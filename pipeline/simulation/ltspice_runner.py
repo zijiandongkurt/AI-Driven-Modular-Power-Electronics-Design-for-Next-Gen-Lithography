@@ -1,5 +1,5 @@
-from PyLTSpice import LTspice
-
+import sys
+print(sys.executable)
 class TopologySimulator():
     def __init__(self):
         pass
@@ -13,3 +13,4 @@ class TopologySimulator():
         pass
 
 
+print("Lol")
