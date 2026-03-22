@@ -1,5 +1,5 @@
-import sys
-print(sys.executable)
+from PyLTSpice import LTspice
+
 class TopologySimulator():
     def __init__(self):
         pass
