@@ -1,62 +1,66 @@
 # Reinforcement Algorithm Module
 
 ## Current Version
-This module implements a **multi-constraint offline GRPO prototype**.
+This module implements a multi-constraint offline GRPO-style prototype.
 
-Instead of processing only one fixed constraint set, it now supports:
+It currently supports:
 - multiple constraint sets per batch
 - multiple topologies for each constraint set
+- invalid topology penalty
 - per-group reward normalization
 - batch-level reward aggregation
+- pseudo policy-gradient structure
 
 ## Input
 `sample_batch.json`
 
-Structure:
+Each constraint set contains:
 - `constraint_id`
 - `prompt_text`
 - `topologies`
-    - `topology_path`
-    - `fitness_score`
-    - `valid`
+  - `topology_path`
+  - `fitness_score`
+  - `valid`
 
 ## Output
-The module generates three output files:
 
-### 1. `policy_update_batch.json`
-Per-topology update signals:
-- constraint_id
-- prompt_text
-- topology_path
+### `policy_update_batch.json`
+Per-topology training signals:
 - fitness_score
-- valid
-- relative_reward
+- advantage
+- log_prob (pseudo)
+- loss (pseudo)
 - preference
 
-### 2. `group_summaries.json`
-Per-constraint statistics:
-- mean fitness
-- mean relative reward
-- best topology
-- best fitness
+### `group_summaries.json`
+Per-constraint summaries:
+- mean_fitness
+- mean_advantage
+- group_objective
+- best_topology
+- best_fitness
 
-### 3. `batch_summary.json`
-Batch-level statistics:
-- number of constraint sets
-- total number of topologies
-- batch mean fitness
-- batch mean relative reward
-- batch objective
-- global best topology
+### `batch_summary.json`
+Batch-level summaries:
+- batch_mean_fitness
+- batch_mean_advantage
+- batch_mean_loss
+- batch_objective
+- best_topology
+- best_fitness
 
 ## Current Logic
 1. Load multiple constraint sets
-2. Apply invalid penalty to invalid topologies
+2. Apply invalid penalty
 3. Normalize rewards within each constraint group
-4. Build per-topology policy update signals
-5. Aggregate group-level and batch-level summaries
+4. Build policy update entries
+5. Compute pseudo policy-gradient loss
+6. Aggregate group-level and batch-level summaries
+
+## Limitation
+Current `log_prob` and `loss` are prototype placeholders and are not yet connected to a real LLM.
 
 ## Next Step
-Use the aggregated batch objective as the training signal for:
-- LoRA-based fine-tuning
-- future GRPO / RL backpropagation
+- Replace pseudo `log_prob` with real LLM log-probabilities
+- Use LoRA-based fine-tuning
+- Connect batch objective to actual backpropagation
