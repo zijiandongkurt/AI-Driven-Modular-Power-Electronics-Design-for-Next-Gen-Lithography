@@ -28,13 +28,13 @@ def compute_group_summary(
         constraint_id: str,
         prompt_text: str,
         topologies: List[Dict],
-        relative_rewards: List[float],
+        advantages: List[float],
 ) -> Dict:
     fitness_scores = [item["fitness_score"] for item in topologies]
     best_item = max(topologies, key=lambda x: x["fitness_score"])
 
     mean_fitness = sum(fitness_scores) / len(fitness_scores) if fitness_scores else 0.0
-    mean_advantage = sum(relative_rewards) / len(relative_rewards) if relative_rewards else 0.0
+    mean_advantage = sum(advantages) / len(advantages) if advantages else 0.0
     group_objective = best_item["fitness_score"] - mean_fitness
 
     return {
@@ -48,6 +48,7 @@ def compute_group_summary(
         "best_fitness": best_item["fitness_score"],
     }
 
+
 def compute_batch_summary(
         all_update_entries: List[Dict],
         group_summaries: List[Dict],
@@ -58,7 +59,6 @@ def compute_batch_summary(
             "num_total_topologies": 0,
             "batch_mean_fitness": 0.0,
             "batch_mean_advantage": 0.0,
-            "batch_mean_loss": 0.0,
             "batch_objective": 0.0,
             "best_topology": None,
             "best_fitness": None,
@@ -66,15 +66,13 @@ def compute_batch_summary(
 
     all_fitness = [item["fitness_score"] for item in all_update_entries]
     all_advantages = [item["advantage"] for item in all_update_entries]
-    all_losses = [item["loss"] for item in all_update_entries]
 
     best_item = max(all_update_entries, key=lambda x: x["fitness_score"])
 
     batch_mean_fitness = sum(all_fitness) / len(all_fitness)
     batch_mean_advantage = sum(all_advantages) / len(all_advantages)
-    batch_mean_loss = sum(all_losses) / len(all_losses)
 
-    # non-zero batch objective for optimization signal
+    # Batch-level optimization signal
     batch_objective = best_item["fitness_score"] - batch_mean_fitness
 
     return {
@@ -82,7 +80,6 @@ def compute_batch_summary(
         "num_total_topologies": len(all_update_entries),
         "batch_mean_fitness": batch_mean_fitness,
         "batch_mean_advantage": batch_mean_advantage,
-        "batch_mean_loss": batch_mean_loss,
         "batch_objective": batch_objective,
         "best_topology": best_item["topology_path"],
         "best_fitness": best_item["fitness_score"],
@@ -101,20 +98,20 @@ def process_single_constraint_group(
     processed_topologies = apply_invalid_penalty_to_topologies(topologies, invalid_penalty)
 
     fitness_scores = [item["fitness_score"] for item in processed_topologies]
-    relative_rewards = normalize_relative_rewards(fitness_scores, epsilon)
+    advantages = normalize_relative_rewards(fitness_scores, epsilon)
 
     update_entries = build_policy_update_entries(
         constraint_id=constraint_id,
         prompt_text=prompt_text,
         topologies=processed_topologies,
-        relative_rewards=relative_rewards,
+        relative_rewards=advantages,
     )
 
     group_summary = compute_group_summary(
         constraint_id=constraint_id,
         prompt_text=prompt_text,
         topologies=processed_topologies,
-        relative_rewards=relative_rewards,
+        advantages=advantages,
     )
 
     return update_entries, group_summary
@@ -164,7 +161,7 @@ def main():
     print(f"Best topology: {batch_summary['best_topology']}")
     print(f"Best fitness: {batch_summary['best_fitness']:.4f}")
     print(f"Batch objective: {batch_summary['batch_objective']:.4f}")
-    print(f"Batch mean loss: {batch_summary['batch_mean_loss']:.4f}")
+    print(f"Batch mean advantage: {batch_summary['batch_mean_advantage']:.4f}")
     print(f"Saved update batch to: {update_batch_path}")
     print(f"Saved group summaries to: {group_summary_path}")
     print(f"Saved batch summary to: {batch_summary_path}")

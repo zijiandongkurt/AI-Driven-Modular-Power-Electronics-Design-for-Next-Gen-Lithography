@@ -5,16 +5,19 @@
     "topologies": [
       {
         "topology_path": "c1_t1.net",
+        "topology_text": "Vin VIN 0 DC 12\nL1 SW VOUT 100u\nC1 VOUT 0 100u\n.end",
         "fitness_score": 0.62,
         "valid": true
       },
       {
         "topology_path": "c1_t2.net",
+        "topology_text": "Vin VIN 0 DC 12\nL1 SW VOUT 50u\nC1 VOUT 0 47u\n.end",
         "fitness_score": 0.81,
         "valid": true
       },
       {
         "topology_path": "c1_t3.net",
+        "topology_text": "Vin VIN 0 DC 12\nL1 BAD BAD 0\n.end",
         "fitness_score": 0.10,
         "valid": false
       }
@@ -26,39 +29,21 @@
     "topologies": [
       {
         "topology_path": "c2_t1.net",
+        "topology_text": "Vin VIN 0 DC 5\nL1 VIN SW 100u\nC1 VOUT 0 100u\n.end",
         "fitness_score": 0.55,
         "valid": true
       },
       {
         "topology_path": "c2_t2.net",
+        "topology_text": "Vin VIN 0 DC 5\nL1 VIN SW 150u\nC1 VOUT 0 220u\n.end",
         "fitness_score": 0.73,
         "valid": true
       },
       {
         "topology_path": "c2_t3.net",
+        "topology_text": "Vin VIN 0 DC 5\nL1 VIN SW 120u\nC1 VOUT 0 150u\n.end",
         "fitness_score": 0.84,
         "valid": true
-      }
-    ]
-  },
-  {
-    "constraint_id": "constraint_003",
-    "prompt_text": "Design a buck-boost converter from 12V to 5V with high efficiency and low ripple.",
-    "topologies": [
-      {
-        "topology_path": "c3_t1.net",
-        "fitness_score": 0.48,
-        "valid": true
-      },
-      {
-        "topology_path": "c3_t2.net",
-        "fitness_score": 0.67,
-        "valid": true
-      },
-      {
-        "topology_path": "c3_t3.net",
-        "fitness_score": 0.25,
-        "valid": false
       }
     ]
   }

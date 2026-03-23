@@ -2,61 +2,49 @@
   {
     "constraint_id": "constraint_001",
     "prompt_text": "Design a buck converter from 12V to 5V with minimal components.",
-    "topology_path": "c1_t1.net",
     "topology_text": "Vin VIN 0 DC 12\nL1 SW VOUT 100u\nC1 VOUT 0 100u\n.end",
-    "fitness_score": 0.62,
-    "valid": true,
     "advantage": 0.5869040930049385,
-    "preference": "increase"
+    "log_prob": -104.86792755126953,
+    "loss": 61.54741668701172
   },
   {
     "constraint_id": "constraint_001",
     "prompt_text": "Design a buck converter from 12V to 5V with minimal components.",
-    "topology_path": "c1_t2.net",
     "topology_text": "Vin VIN 0 DC 12\nL1 SW VOUT 50u\nC1 VOUT 0 47u\n.end",
-    "fitness_score": 0.81,
-    "valid": true,
     "advantage": 0.8208448853215924,
-    "preference": "increase"
+    "log_prob": -111.11988830566406,
+    "loss": 91.21218872070312
   },
   {
     "constraint_id": "constraint_001",
     "prompt_text": "Design a buck converter from 12V to 5V with minimal components.",
-    "topology_path": "c1_t3.net",
     "topology_text": "Vin VIN 0 DC 12\nL1 BAD BAD 0\n.end",
-    "fitness_score": -1.0,
-    "valid": false,
     "advantage": -1.4077489783265311,
-    "preference": "decrease"
+    "log_prob": -75.98600769042969,
+    "loss": -106.96922302246094
   },
   {
     "constraint_id": "constraint_002",
     "prompt_text": "Design a boost converter from 5V to 12V with high efficiency.",
-    "topology_path": "c2_t1.net",
     "topology_text": "Vin VIN 0 DC 5\nL1 VIN SW 100u\nC1 VOUT 0 100u\n.end",
-    "fitness_score": 0.55,
-    "valid": true,
     "advantage": -1.3106216487106344,
-    "preference": "decrease"
+    "log_prob": -108.38218688964844,
+    "loss": -142.04803466796875
   },
   {
     "constraint_id": "constraint_002",
     "prompt_text": "Design a boost converter from 5V to 12V with high efficiency.",
-    "topology_path": "c2_t2.net",
     "topology_text": "Vin VIN 0 DC 5\nL1 VIN SW 150u\nC1 VOUT 0 220u\n.end",
-    "fitness_score": 0.73,
-    "valid": true,
     "advantage": 0.19519896895690292,
-    "preference": "increase"
+    "log_prob": -113.32192993164062,
+    "loss": 22.120323181152344
   },
   {
     "constraint_id": "constraint_002",
     "prompt_text": "Design a boost converter from 5V to 12V with high efficiency.",
-    "topology_path": "c2_t3.net",
     "topology_text": "Vin VIN 0 DC 5\nL1 VIN SW 120u\nC1 VOUT 0 150u\n.end",
-    "fitness_score": 0.84,
-    "valid": true,
     "advantage": 1.1154226797537314,
-    "preference": "increase"
+    "log_prob": -115.17871856689453,
+    "loss": 128.47296142578125
   }
 ]

@@ -1,0 +1,14 @@
+[
+  {
+    "constraint_id": "c1",
+    "prompt_text": "Design a buck converter from 12V to 5V.",
+    "topology_text": "Vin VIN 0 DC 12\nL1 SW VOUT 100u\nC1 VOUT 0 100u\n.end",
+    "advantage": 0.8
+  },
+  {
+    "constraint_id": "c2",
+    "prompt_text": "Design a boost converter from 5V to 12V.",
+    "topology_text": "Vin VIN 0 DC 5\nL1 VIN SW 100u\nC1 VOUT 0 100u\n.end",
+    "advantage": -0.3
+  }
+]
