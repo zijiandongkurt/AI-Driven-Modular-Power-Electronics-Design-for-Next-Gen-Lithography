@@ -1,66 +1,109 @@
-# Reinforcement Algorithm Module
+# Reinforcement Learning Module for Topology Optimization
 
-## Current Version
-This module implements a multi-constraint offline GRPO-style prototype.
+This module implements a reinforcement learning (RL) loop that connects simulation-based evaluation with language model training.
 
-It currently supports:
-- multiple constraint sets per batch
-- multiple topologies for each constraint set
-- invalid topology penalty
-- per-group reward normalization
-- batch-level reward aggregation
-- pseudo policy-gradient structure
+The goal is to convert circuit simulation results (fitness scores) into training signals and use them to guide updates of a language model.
 
-## Input
-`sample_batch.json`
+---
 
-Each constraint set contains:
-- `constraint_id`
-- `prompt_text`
-- `topologies`
-  - `topology_path`
-  - `fitness_score`
-  - `valid`
+## Overview
 
-## Output
+The current implementation focuses on the RL loop between the reward function and the language model.
 
-### `policy_update_batch.json`
-Per-topology training signals:
-- fitness_score
-- advantage
-- log_prob (pseudo)
-- loss (pseudo)
-- preference
+It follows a simplified policy-gradient approach:
 
-### `group_summaries.json`
-Per-constraint summaries:
-- mean_fitness
-- mean_advantage
-- group_objective
-- best_topology
-- best_fitness
+1. Compute relative rewards (advantages) from fitness scores
+2. Construct training samples (prompt + topology + advantage)
+3. Compute log-probabilities using a language model
+4. Build a policy-gradient-style loss
+5. Perform backpropagation and update model parameters
 
-### `batch_summary.json`
-Batch-level summaries:
-- batch_mean_fitness
-- batch_mean_advantage
-- batch_mean_loss
-- batch_objective
-- best_topology
-- best_fitness
+---
 
-## Current Logic
-1. Load multiple constraint sets
-2. Apply invalid penalty
-3. Normalize rewards within each constraint group
-4. Build policy update entries
-5. Compute pseudo policy-gradient loss
-6. Aggregate group-level and batch-level summaries
+## Project Structure
+```
+pipeline/
+├── reinforcement_algorithm/
+│   ├── grpo_loop.py
+│   ├── reward_normalizer.py
+│   ├── policy_update.py
+│   ├── policy_update_batch.json
+│   ├── group_summaries.json
+│   ├── batch_summary.json
+│   └── sample_batch.json
+│
+├── model_training/
+│   ├── trainer_demo.py
+│   ├── trainer_demo_output.json
+│   ├── trainer_demo_summary.json
+```
+---
 
-## Limitation
-Current `log_prob` and `loss` are prototype placeholders and are not yet connected to a real LLM.
+## Module Description
 
-## Next Step
-- Replace pseudo `log_prob` with real LLM log-probabilities
-- Use LoRA-based fine-tuning
-- Connect batch objective to actual backpropagation
+### 1. reinforcement_algorithm
+
+Handles RL-related processing.
+
+- Takes simulation outputs (fitness scores)
+- Normalizes rewards within each constraint group
+- Computes advantages
+- Prepares training data for the model
+
+**Key files:**
+
+- `grpo_loop.py`  
+  Main script for batch processing and advantage computation
+
+- `reward_normalizer.py`  
+  Computes normalized rewards (advantages)
+
+- `policy_update.py`  
+  Converts rewards into training-ready samples
+
+- `policy_update_batch.json`  
+  Output data used as input for training
+
+---
+
+### 2. model_training
+
+Performs the actual model training step using RL signals.
+
+- Loads training samples from RL module
+- Computes log-probabilities using a language model
+- Builds a policy-gradient-style loss
+- Performs backpropagation and optimizer update
+
+**Model used:**
+
+- `Qwen2.5-0.5B-Instruct` (used for local testing due to hardware constraints)
+
+**Key files:**
+
+- `trainer_demo.py`  
+  Main training script
+
+- `trainer_demo_output.json`  
+  Per-sample results
+
+- `trainer_demo_summary.json`  
+  Batch-level statistics
+
+---
+
+## LLM Component
+
+The LLM component is implemented by Yuhao.
+
+- Code location: `<LLM>` folder under branch `"LLM_Syh"`
+- Detailed explanations are provided in the README.md in that branch
+
+---
+
+## How to Run
+
+### Step 1: Run RL processing
+
+```bash
+python pipeline/reinforcement_algorithm/grpo_loop.py
