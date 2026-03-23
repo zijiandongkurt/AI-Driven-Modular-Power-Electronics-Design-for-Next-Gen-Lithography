@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 class Constraint:
     """Design constraint spec. Shared contract with all other modules."""
 
-    """
+    
     vin: float
     vout_target: float
     efficiency_target: float = 0.90
@@ -49,7 +49,7 @@ class Constraint:
     def to_prompt(self) -> str:
         d = {k: v for k, v in asdict(self).items() if v is not None}
         return f"### Constraint:\n{json.dumps(d, indent=2)}\n\n### SPICE Netlist:\n"
-    """
+    
 
 
 @dataclass
