@@ -23,6 +23,12 @@ model = AutoModelForCausalLM.from_pretrained(
 if device == "cpu":
     model.to(device)
 
+# Set model to training mode
+model.train()
+
+# Define optimizer
+optimizer = torch.optim.AdamW(model.parameters(), lr=1e-6)
+
 # Load batch input from JSON
 data_path = Path(__file__).resolve().parent.parent / "reinforcement_algorithm" / "policy_update_batch.json"
 print("Loading data from:", data_path)
@@ -31,7 +37,10 @@ with open(data_path, "r", encoding="utf-8") as f:
     examples = json.load(f)
 
 results = []
-total_loss = 0.0
+batch_loss = 0.0
+
+# Clear gradients before backward
+optimizer.zero_grad()
 
 # Process each example in the batch
 for ex in examples:
@@ -68,9 +77,11 @@ for ex in examples:
     prompt_length = prompt_ids.shape[1]
     response_log_prob = token_log_probs[:, prompt_length - 1:].sum()
 
-    # Compute policy-gradient-style loss
+    # Compute policy-gradient-style loss for this example
     loss = -response_log_prob * advantage
-    total_loss += loss.item()
+
+    # Accumulate batch loss as a tensor
+    batch_loss = batch_loss + loss
 
     result = {
         "constraint_id": ex["constraint_id"],
@@ -96,11 +107,18 @@ for ex in examples:
     print("\nPolicy gradient style loss:")
     print(loss.item())
 
-# Compute batch mean loss
-batch_mean_loss = total_loss / len(examples) if examples else 0.0
+# Compute mean batch loss
+if examples:
+    batch_loss = batch_loss / len(examples)
+
+# Backward pass on the full batch
+batch_loss.backward()
+
+# Update model parameters
+optimizer.step()
 
 print("\n==============================")
-print("Batch mean loss:", batch_mean_loss)
+print("Batch mean loss:", batch_loss.item())
 
 # Save detailed outputs
 output_path = Path(__file__).parent / "trainer_demo_output.json"
@@ -112,7 +130,7 @@ print(f"Saved detailed results to: {output_path}")
 # Save batch summary
 batch_summary = {
     "num_examples": len(examples),
-    "batch_mean_loss": batch_mean_loss,
+    "batch_mean_loss": batch_loss.item() if examples else 0.0,
 }
 
 summary_path = Path(__file__).parent / "trainer_demo_summary.json"
