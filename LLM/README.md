@@ -17,25 +17,6 @@ The module uses **Qwen2.5-Coder-7B** as the base model and follows a two-stage t
 | `sft_trainer.py` | SFT training module. Fine-tunes the base model on constraint-netlist pairs using LoRA, then saves/merges the adapter. |
 | `rl_updater.py` | RL policy update module. Receives external reward scores and updates LoRA weights via GRPO algorithm. |
 
-## Architecture
-
-```
-              ┌──────────────────┐
-              │   LLMEngine      │
-              │  (llm_engine_    │
-              │   minimal.py)    │
-              └──┬──────────┬────┘
-                 │          │
-        load &   │          │  model & tokenizer
-        generate │          │  access
-                 │          │
-    ┌────────────▼──┐  ┌────▼───────────┐
-    │  SFTWarmStart  │  │   RLUpdater    │
-    │ (sft_trainer.  │  │ (rl_updater.   │
-    │     py)        │  │     py)        │
-    └────────────────┘  └────────────────┘
-      Stage 1: SFT        Stage 2: GRPO
-```
 
 ## Quick Start
 
