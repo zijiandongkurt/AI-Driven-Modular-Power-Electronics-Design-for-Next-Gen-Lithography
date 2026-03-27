@@ -1,0 +1,50 @@
+[
+  {
+    "constraint_id": "constraint_001",
+    "prompt_text": "Design a buck converter from 12V to 5V with minimal components.",
+    "topologies": [
+      {
+        "topology_path": "c1_t1.net",
+        "topology_text": "Vin VIN 0 DC 12\nL1 SW VOUT 100u\nC1 VOUT 0 100u\n.end",
+        "fitness_score": 0.62,
+        "valid": true
+      },
+      {
+        "topology_path": "c1_t2.net",
+        "topology_text": "Vin VIN 0 DC 12\nL1 SW VOUT 50u\nC1 VOUT 0 47u\n.end",
+        "fitness_score": 0.81,
+        "valid": true
+      },
+      {
+        "topology_path": "c1_t3.net",
+        "topology_text": "Vin VIN 0 DC 12\nL1 BAD BAD 0\n.end",
+        "fitness_score": 0.10,
+        "valid": false
+      }
+    ]
+  },
+  {
+    "constraint_id": "constraint_002",
+    "prompt_text": "Design a boost converter from 5V to 12V with high efficiency.",
+    "topologies": [
+      {
+        "topology_path": "c2_t1.net",
+        "topology_text": "Vin VIN 0 DC 5\nL1 VIN SW 100u\nC1 VOUT 0 100u\n.end",
+        "fitness_score": 0.55,
+        "valid": true
+      },
+      {
+        "topology_path": "c2_t2.net",
+        "topology_text": "Vin VIN 0 DC 5\nL1 VIN SW 150u\nC1 VOUT 0 220u\n.end",
+        "fitness_score": 0.73,
+        "valid": true
+      },
+      {
+        "topology_path": "c2_t3.net",
+        "topology_text": "Vin VIN 0 DC 5\nL1 VIN SW 120u\nC1 VOUT 0 150u\n.end",
+        "fitness_score": 0.84,
+        "valid": true
+      }
+    ]
+  }
+]
