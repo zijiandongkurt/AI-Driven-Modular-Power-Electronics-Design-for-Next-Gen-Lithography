@@ -2,120 +2,128 @@ import pandas as pd
 import numpy as np
 import os
 
-def calculate_reward(group_df, constraints, weights):
-    """
-    Calculates the fitness score including the l5 inefficiency penalty.
-    Returns both the base_fitness (hardware constraints only) and final_fitness (with efficiency).
-    """
-    required_cols = ['V(2)', 'I(L1)', 'V(1)', 'I(Vin)', 'I(Rload)']
-    
-    # Pre-check for required columns and enough data
-    if not all(col in group_df.columns for col in required_cols):
-        return 0.0
+class RewardFunction:
+    def __init__(self):
+        # Define a maximum penalty cap to prevent network gradients from exploding
+        self.MAX_PENALTY = 10000.0 
 
-    clean_df = group_df[required_cols].dropna()
-    if len(clean_df) < 10: 
-        return 0.0
+    def calculate_loss(self, row, constraints, weights):
+        """
+        Calculates the total loss as a weighted sum of penalties.
+        A lower loss means a better circuit.
+        """
+        # --- 1. Safely extract metrics, converting NaNs to 0.0 ---
+        # Pandas sometimes reads empty CSV cells as NaN instead of missing keys
+        v_out = row.get('voltage_out_mean_V', 0.0)
+        v_out = 0.0 if pd.isna(v_out) else v_out
+        
+        efficiency = row.get('efficiency', 0.0)
+        efficiency = 0.0 if pd.isna(efficiency) else efficiency
+        
+        total_volume = row.get('total_volume_cm3', self.MAX_PENALTY)
+        total_volume = self.MAX_PENALTY if pd.isna(total_volume) else total_volume
+        
+        count_mosfets = row.get('count_mosfets', 0)
+        count_diodes = row.get('count_diodes', 0)
+        count_inductors = row.get('count_inductors', 0)
+        count_capacitors = row.get('count_capacitors', 0)
 
-    v_in = clean_df['V(1)']
-    v_out = clean_df['V(2)']
-    i_in = clean_df['I(Vin)']
-    i_out = clean_df['I(Rload)']
-    i_L1 = clean_df['I(L1)']
+        # --- 2. Hardware Penalty: Voltage accuracy ---
+        target_v_out = constraints.get('vout_target', 5.0)
+        penalty_v_out = (v_out - target_v_out) ** 2
+        
+        # --- 3. Efficiency Penalty ---
+        safe_efficiency = max(0.0, min(1.0, float(efficiency)))
+        penalty_efficiency = 1.0 - safe_efficiency
 
-    # Extract needed parameters
-    # take the mean at the end of the simulation, look at the steady state value
-    # take the last 100 - 150 samples to avoid transient
-    v_in_mean = v_in.mean()
-    il1_p2p = i_L1.max() - i_L1.min()
-    ivin_abs_peak = i_in.abs().max()
+        # --- 4. Volume Penalty (THE INFINITY FIX) ---
+        # If the colleague's script output 'inf' because it melted, cap it at MAX_PENALTY
+        if np.isinf(total_volume):
+            penalty_volume = self.MAX_PENALTY
+        else:
+            # Also cap it just in case it's a valid but astronomically high number
+            penalty_volume = min(float(total_volume), self.MAX_PENALTY)
 
-    # Calculate Efficiency
-    instant_p_in = -v_in * i_in
-    instant_p_out = v_out * i_out
-    
-    avg_p_in = instant_p_in.mean()
-    avg_p_out = instant_p_out.mean()
-    
-    efficiency = 0.0
-    epsilon = 1e-9 
-    if avg_p_in > epsilon:
-        efficiency = np.clip(avg_p_out / avg_p_in, 0.0, 1.0)
+        # --- 5. Custom Component Penalty ---
+        comp_weights = weights.get('components', {})
+        penalty_components = (
+            comp_weights.get('mosfet', 3.0) * count_mosfets +
+            comp_weights.get('diode', 1.5) * count_diodes +
+            comp_weights.get('inductor', 2.5) * count_inductors +
+            comp_weights.get('capacitor', 1.0) * count_capacitors
+        )
 
-    # Calculate Hardware Penalties (l1 - l4)
-    penalty_v_out = ((v_out - constraints['target_v_out']) ** 2).mean()
-    
-    penalty_v_in = 0.0
-    if abs(v_in_mean - constraints['target_v_in']) > constraints['v_in_tol']:
-        penalty_v_in = (abs(v_in_mean - constraints['target_v_in']) - constraints['v_in_tol']) ** 2
+        # --- 6. Apply top-level weights to all penalties ---
+        l1 = weights.get('v_out', 1.0) * penalty_v_out
+        l2 = weights.get('efficiency', 5.0) * penalty_efficiency
+        l3 = weights.get('volume', 0.1) * penalty_volume
+        l4 = weights.get('cost', 1.0) * penalty_components
+        
+        total_loss = l1 + l2 + l3 + l4
+        
+        # Final safety net: If loss somehow still became NaN or Inf, cap it
+        if np.isinf(total_loss) or pd.isna(total_loss):
+            return self.MAX_PENALTY
+            
+        return total_loss
 
-    # might be incorrect if multiple inductors 
-    penalty_il1_ripple = 0.0
-    if il1_p2p > constraints['max_il1_ripple']:
-        penalty_il1_ripple = (il1_p2p - constraints['max_il1_ripple']) ** 2
+    def calculate_reward(self, row, constraints, weights):
+        loss = self.calculate_loss(row, constraints, weights)
+        return -loss
 
-    penalty_ivin_peak = 0.0
-    if ivin_abs_peak > constraints['max_ivin_peak']:
-        penalty_ivin_peak = (ivin_abs_peak - constraints['max_ivin_peak']) ** 2
+    def process_csv_and_calculate_reward(self, csv_file_path, constraints, weights):
+        """
+        Reads a CSV file, processes data by 'source_file', and calculates
+        the final reward using the weighted sum loss.
+        """
+        results = []
+        try:
+            df = pd.read_csv(csv_file_path)
+        except FileNotFoundError:
+            return [["Error", "File not found"]]
+        except Exception as e:
+            return [["Error", f"Could not read CSV: {e}"]]
 
-    l1 = weights.get('v_out', 1.0) * penalty_v_out
-    l2 = weights.get('v_in', 1.0) * penalty_v_in
-    l3 = weights.get('il1_ripple', 1.0) * penalty_il1_ripple
-    l4 = weights.get('ivin_peak', 1.0) * penalty_ivin_peak
-    l5 = weights.get('efficiency', 0.0) * (1.0 - efficiency)
-    
-    # Final fitness combines hardware constraint losses with efficiency loss
-    fitness = float(1.0 / (1.0 + l1 + l2 + l3 + l4 + l5))
-    
-    return fitness
+        if 'source_file' not in df.columns:
+            return [["Error", "Missing required 'source_file' column"]]
 
-def process_csv_and_calculate_fitness(csv_file_path, constraints, weights):
-    """
-    Reads a CSV file, groups data by 'source_file', and calculates
-    a fitness score using dynamic constraints and dynamic penalty weights.
-    Returns a list of [source_file, final_fitness_score].
-    """
-    fitness_results = []
-    try:
-        df = pd.read_csv(csv_file_path)
-    except FileNotFoundError:
-        return [["Error", "File not found"]]
-    except Exception as e:
-        return [["Error", f"Could not read CSV: {e}"]]
+        # Group by source_file to handle potential .step parameter sweeps.
+        grouped = df.groupby('source_file').mean(numeric_only=True)
 
-    if 'source_file' not in df.columns:
-        return [["Error", "Missing required 'source_file' column"]]
+        # Calculate for each unique source_file run
+        for source_file_name, row in grouped.iterrows():
+            # Get the reward (negative loss)
+            final_reward = self.calculate_reward(row, constraints, weights)
+            
+            # Optional: You can also append the raw loss if you want to track it
+            # raw_loss = self.calculate_loss(row, constraints, weights)
+            
+            results.append([source_file_name, final_reward])
 
-    # Ensure temporal sequence is maintained
-    df = df.sort_values(by=['source_file', 'time'])
-    grouped = df.groupby('source_file')
-
-    # Calculate for each unique source_file run
-    for source_file_name, group_df in grouped:
-        # Unpack both, but only append the final_fitness to the list
-        base_fitness, final_fitness = calculate_reward(group_df, constraints, weights)
-        fitness_results.append([source_file_name, final_fitness])
-
-    return fitness_results
+        return results
 
 
 # --- Example Execution Setup ---
 
 my_constraints = {
-    'target_v_in': 12.0,   
-    'v_in_tol': 0.5,       
-    'target_v_out': 24.0,  
-    'max_il1_ripple': 1.0, 
-    'max_ivin_peak': 10.0  
+    "vin_min": 12,
+    "vin_max": 100,
+    "vout_target": 5,
+    "efficiency_target": 0.90,
+    "power_in": 100,
 }
 
-# Standard weights, including the efficiency weight parameter
 my_weights = {
-    'v_out': 1.0,
-    'v_in': 1.0,
-    'il1_ripple': 1.0,
-    'ivin_peak': 1.0,
-    'efficiency': 0.5  # Adjust this dynamically in your external fine-tuning code
+    'v_out': 10.0,          # Increased weight: Voltage tracking is usually the most critical
+    'efficiency': 20.0,     # High weight to heavily incentivize high efficiency
+    'volume': 2.0,          # Penalty per cm3
+    'cost': 1.0,            # Global multiplier for the custom component sum
+    'components': {         # Custom tweakable component penalties
+        'mosfet': 5.0,
+        'diode': 2.0,
+        'inductor': 4.0,
+        'capacitor': 1.0
+    }
 }
 
 # Dynamically get the folder where this specific script is saved
@@ -125,6 +133,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 csv_file_path = os.path.join(script_dir, 'batch_001_out.csv')
 
 # Execute
-results = process_csv_and_calculate_fitness(csv_file_path, my_constraints, my_weights)
+reward_function = RewardFunction()
+results = reward_function.process_csv_and_calculate_reward(csv_file_path, my_constraints, my_weights)
 
 print(results)
