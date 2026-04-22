@@ -87,17 +87,32 @@ class RewardFunction:
         if 'source_file' not in df.columns:
             return [["Error", "Missing required 'source_file' column"]]
 
-        # Group by source_file to handle potential .step parameter sweeps.
-        grouped = df.groupby('source_file').mean(numeric_only=True)
+        # Define how each column should be aggregated across the voltage sweep
+        aggregation_rules = {
+        # Worst-case scenario metrics (Maximums)
+        'total_volume_cm3': 'max',            # Size for the worst-case heatsink!
+        'voltage_out_ripple_V': 'max',        # Worst-case ripple
+        'switch_voltage_peak_V': 'max',       # Worst-case switch stress
+        'switch_current_peak_A': 'max',
+        'inductor_current_peak_A': 'max',
+        
+        # Average performance metrics (Means)
+        'efficiency': 'mean',                 # Average efficiency across the operating range
+        'voltage_out_mean_V': 'mean',         # Average output voltage tracking
+        
+        # Static netlist values (First value is fine, they don't change between steps)
+        'count_mosfets': 'first',
+        'count_diodes': 'first',
+        'count_inductors': 'first',
+        'count_capacitors': 'first'
+        }
 
-        # Calculate for each unique source_file run
+        # Group by the circuit and apply the specific rules
+        grouped = df.groupby('source_file').agg(aggregation_rules)
+
+        # Now calculate the reward using this properly aggregated data
         for source_file_name, row in grouped.iterrows():
-            # Get the reward (negative loss)
             final_reward = self.calculate_reward(row, constraints, weights)
-            
-            # Optional: You can also append the raw loss if you want to track it
-            # raw_loss = self.calculate_loss(row, constraints, weights)
-            
             results.append([source_file_name, final_reward])
 
         return results
