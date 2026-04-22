@@ -83,10 +83,22 @@ class TopologySimulator():
             l_values = [_to_float(net.get_component_value(l)) for l in l_refs]
             counts   = {k: len(net.get_components(k)) for k in COMPONENT_WEIGHTS}
 
+            # Extract switching frequency from gate voltage PULSE period
+            f_sw = float("nan")
+            for vref in net.get_components("V"):
+                val = net.get_component_value(vref)
+                if val and "PULSE" in val.upper():
+                    parts = val.upper().replace("PULSE(","").replace(")","").split()
+                    if len(parts) >= 7:
+                        period = _to_float(parts[6])
+                        if period and period > 0:
+                            f_sw = 1.0 / period
+                            break
+
             netlist_map[netpath.stem] = {
-                "counts":     counts,
-                "l_values":   l_values,
-                "cost_score": sum(counts[k] * COMPONENT_WEIGHTS[k] for k in counts),
+                "counts":            counts,
+                "l_values":          l_values,
+                "switching_freq_Hz": f_sw,
             }
 
             runner.run(net,
@@ -135,10 +147,9 @@ class TopologySimulator():
                 continue
 
             # Retrieve pre-extracted netlist metadata
-            meta       = netlist_map.get(raw_path.stem, {})
-            counts     = meta.get("counts", {})
-            l_values   = meta.get("l_values", [])
-            cost_score = meta.get("cost_score", 0.0)
+            meta     = netlist_map.get(raw_path.stem, {})
+            counts   = meta.get("counts", {})
+            l_values = meta.get("l_values", [])
 
             for step in steps:
                 try:
@@ -159,6 +170,10 @@ class TopologySimulator():
                 t_max = df["time"].max()
                 df_ss = df[df["time"] >= t_max * 0.8].copy()
 
+                # Time array for trapezoidal integration (corrects for variable timestep)
+                t      = df_ss["time"].values
+                t_span = t[-1] - t[0]
+
                 row = {
                     # ── Identity ──────────────────────────────────────────────────
                     "source_file": raw_path.stem,
@@ -167,55 +182,72 @@ class TopologySimulator():
 
                 # ── Output voltage ────────────────────────────────────────────────
                 if "v(out)" in df_ss:
-                    v_out               = df_ss["v(out)"]
-                    row["voltage_out_mean_V"]   = v_out.mean()
-                    row["voltage_out_ripple_V"] = v_out.max() - v_out.min()
+                    v_out_vals              = df_ss["v(out)"].values
+                    row["voltage_out_mean_V"]   = np.trapezoid(v_out_vals, t) / t_span
+                    row["voltage_out_ripple_V"] = v_out_vals.max() - v_out_vals.min()
 
                 # ── Input voltage ─────────────────────────────────────────────────
                 if "v(in)" in df_ss:
-                    v_in                = df_ss["v(in)"]
-                    row["voltage_in_mean_V"]    = v_in.mean()
-                    row["voltage_in_ripple_V"]  = v_in.max() - v_in.min()
+                    v_in_vals               = df_ss["v(in)"].values
+                    row["voltage_in_mean_V"]    = np.trapezoid(v_in_vals, t) / t_span
+                    row["voltage_in_ripple_V"]  = v_in_vals.max() - v_in_vals.min()
 
                 # ── Conversion ratio ──────────────────────────────────────────────
                 if "voltage_out_mean_V" in row and "voltage_in_mean_V" in row and row["voltage_in_mean_V"] != 0:
                     row["conversion_ratio"] = row["voltage_out_mean_V"] / row["voltage_in_mean_V"]
 
-                # ── Inductor current (first inductor found) ───────────────────────
-                i_l_col = next((c for c in df_ss.columns if c.startswith("i(l")), None)
-                if i_l_col:
-                    i_l              = df_ss[i_l_col]
-                    row["inductor_current_mean_A"]   = i_l.mean()
-                    row["inductor_current_ripple_A"] = i_l.max() - i_l.min()
-                    row["inductor_current_peak_A"]   = i_l.max()
-                    row["inductor_current_rms_A"]    = float(np.sqrt((i_l**2).mean()))
-                    row["is_ccm"]    = int(i_l.min() > 1e-6)
+                # ── Inductor current (worst-case across all inductors) ────────────
+                i_l_cols = [c for c in df_ss.columns if c.startswith("i(l")]
+                if i_l_cols:
+                    all_mean, all_rms, all_peak, all_ripple, all_min = [], [], [], [], []
+                    for col in i_l_cols:
+                        vals = df_ss[col].values
+                        all_mean.append(np.trapezoid(vals, t) / t_span)
+                        all_rms.append(float(np.sqrt(np.trapezoid(vals**2, t) / t_span)))
+                        all_peak.append(vals.max())
+                        all_ripple.append(vals.max() - vals.min())
+                        all_min.append(vals.min())
+                    row["inductor_current_mean_A"]   = max(all_mean)
+                    row["inductor_current_rms_A"]    = max(all_rms)
+                    row["inductor_current_peak_A"]   = max(all_peak)
+                    row["inductor_current_ripple_A"] = max(all_ripple)
+                    row["is_ccm"]                    = int(min(all_min) > 1e-6)
 
-                # ── Switching frequency (from inductor current peaks) ─────────────
-                if i_l_col:
-                    i_l_vals = df_ss[i_l_col].values
-                    t_vals   = df_ss["time"].values
-                    peaks    = np.where(
+                # ── Switching frequency (netlist PULSE, fallback to waveform) ───────
+                f_sw = meta.get("switching_freq_Hz", float("nan"))
+                if np.isnan(f_sw) and i_l_cols:
+                    i_l_vals = df_ss[i_l_cols[0]].values
+                    peaks = np.where(
                         (i_l_vals[1:-1] > i_l_vals[:-2]) &
                         (i_l_vals[1:-1] > i_l_vals[2:])
                     )[0] + 1
                     if len(peaks) >= 2:
-                        row["switching_freq_Hz"] = float(1.0 / np.diff(t_vals[peaks]).mean())
+                        f_sw = float(1.0 / np.diff(t[peaks]).mean())
+                row["switching_freq_Hz"] = f_sw
 
                 # ── Output power ──────────────────────────────────────────────────
                 i_load_col = next(
                     (c for c in df_ss.columns if "rload" in c or "r_load" in c), None
                 )
                 if i_load_col and "voltage_out_mean_V" in row:
-                    row["load_current_mean_A"] = df_ss[i_load_col].mean()
-                    row["power_out_W"]       = row["voltage_out_mean_V"] * row["load_current_mean_A"]
+                    i_load_vals            = df_ss[i_load_col].values
+                    row["load_current_mean_A"] = np.trapezoid(i_load_vals, t) / t_span
+                    row["power_out_W"]         = row["voltage_out_mean_V"] * row["load_current_mean_A"]
 
                 # ── Input power & efficiency ──────────────────────────────────────
+                # Match i(vin) or i(v_in) exactly — exclude gate drive sources
                 i_src_col = next(
-                    (c for c in df_ss.columns if c.startswith("i(vin") or c.startswith("i(v_in")), None
+                    (c for c in df_ss.columns
+                     if c in ("i(vin)", "i(v_in)")
+                     or (c.startswith("i(v") and "gate" not in c and "lo" not in c and "hi" not in c)), None
                 )
                 if i_src_col and "voltage_in_mean_V" in row:
-                    row["power_in_W"] = row["voltage_in_mean_V"] * abs(df_ss[i_src_col].mean())
+                    i_src_vals        = df_ss[i_src_col].values
+                    # DEBUG: print i(vin) stats to diagnose power_in = 0
+                    print(f"DEBUG {raw_path.name}: i_src_col={i_src_col}, "
+                          f"min={i_src_vals.min():.4f}, max={i_src_vals.max():.4f}, "
+                          f"trapz={np.trapezoid(i_src_vals, t) / t_span:.4f}")
+                    row["power_in_W"] = row["voltage_in_mean_V"] * abs(np.trapezoid(i_src_vals, t) / t_span)
                     if row.get("power_in_W", 0) > 0 and "power_out_W" in row:
                         row["efficiency"] = row["power_out_W"] / row["power_in_W"]
 
@@ -234,21 +266,24 @@ class TopologySimulator():
                         row["heatsink_thermal_resistance_CW"] = float("inf")
                         row["heatsink_volume_cm3"]     = 0.0
 
-                # ── Switch voltage stress ─────────────────────────────────────────
+                # ── Switch voltage stress (switch node v(sw) exact match) ────────
                 v_ds_col = next(
-                    (c for c in df_ss.columns if "v(ds)" in c or "v(sw" in c), None
+                    (c for c in df_ss.columns if c == "v(sw)" or c == "v(ds)"), None
                 )
                 if v_ds_col:
                     row["switch_voltage_peak_V"] = df_ss[v_ds_col].max()
 
-                # ── Switch current stress ─────────────────────────────────────────
-                i_sw_col = next(
-                    (c for c in df_ss.columns if c.startswith("i(m")), None
-                )
-                if i_sw_col:
-                    i_sw            = df_ss[i_sw_col]
-                    row["switch_current_peak_A"] = i_sw.max()
-                    row["switch_current_rms_A"]  = float(np.sqrt((i_sw**2).mean()))
+                # ── Switch current stress (drain current = id(m...)) ─────────────
+                i_sw_cols = [c for c in df_ss.columns if c.startswith("id(m")]
+                i_sw_col  = i_sw_cols[0] if i_sw_cols else None
+                if i_sw_cols:
+                    sw_peaks, sw_rms = [], []
+                    for col in i_sw_cols:
+                        vals = df_ss[col].values
+                        sw_peaks.append(vals.max())
+                        sw_rms.append(float(np.sqrt(np.trapezoid(vals**2, t) / t_span)))
+                    row["switch_current_peak_A"] = max(sw_peaks)
+                    row["switch_current_rms_A"]  = max(sw_rms)
 
                 # ── Inductor volume surrogate — eq.(5): V_ind = kL * L ────────────
                 if l_values:
@@ -258,12 +293,11 @@ class TopologySimulator():
                 if "inductor_volume_cm3" in row and "heatsink_volume_cm3" in row:
                     row["total_volume_cm3"] = V_FIXED + row["inductor_volume_cm3"] + row["heatsink_volume_cm3"]  # cm3
 
-                # ── Cost & component counts (from netlist) ────────────────────────
+                # ── Component counts (from netlist) ──────────────────────────────
                 row["count_mosfets"]    = counts.get("M", 0)
                 row["count_diodes"]     = counts.get("D", 0)
                 row["count_inductors"]  = counts.get("L", 0)
                 row["count_capacitors"] = counts.get("C", 0)
-                row["cost_score"]   = cost_score
 
                 all_rows.append(row)
 
@@ -281,4 +315,5 @@ class TopologySimulator():
 
 # testing
 simo = TopologySimulator()
-df = simo.simulate("batch_001")
+_ = simo.simulate("batch_001")
+_ = simo.simulate("batch_002")
