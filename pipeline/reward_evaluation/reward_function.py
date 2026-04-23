@@ -47,16 +47,16 @@ class RewardFunction:
         # --- 5. Custom Component Penalty ---
         comp_weights = weights.get('components', {})
         penalty_components = (
-            comp_weights.get('mosfet', 3.0) * count_mosfets +
-            comp_weights.get('diode', 1.5) * count_diodes +
-            comp_weights.get('inductor', 2.5) * count_inductors +
+            comp_weights.get('mosfet', 1.0) * count_mosfets +
+            comp_weights.get('diode', 1.0) * count_diodes +
+            comp_weights.get('inductor', 1.0) * count_inductors +
             comp_weights.get('capacitor', 1.0) * count_capacitors
         )
 
         # --- 6. Apply top-level weights to all penalties ---
         l1 = weights.get('v_out', 1.0) * penalty_v_out
-        l2 = weights.get('efficiency', 5.0) * penalty_efficiency
-        l3 = weights.get('volume', 0.1) * penalty_volume
+        l2 = weights.get('efficiency', 1.0) * penalty_efficiency
+        l3 = weights.get('volume', 1.0) * penalty_volume
         l4 = weights.get('cost', 1.0) * penalty_components
         
         total_loss = l1 + l2 + l3 + l4
