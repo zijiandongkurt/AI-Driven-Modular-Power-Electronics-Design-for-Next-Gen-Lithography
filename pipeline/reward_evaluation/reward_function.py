@@ -73,7 +73,8 @@ class RewardFunction:
                 "efficiency": float(safe_efficiency),
                 "total_volume_cm3": float(penalty_volume), 
                 "total_components": int(count_mosfets + count_diodes + count_inductors + count_capacitors)
-            }
+            },
+            "applied_constraints": constraints  # Added the specific constraints used for this grading
         }
 
         # Final safety net: If loss somehow still became NaN or Inf, cap it
@@ -86,13 +87,13 @@ class RewardFunction:
         loss, details = self.calculate_loss(row, constraints, weights)
         return -loss, details
 
-    def process_csv_to_json(self, csv_file_path, constraints, weights, include_detailed_metrics=False):
+    def process_csv_to_json(self, csv_file_path, batch_constraints, weights, include_detailed_metrics=False):
         """
         Reads a CSV file, processes data by 'source_file', calculates
         the final reward, and outputs a formatted JSON string.
         
         If include_detailed_metrics is True, it appends volume, efficiency, 
-        and loss components to the output.
+        loss components, and applied constraints to the output.
         """
         results = {}
         try:
@@ -128,7 +129,11 @@ class RewardFunction:
 
         # Calculate the reward using this properly aggregated data
         for source_file_name, row in grouped.iterrows():
-            final_reward, details = self.calculate_reward(row, constraints, weights)
+            
+            # Grab the specific constraint dictionary for this exact circuit
+            circuit_specific_constraints = batch_constraints.get(str(source_file_name), {})
+            
+            final_reward, details = self.calculate_reward(row, circuit_specific_constraints, weights)
             
             circuit_data = {
                 "fitness_score": float(final_reward)
@@ -146,12 +151,24 @@ class RewardFunction:
 # --- Example Execution Setup ---
 
 if __name__ == "__main__":
-    my_constraints = {
-        "vin_min": 12,
-        "vin_max": 100,
-        "vout_target": 5,
-        "efficiency_target": 0.90,
-        "power_in": 100,
+    
+    # A dictionary mapping each circuit to its own custom constraint goals
+    my_batch_constraints = {
+        "boost": {
+            "vin_min": 12, "vin_max": 12, "vout_target": 24.0, "efficiency_target": 0.95, "power_in": 100
+        },
+        "buck": {
+            "vin_min": 12, "vin_max": 12, "vout_target": 5.0, "efficiency_target": 0.90, "power_in": 100
+        },
+        "buck_boost": {
+            "vin_min": 12, "vin_max": 12, "vout_target": 12.0, "efficiency_target": 0.85, "power_in": 100
+        },
+        "sepic": {
+            "vin_min": 12, "vin_max": 12, "vout_target": 15.0, "efficiency_target": 0.85, "power_in": 100
+        },
+        "zeta": {
+            "vin_min": 12, "vin_max": 12, "vout_target": 3.3, "efficiency_target": 0.80, "power_in": 100
+        }
     }
 
     my_weights = {
@@ -174,7 +191,7 @@ if __name__ == "__main__":
     
     json_output = reward_function.process_csv_to_json(
         csv_file_path, 
-        my_constraints, 
+        my_batch_constraints, 
         my_weights, 
         include_detailed_metrics=True 
     )
