@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import os
+import json
 
 class RewardFunction:
     def __init__(self):
@@ -10,10 +11,9 @@ class RewardFunction:
     def calculate_loss(self, row, constraints, weights):
         """
         Calculates the total loss as a weighted sum of penalties.
-        A lower loss means a better circuit.
+        Returns a tuple: (total_loss, details_dict)
         """
         # --- 1. Safely extract metrics, converting NaNs to 0.0 ---
-        # Pandas sometimes reads empty CSV cells as NaN instead of missing keys
         v_out = row.get('voltage_out_mean_V', 0.0)
         v_out = 0.0 if pd.isna(v_out) else v_out
         
@@ -33,15 +33,14 @@ class RewardFunction:
         penalty_v_out = (v_out - target_v_out) ** 2
         
         # --- 3. Efficiency Penalty ---
+        target_efficiency = constraints.get('efficiency_target', 0.90)
         safe_efficiency = max(0.0, min(1.0, float(efficiency)))
-        penalty_efficiency = 1.0 - safe_efficiency
+        penalty_efficiency = max(0.0, target_efficiency - safe_efficiency)
 
         # --- 4. Volume Penalty (THE INFINITY FIX) ---
-        # If the colleague's script output 'inf' because it melted, cap it at MAX_PENALTY
         if np.isinf(total_volume):
             penalty_volume = self.MAX_PENALTY
         else:
-            # Also cap it just in case it's a valid but astronomically high number
             penalty_volume = min(float(total_volume), self.MAX_PENALTY)
 
         # --- 5. Custom Component Penalty ---
@@ -54,101 +53,130 @@ class RewardFunction:
         )
 
         # --- 6. Apply top-level weights to all penalties ---
-        l1 = weights.get('v_out', 1.0) * penalty_v_out
-        l2 = weights.get('efficiency', 1.0) * penalty_efficiency
-        l3 = weights.get('volume', 1.0) * penalty_volume
-        l4 = weights.get('cost', 1.0) * penalty_components
+        loss_v_out = weights.get('v_out', 1.0) * penalty_v_out
+        loss_efficiency = weights.get('efficiency', 1.0) * penalty_efficiency
+        loss_volume = weights.get('volume', 1.0) * penalty_volume
+        loss_components = weights.get('component_cost', 1.0) * penalty_components
         
-        total_loss = l1 + l2 + l3 + l4
+        total_loss = loss_v_out + loss_efficiency + loss_volume + loss_components
         
+        # Bundle the requested details for optional JSON output
+        details = {
+            "loss_breakdown": {
+                "voltage_tracking_loss": float(loss_v_out),
+                "efficiency_loss": float(loss_efficiency),
+                "volume_loss": float(loss_volume),
+                "component_cost_loss": float(loss_components)
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": float(v_out),
+                "efficiency": float(safe_efficiency),
+                "total_volume_cm3": float(penalty_volume), 
+                "total_components": int(count_mosfets + count_diodes + count_inductors + count_capacitors)
+            }
+        }
+
         # Final safety net: If loss somehow still became NaN or Inf, cap it
         if np.isinf(total_loss) or pd.isna(total_loss):
-            return self.MAX_PENALTY
+            return self.MAX_PENALTY, details
             
-        return total_loss
+        return total_loss, details
 
     def calculate_reward(self, row, constraints, weights):
-        loss = self.calculate_loss(row, constraints, weights)
-        return -loss
+        loss, details = self.calculate_loss(row, constraints, weights)
+        return -loss, details
 
-    def process_csv_and_calculate_reward(self, csv_file_path, constraints, weights):
+    def process_csv_to_json(self, csv_file_path, constraints, weights, include_detailed_metrics=False):
         """
-        Reads a CSV file, processes data by 'source_file', and calculates
-        the final reward using the weighted sum loss.
+        Reads a CSV file, processes data by 'source_file', calculates
+        the final reward, and outputs a formatted JSON string.
+        
+        If include_detailed_metrics is True, it appends volume, efficiency, 
+        and loss components to the output.
         """
-        results = []
+        results = {}
         try:
             df = pd.read_csv(csv_file_path)
         except FileNotFoundError:
-            return [["Error", "File not found"]]
+            return json.dumps({"Error": {"message": "File not found"}}, indent=4)
         except Exception as e:
-            return [["Error", f"Could not read CSV: {e}"]]
+            return json.dumps({"Error": {"message": f"Could not read CSV: {e}"}}, indent=4)
 
         if 'source_file' not in df.columns:
-            return [["Error", "Missing required 'source_file' column"]]
+            return json.dumps({"Error": {"message": "Missing required 'source_file' column"}}, indent=4)
 
         # Define how each column should be aggregated across the voltage sweep
         aggregation_rules = {
-        # Worst-case scenario metrics (Maximums)
-        'total_volume_cm3': 'max',            # Size for the worst-case heatsink!
-        'voltage_out_ripple_V': 'max',        # Worst-case ripple
-        'switch_voltage_peak_V': 'max',       # Worst-case switch stress
-        'switch_current_peak_A': 'max',
-        'inductor_current_peak_A': 'max',
-        
-        # Average performance metrics (Means)
-        'efficiency': 'mean',                 # Average efficiency across the operating range
-        'voltage_out_mean_V': 'mean',         # Average output voltage tracking
-        
-        # Static netlist values (First value is fine, they don't change between steps)
-        'count_mosfets': 'first',
-        'count_diodes': 'first',
-        'count_inductors': 'first',
-        'count_capacitors': 'first'
+            'total_volume_cm3': 'max',            
+            'voltage_out_ripple_V': 'max',        
+            'switch_voltage_peak_V': 'max',       
+            'switch_current_peak_A': 'max',
+            'inductor_current_peak_A': 'max',
+            'efficiency': 'mean',                 
+            'voltage_out_mean_V': 'mean',         
+            'count_mosfets': 'first',
+            'count_diodes': 'first',
+            'count_inductors': 'first',
+            'count_capacitors': 'first'
         }
 
-        # Group by the circuit and apply the specific rules
-        grouped = df.groupby('source_file').agg(aggregation_rules)
+        # Filter out rules for columns that don't exist in the CSV
+        valid_rules = {col: rule for col, rule in aggregation_rules.items() if col in df.columns}
 
-        # Now calculate the reward using this properly aggregated data
+        # Group by the circuit and apply ONLY the valid specific rules
+        grouped = df.groupby('source_file').agg(valid_rules)
+
+        # Calculate the reward using this properly aggregated data
         for source_file_name, row in grouped.iterrows():
-            final_reward = self.calculate_reward(row, constraints, weights)
-            results.append([source_file_name, final_reward])
+            final_reward, details = self.calculate_reward(row, constraints, weights)
+            
+            circuit_data = {
+                "fitness_score": float(final_reward)
+            }
+            
+            # Inject the extra variables if the hyperparameter is toggled
+            if include_detailed_metrics:
+                circuit_data.update(details)
 
-        return results
+            results[str(source_file_name)] = circuit_data
+
+        return json.dumps(results, indent=4)
 
 
 # --- Example Execution Setup ---
 
-my_constraints = {
-    "vin_min": 12,
-    "vin_max": 100,
-    "vout_target": 5,
-    "efficiency_target": 0.90,
-    "power_in": 100,
-}
-
-my_weights = {
-    'v_out': 10.0,          # Increased weight: Voltage tracking is usually the most critical
-    'efficiency': 20.0,     # High weight to heavily incentivize high efficiency
-    'volume': 2.0,          # Penalty per cm3
-    'cost': 1.0,            # Global multiplier for the custom component sum
-    'components': {         # Custom tweakable component penalties
-        'mosfet': 5.0,
-        'diode': 2.0,
-        'inductor': 4.0,
-        'capacitor': 1.0
+if __name__ == "__main__":
+    my_constraints = {
+        "vin_min": 12,
+        "vin_max": 100,
+        "vout_target": 5,
+        "efficiency_target": 0.90,
+        "power_in": 100,
     }
-}
 
-# Dynamically get the folder where this specific script is saved
-script_dir = os.path.dirname(os.path.abspath(__file__))
+    my_weights = {
+        'v_out': 10.0,          
+        'efficiency': 20.0,     
+        'volume': 2.0,          
+        'component_cost': 1.0,            
+        'components': {         
+            'mosfet': 1.0,
+            'diode': 1.0,
+            'inductor': 1.0,
+            'capacitor': 1.0
+        }
+    }
 
-# Join that folder path with the file name
-csv_file_path = os.path.join(script_dir, 'batch_001_out.csv')
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    csv_file_path = os.path.join(script_dir, 'batch_001_out.csv')
 
-# Execute
-reward_function = RewardFunction()
-results = reward_function.process_csv_and_calculate_reward(csv_file_path, my_constraints, my_weights)
+    reward_function = RewardFunction()
+    
+    json_output = reward_function.process_csv_to_json(
+        csv_file_path, 
+        my_constraints, 
+        my_weights, 
+        include_detailed_metrics=True 
+    )
 
-print(results)
+    print(json_output)
