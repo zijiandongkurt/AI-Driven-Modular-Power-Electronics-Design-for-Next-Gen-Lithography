@@ -26,7 +26,7 @@ class validator():
         return component_lines, directive_lines
 
     def _buildGraph(self, component_lines):
-        """Build a NetworkX graph where nodes are SPICE nodes and edges are components.
+        """Build a NetworkX MultiGraph where nodes are SPICE nodes and edges are components.
         Each edge carries ref and prefix as attributes.
         MOSFETs produce edges between all terminal pairs.
         """
@@ -43,13 +43,32 @@ class validator():
                 terminals = parts[1:5]  # drain, source, gate, bulk
             else:
                 terminals = parts[1:3]
-            # add an edge between every pair of terminals for this component
             seen = set()
             for i, a in enumerate(terminals):
                 for b in terminals[i+1:]:
                     if (a, b) not in seen:
                         G.add_edge(a, b, ref=ref, prefix=prefix)
                         seen.add((a, b))
+        return G
+
+    def _buildZeroImpedanceGraph(self, component_lines):
+        """Build a simple graph containing only zero-impedance edges:
+        voltage sources and zero-ohm resistors.
+        Used for short circuit path detection.
+        """
+        G = nx.MultiGraph()
+        for line in component_lines:
+            parts = line.split()
+            if len(parts) < 3:
+                continue
+            ref = parts[0].upper()
+            node_a, node_b = parts[1].lower(), parts[2].lower()
+            # zero-ohm resistor
+            if ref[0] == "R" and len(parts) >= 4 and parts[3] in {"0", "0.0"}:
+                G.add_edge(node_a, node_b, ref=ref, prefix="R")
+            # voltage sources except Vin (the supply) — Vin is intentional, not a short
+            if ref[0] == "V" and ref != "VIN":
+                G.add_edge(node_a, node_b, ref=ref, prefix="V")
         return G
 
     def _hasFloatingNodes(self, G):
@@ -84,20 +103,19 @@ class validator():
         net_files = list(batch_dir.glob("*.net"))
         assert net_files, f"No .net files found in: {batch_dir}"
 
-        # prepare output folders
         valid_dir   = self.BASE_DIR / "valid"   / batchID
         invalid_dir = self.BASE_DIR / "invalid" / batchID
         results_dir = self.BASE_DIR / "results"
         for d in (valid_dir, invalid_dir, results_dir):
             d.mkdir(parents=True, exist_ok=True)
 
-        results = {}
+        results  = {}
         csv_rows = []
 
         for net_path in net_files:
-            netlist  = net_path.read_text()
+            netlist   = net_path.read_text()
             checklist = self._validateOne(netlist)
-            passed   = all(checklist.values())
+            passed    = all(checklist.values())
 
             for check, result in checklist.items():
                 if not result:
@@ -105,14 +123,12 @@ class validator():
             if passed:
                 print(f"[{net_path.name}] Validation passed.")
 
-            # copy to valid or invalid subfolder
             dest = valid_dir if passed else invalid_dir
             shutil.copy(net_path, dest / net_path.name)
 
             results[net_path.name] = (passed, checklist)
             csv_rows.append({"netlist": net_path.name, "valid": passed, **checklist})
 
-        # write CSV
         csv_path = results_dir / f"{batchID}.csv"
         with open(csv_path, "w", newline="") as f:
             writer = csv.DictWriter(f, fieldnames=csv_rows[0].keys())
@@ -141,10 +157,15 @@ class validator():
             "gate_per_mosfet":       self._checkGatePerMosfet(netlist),
             "connected_graph":       self._checkConnectedGraph(netlist),
             "floating_nodes":        self._checkFloatingNodes(netlist),
-            "uic_on_floating":       self._checkUicOnFloating(netlist),
-            "short_circuits":        self._checkShortCircuits(netlist),
             "cl_loops":              self._checkCLLoops(netlist),
             "current_path":          self._checkCurrentPath(netlist),
+            "short_same_node":       self._checkShortSameNode(netlist),
+            "short_zero_resistor":   self._checkShortZeroResistor(netlist),
+            "short_zero_voltage":    self._checkShortZeroVoltage(netlist),
+            "singular_voltage_cap":   self._checkSingularVoltageCap(netlist),
+            "short_input_to_gnd":    self._checkShortInputToGnd(netlist),
+            "kvl_voltage_loop":      self._checkKvlVoltageLoop(netlist),
+            "singular_cap_loop":     self._checkSingularCapLoop(netlist),
         }
 
     # ── checks ────────────────────────────────────────────────────────────────
@@ -225,7 +246,6 @@ class validator():
                 val = parts[3]
                 if not SPICE_VAL.match(val):
                     return False
-                # zero value is invalid for L and C
                 try:
                     if ref[0] in {"L", "C"} and float(re.sub(r"[TGMKkmunpf]u?$", "", val)) == 0:
                         return False
@@ -234,7 +254,7 @@ class validator():
         return True
 
     def _checkMosfetBulk(self, netlist):
-        """Every MOSFET must declare drain, gate, source, bulk, and model — 6 tokens min."""
+        """Every MOSFET must declare drain, source, gate, bulk and model — 6 tokens min."""
         component_lines, _ = self._parseLines(netlist)
         for line in component_lines:
             parts = line.split()
@@ -265,7 +285,9 @@ class validator():
         return True
 
     def _checkSimulationParameters(self, netlist):
-        """Must have .tran with timestep and stop time, and standardised MOSFET model."""
+        """Must have .tran with timestep and stop time, standardised MOSFET model,
+        and valid Vgate PULSE with 7 params.
+        """
         component_lines, directive_lines = self._parseLines(netlist)
 
         tran_ok = any(
@@ -325,38 +347,6 @@ class validator():
         G = self._buildGraph(component_lines)
         return not self._hasFloatingNodes(G)
 
-    def _checkUicOnFloating(self, netlist):
-        """If floating nodes exist, .tran must include uic."""
-        component_lines, directive_lines = self._parseLines(netlist)
-        G = self._buildGraph(component_lines)
-        if not self._hasFloatingNodes(G):
-            return True
-        return any(
-            d.lower().startswith(".tran") and "uic" in d.lower()
-            for d in directive_lines
-        )
-
-    def _checkShortCircuits(self, netlist):
-        """Detect same-node connections and zero-ohm resistors or 0V sources
-        between any two nodes.
-        """
-        component_lines, _ = self._parseLines(netlist)
-        for line in component_lines:
-            parts = line.split()
-            ref = parts[0].upper()
-            if len(parts) < 4:
-                continue
-            node_a, node_b, val = parts[1].lower(), parts[2].lower(), parts[3]
-            if node_a == node_b:
-                return False
-            if ref[0] == "R" and val in {"0", "0.0"}:
-                return False
-            if ref[0] == "V" and val in {"0", "0.0"} and not re.search(
-                r"PULSE|SIN|PWL|AC", line, re.IGNORECASE
-            ):
-                return False
-        return True
-
     def _checkCLLoops(self, netlist):
         """A node connected exclusively to inductors and capacitors is unstable."""
         component_lines, _ = self._parseLines(netlist)
@@ -368,9 +358,7 @@ class validator():
         return True
 
     def _checkCurrentPath(self, netlist):
-        """A valid current path must exist: in -> out and out -> 0.
-        Uses NetworkX path existence on an undirected graph.
-        """
+        """A valid current path must exist: in -> out and out -> 0."""
         component_lines, _ = self._parseLines(netlist)
         G = self._buildGraph(component_lines)
         try:
@@ -381,5 +369,117 @@ class validator():
         except nx.NodeNotFound:
             return False
 
+    # ── short circuit checks ──────────────────────────────────────────────────
+
+    def _checkShortSameNode(self, netlist):
+        """Both terminals of a component must be different nodes."""
+        component_lines, _ = self._parseLines(netlist)
+        for line in component_lines:
+            parts = line.split()
+            if len(parts) < 3:
+                continue
+            if parts[1].lower() == parts[2].lower():
+                return False
+        return True
+
+    def _checkShortZeroResistor(self, netlist):
+        """No resistor may have a value of zero."""
+        component_lines, _ = self._parseLines(netlist)
+        for line in component_lines:
+            parts = line.split()
+            if parts[0][0].upper() == "R" and len(parts) >= 4:
+                if parts[3] in {"0", "0.0"}:
+                    return False
+        return True
+
+    def _checkShortZeroVoltage(self, netlist):
+        """No DC voltage source may have a value of zero — this is a dead short."""
+        component_lines, _ = self._parseLines(netlist)
+        for line in component_lines:
+            parts = line.split()
+            if parts[0][0].upper() == "V" and len(parts) >= 4:
+                if parts[3] in {"0", "0.0"} and not re.search(
+                    r"PULSE|SIN|PWL|AC", line, re.IGNORECASE
+                ):
+                    return False
+        return True
+
+    def _checkSingularVoltageCap(self, netlist):
+        """A voltage source directly in parallel with a capacitor (no series R between them)
+        causes a singular matrix — LTspice cannot solve the initial conditions.
+        Detected by finding a V and C that share exactly the same two nodes.
+        """
+        component_lines, _ = self._parseLines(netlist)
+
+        # collect node pairs per prefix
+        v_pairs = set()
+        c_pairs = set()
+        for line in component_lines:
+            parts = line.split()
+            if len(parts) < 3:
+                continue
+            ref    = parts[0].upper()
+            pair   = frozenset([parts[1].lower(), parts[2].lower()])
+            if ref[0] == "V" and ref != "VIN":
+                v_pairs.add(pair)
+            if ref[0] == "C":
+                c_pairs.add(pair)
+
+        return len(v_pairs & c_pairs) == 0
+
+    def _checkShortInputToGnd(self, netlist):
+        """A zero-impedance path must not exist from 'in' to '0' —
+        this would short the input supply.
+        Detected by BFS on the zero-impedance subgraph.
+        """
+        component_lines, _ = self._parseLines(netlist)
+        G_zero = self._buildZeroImpedanceGraph(component_lines)
+
+        if "in" not in G_zero.nodes or "0" not in G_zero.nodes:
+            return True
+        return not nx.has_path(G_zero, "in", "0")
+
+    def _checkKvlVoltageLoop(self, netlist):
+        """Two or more voltage sources forming a closed loop violates KVL —
+        LTspice will fail with a singular matrix.
+        Detected by checking if any cycle exists in the zero-impedance subgraph
+        that contains at least two voltage source edges.
+        """
+        component_lines, _ = self._parseLines(netlist)
+        G_zero = self._buildZeroImpedanceGraph(component_lines)
+
+        # convert to simple graph for cycle detection
+        G_simple = nx.Graph(G_zero)
+        for cycle in nx.cycle_basis(G_simple):
+            # collect all edges in this cycle
+            cycle_edges = list(zip(cycle, cycle[1:] + cycle[:1]))
+            v_count = 0
+            for a, b in cycle_edges:
+                edge_data = G_zero.get_edge_data(a, b) or G_zero.get_edge_data(b, a)
+                if edge_data:
+                    for _, attrs in edge_data.items():
+                        if attrs.get("prefix") == "V":
+                            v_count += 1
+            if v_count >= 2:
+                return False
+        return True
+
+    def _checkSingularCapLoop(self, netlist):
+        """A loop where every branch is a capacitor causes a singular matrix at t=0
+        because initial conditions are undefined.
+        Detected by cycle detection on a capacitor-only subgraph.
+        """
+        component_lines, _ = self._parseLines(netlist)
+
+        G_cap = nx.Graph()
+        for line in component_lines:
+            parts = line.split()
+            if len(parts) < 3:
+                continue
+            if parts[0][0].upper() == "C":
+                G_cap.add_edge(parts[1].lower(), parts[2].lower())
+
+        return len(nx.cycle_basis(G_cap)) == 0
+
 validator = validator()
-validation_results = validator.validate(batchID="batch_1")
+validation_results = validator.validate(batchID="batch_2")
