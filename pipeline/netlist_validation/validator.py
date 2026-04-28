@@ -40,7 +40,7 @@ class validator():
             if prefix == "M":
                 if len(parts) < 5:
                     continue
-                terminals = parts[1:5]  # drain, source, gate, bulk
+                terminals = parts[1:5]  # drain, gate, source, bulk (standard LTspice order)
             else:
                 terminals = parts[1:3]
             seen = set()
@@ -123,8 +123,15 @@ class validator():
             if passed:
                 print(f"[{net_path.name}] Validation passed.")
 
-            dest = valid_dir if passed else invalid_dir
-            shutil.copy(net_path, dest / net_path.name)
+            dest      = valid_dir if passed else invalid_dir
+            dest_path = dest / net_path.name
+            raw_text  = net_path.read_text()
+            if not raw_text.lstrip().startswith("*"):
+                raw_text = f"* {net_path.stem}\n" + raw_text
+            # Inject .save to ensure all currents and voltages are in .raw output
+            if passed and ".save" not in raw_text.lower():
+                raw_text = raw_text.replace(".end", ".save V(*) I(*)\n.end")
+            dest_path.write_text(raw_text)
 
             results[net_path.name] = (passed, checklist)
             csv_rows.append({"netlist": net_path.name, "valid": passed, **checklist})
@@ -234,7 +241,7 @@ class validator():
     def _checkComponentValues(self, netlist):
         """Passives (R, L, C) must have a positive, parseable numeric value."""
         SPICE_VAL = re.compile(
-            r"^[+]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+|[TGMKkmunpf]u?)?$"
+            r"^[+]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+|Meg|[TGMKkmunpf]u?)?$"
         )
         component_lines, _ = self._parseLines(netlist)
         for line in component_lines:
@@ -254,7 +261,7 @@ class validator():
         return True
 
     def _checkMosfetBulk(self, netlist):
-        """Every MOSFET must declare drain, source, gate, bulk and model — 6 tokens min."""
+        """Every MOSFET must declare drain, gate, source, bulk and model — 6 tokens min."""
         component_lines, _ = self._parseLines(netlist)
         for line in component_lines:
             parts = line.split()
@@ -330,7 +337,7 @@ class validator():
             parts = line.split()
             ref = parts[0].upper()
             if ref[0] == "M" and len(parts) >= 5:
-                gate_nodes.add(parts[3].lower())  # drain source gate bulk
+                gate_nodes.add(parts[2].lower())  # drain gate source bulk — standard LTspice
             if re.match(r"VGATE(_HI|_LO)?\d*$", ref, re.IGNORECASE):
                 driven_nodes.add(parts[1].lower())
         return gate_nodes.issubset(driven_nodes)
