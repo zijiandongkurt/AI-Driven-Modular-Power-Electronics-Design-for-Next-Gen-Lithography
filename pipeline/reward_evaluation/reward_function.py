@@ -61,6 +61,7 @@ class RewardFunction:
         total_loss = loss_v_out + loss_efficiency + loss_volume + loss_components
         
         # Bundle the requested details for optional JSON output
+        # (Removed the redundant constraints from this inner dictionary)
         details = {
             "loss_breakdown": {
                 "voltage_tracking_loss": float(loss_v_out),
@@ -73,8 +74,7 @@ class RewardFunction:
                 "efficiency": float(safe_efficiency),
                 "total_volume_cm3": float(penalty_volume), 
                 "total_components": int(count_mosfets + count_diodes + count_inductors + count_capacitors)
-            },
-            "applied_constraints": constraints  # Added the specific constraints used for this grading
+            }
         }
 
         # Final safety net: If loss somehow still became NaN or Inf, cap it
@@ -87,24 +87,31 @@ class RewardFunction:
         loss, details = self.calculate_loss(row, constraints, weights)
         return -loss, details
 
-    def process_csv_to_json(self, csv_file_path, batch_constraints, weights, include_detailed_metrics=False):
+    def process_csv_to_json(self, csv_file_path, output_json_path, constraints, weights, include_detailed_metrics=False):
         """
         Reads a CSV file, processes data by 'source_file', calculates
-        the final reward, and outputs a formatted JSON string.
+        the final reward using a SINGLE constraint set for all, outputs JSON, 
+        and saves it to a specified file.
         
-        If include_detailed_metrics is True, it appends volume, efficiency, 
-        loss components, and applied constraints to the output.
+        Returns:
+            tuple: (json_output_string, path_of_saved_file)
         """
-        results = {}
+        
+        # --- NEW STRUCTURE: Set up the global dictionary format ---
+        final_output = {
+            "active_constraints": constraints,
+            "circuits": {}
+        }
+        
         try:
             df = pd.read_csv(csv_file_path)
         except FileNotFoundError:
-            return json.dumps({"Error": {"message": "File not found"}}, indent=4)
+            return json.dumps({"Error": {"message": "File not found"}}, indent=4), None
         except Exception as e:
-            return json.dumps({"Error": {"message": f"Could not read CSV: {e}"}}, indent=4)
+            return json.dumps({"Error": {"message": f"Could not read CSV: {e}"}}, indent=4), None
 
         if 'source_file' not in df.columns:
-            return json.dumps({"Error": {"message": "Missing required 'source_file' column"}}, indent=4)
+            return json.dumps({"Error": {"message": "Missing required 'source_file' column"}}, indent=4), None
 
         # Define how each column should be aggregated across the voltage sweep
         aggregation_rules = {
@@ -130,10 +137,8 @@ class RewardFunction:
         # Calculate the reward using this properly aggregated data
         for source_file_name, row in grouped.iterrows():
             
-            # Grab the specific constraint dictionary for this exact circuit
-            circuit_specific_constraints = batch_constraints.get(str(source_file_name), {})
-            
-            final_reward, details = self.calculate_reward(row, circuit_specific_constraints, weights)
+            # Use the single global constraint dictionary passed into the function
+            final_reward, details = self.calculate_reward(row, constraints, weights)
             
             circuit_data = {
                 "fitness_score": float(final_reward)
@@ -143,32 +148,33 @@ class RewardFunction:
             if include_detailed_metrics:
                 circuit_data.update(details)
 
-            results[str(source_file_name)] = circuit_data
+            # --- Inject into the new nested 'circuits' branch ---
+            final_output["circuits"][str(source_file_name)] = circuit_data
 
-        return json.dumps(results, indent=4)
+        # Dump the entire nested dictionary to JSON
+        json_string = json.dumps(final_output, indent=4)
+
+        # Write the JSON string to the specified file path
+        try:
+            with open(output_json_path, 'w') as json_file:
+                json_file.write(json_string)
+        except Exception as e:
+            return json.dumps({"Error": {"message": f"Could not save JSON file: {e}"}}, indent=4), None
+
+        return json_string, output_json_path
 
 
 # --- Example Execution Setup ---
 
 if __name__ == "__main__":
     
-    # A dictionary mapping each circuit to its own custom constraint goals
-    my_batch_constraints = {
-        "boost": {
-            "vin_min": 12, "vin_max": 12, "vout_target": 24.0, "efficiency_target": 0.95, "power_in": 100
-        },
-        "buck": {
-            "vin_min": 12, "vin_max": 12, "vout_target": 5.0, "efficiency_target": 0.90, "power_in": 100
-        },
-        "buck_boost": {
-            "vin_min": 12, "vin_max": 12, "vout_target": 12.0, "efficiency_target": 0.85, "power_in": 100
-        },
-        "sepic": {
-            "vin_min": 12, "vin_max": 12, "vout_target": 15.0, "efficiency_target": 0.85, "power_in": 100
-        },
-        "zeta": {
-            "vin_min": 12, "vin_max": 12, "vout_target": 3.3, "efficiency_target": 0.80, "power_in": 100
-        }
+    # A single constraint dictionary applied to EVERY topology in the batch
+    my_constraints = {
+        "vin_min": 12, 
+        "vin_max": 12, 
+        "vout_target": 5.0, 
+        "efficiency_target": 0.90, 
+        "power_in": 100
     }
 
     my_weights = {
@@ -186,14 +192,25 @@ if __name__ == "__main__":
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
     csv_file_path = os.path.join(script_dir, 'batch_001_out.csv')
+    
+    # Specify where you want the JSON saved
+    output_json_path = os.path.join(script_dir, 'batch_001_results.json')
 
     reward_function = RewardFunction()
     
-    json_output = reward_function.process_csv_to_json(
+    # Unpack the returned tuple
+    json_output, saved_file_path = reward_function.process_csv_to_json(
         csv_file_path, 
-        my_batch_constraints, 
+        output_json_path, 
+        my_constraints, 
         my_weights, 
-        include_detailed_metrics=True 
+        include_detailed_metrics=False 
     )
 
+    print("--- JSON DATA ---")
     print(json_output)
+    print("\n--- FILE STATUS ---")
+    if saved_file_path:
+        print(f"Successfully saved to: {saved_file_path}")
+    else:
+        print("Failed to save JSON file.")
