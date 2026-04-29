@@ -478,5 +478,5 @@ class validator():
 
         return len(nx.cycle_basis(G_cap)) == 0
 
-validator = validator()
-validation_results = validator.validate(batchID="batch_2")
+# validator = validator()
+# validation_results = validator.validate(batchID="batch_2")

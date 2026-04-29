@@ -55,6 +55,22 @@ def load_constraints(json_path: str | Path) -> list[dict]:
     return data
 
 
+def load_constraint(json_path: str | Path, idx: int = 0) -> dict:
+    """Load a single constraint dict from a JSON file by index.
+
+    Args:
+        json_path: Path to a JSON file containing a list of constraint dicts.
+        idx:       Index of the constraint to return (default: 0).
+
+    Returns:
+        A single constraint dict.
+    """
+    constraints = load_constraints(json_path)
+    if idx >= len(constraints):
+        raise IndexError(f"Index {idx} out of range — file has {len(constraints)} constraints")
+    return constraints[idx]
+
+
 def make_prompt(constraint: dict) -> str:
     """Build the full prompt for one constraint dict.
 

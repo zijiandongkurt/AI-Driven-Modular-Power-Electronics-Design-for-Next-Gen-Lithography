@@ -28,9 +28,9 @@ from typing import Iterable
 
 import torch
 
-from llm_engine_minimal import LLMEngine
-from prompt_input import load_constraints, make_prompt, slug
-from net_writer import write_netlists
+from .llm_engine_minimal import LLMEngine
+from .prompt_input import load_constraints, make_prompt, slug
+from .net_writer import write_netlists
 
 
 DEFAULT_MODEL_ID = r"D:\Document\Course\Team_intership\LLM\models\qwen25-coder-7b"

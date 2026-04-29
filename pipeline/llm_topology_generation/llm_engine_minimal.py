@@ -20,7 +20,7 @@ from typing import Optional
 
 import torch
 
-from prompt_input import NAMING_RULES
+from .prompt_input import NAMING_RULES
 
 logger = logging.getLogger(__name__)
 

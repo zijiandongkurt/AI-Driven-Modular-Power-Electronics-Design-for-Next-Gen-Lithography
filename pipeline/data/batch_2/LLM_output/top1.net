@@ -1,4 +1,3 @@
-* top1
 .tran 1n 5m
 Vin in 0 12
 M1 in gate sw 0 NMOS W=1 L=1
@@ -9,5 +8,4 @@ Rload out 0 0.278
 Vgate gate 0 PULSE(0 12 0 1n 1n 4.16667e-06 1e-05)
 .model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
 .model DIODE D
-.save V(*) I(*)
 .end

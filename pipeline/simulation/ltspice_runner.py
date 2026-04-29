@@ -324,6 +324,6 @@ class TopologySimulator():
         return combined
 
 
-# testing
-simo = TopologySimulator()
-_ = simo.simulate("batch_2")
+# # testing
+# simo = TopologySimulator()
+# _ = simo.simulate("batch_2")

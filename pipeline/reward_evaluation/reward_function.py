@@ -165,52 +165,67 @@ class RewardFunction:
         return json_string, output_json_path
 
 
+    def process_batch(self, batchID, constraints, weights, include_detailed_metrics=True):
+        """Standard pipeline entry point. Reads and writes from data/<batchID>/."""
+        data_dir         = Path(__file__).parent.parent / "data"
+        csv_file_path    = data_dir / batchID / "simulation_results.csv"
+        output_json_path = data_dir / batchID / "reward_results.json"
+
+        return self.process_csv_to_json(
+            csv_file_path    = csv_file_path,
+            output_json_path = output_json_path,
+            constraints      = constraints,
+            weights          = weights,
+            include_detailed_metrics=include_detailed_metrics,
+        )
+
+
 # --- Example Execution Setup ---
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
     
-    # A single constraint dictionary applied to EVERY topology in the batch
-    my_constraints = {
-        "vin_min": 12,
-        "vin_max": 100,
-        "vout_target": 5,
-        "efficiency_target": 0.90,
-        "power_in": 100,
-    }
+#     # A single constraint dictionary applied to EVERY topology in the batch
+#     my_constraints = {
+#         "vin_min": 12,
+#         "vin_max": 100,
+#         "vout_target": 5,
+#         "efficiency_target": 0.90,
+#         "power_in": 100,
+#     }
 
 
-    my_weights = {
-        'v_out': 10.0,          
-        'efficiency': 20.0,     
-        'volume': 2.0,          
-        'component_cost': 1.0,            
-        'components': {         
-            'mosfet': 1.0,
-            'diode': 1.0,
-            'inductor': 1.0,
-            'capacitor': 1.0
-        }
-    }
+#     my_weights = {
+#         'v_out': 10.0,          
+#         'efficiency': 20.0,     
+#         'volume': 2.0,          
+#         'component_cost': 1.0,            
+#         'components': {         
+#             'mosfet': 1.0,
+#             'diode': 1.0,
+#             'inductor': 1.0,
+#             'capacitor': 1.0
+#         }
+#     }
 
-    data_dir         = Path(__file__).parent.parent / "data"
-    csv_file_path    = data_dir / "batch_2" / "simulation_results.csv"
-    output_json_path = data_dir / "batch_2" / "reward_results.json"
+#     data_dir         = Path(__file__).parent.parent / "data"
+#     csv_file_path    = data_dir / "batch_2" / "simulation_results.csv"
+#     output_json_path = data_dir / "batch_2" / "reward_results.json"
 
-    reward_function = RewardFunction()
+#     reward_function = RewardFunction()
     
-    # Unpack the returned tuple
-    json_output, saved_file_path = reward_function.process_csv_to_json(
-        csv_file_path, 
-        output_json_path, 
-        my_constraints, 
-        my_weights, 
-        include_detailed_metrics=True
-    )
+#     # Unpack the returned tuple
+#     json_output, saved_file_path = reward_function.process_csv_to_json(
+#         csv_file_path, 
+#         output_json_path, 
+#         my_constraints, 
+#         my_weights, 
+#         include_detailed_metrics=True
+#     )
 
-    print("--- JSON DATA ---")
-    print(json_output)
-    print("\n--- FILE STATUS ---")
-    if saved_file_path:
-        print(f"Successfully saved to: {saved_file_path}")
-    else:
-        print("Failed to save JSON file.")
+#     print("--- JSON DATA ---")
+#     print(json_output)
+#     print("\n--- FILE STATUS ---")
+#     if saved_file_path:
+#         print(f"Successfully saved to: {saved_file_path}")
+#     else:
+#         print("Failed to save JSON file.")
