@@ -170,12 +170,13 @@ if __name__ == "__main__":
     
     # A single constraint dictionary applied to EVERY topology in the batch
     my_constraints = {
-        "vin_min": 12, 
-        "vin_max": 12, 
-        "vout_target": 5.0, 
-        "efficiency_target": 0.90, 
-        "power_in": 100
+        "vin_min": 12,
+        "vin_max": 100,
+        "vout_target": 5,
+        "efficiency_target": 0.90,
+        "power_in": 100,
     }
+
 
     my_weights = {
         'v_out': 10.0,          
@@ -191,10 +192,10 @@ if __name__ == "__main__":
     }
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    csv_file_path = os.path.join(script_dir, 'batch_001_out.csv')
+    csv_file_path = os.path.join(script_dir, 'batch_2_out.csv')
     
     # Specify where you want the JSON saved
-    output_json_path = os.path.join(script_dir, 'batch_001_results.json')
+    output_json_path = os.path.join(script_dir, 'batch_2_results.json')
 
     reward_function = RewardFunction()
     
@@ -204,7 +205,7 @@ if __name__ == "__main__":
         output_json_path, 
         my_constraints, 
         my_weights, 
-        include_detailed_metrics=False 
+        include_detailed_metrics=True
     )
 
     print("--- JSON DATA ---")
