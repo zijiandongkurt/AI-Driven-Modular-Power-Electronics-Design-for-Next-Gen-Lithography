@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 import json
+from pathlib import Path
 
 class RewardFunction:
     def __init__(self):
@@ -191,11 +192,9 @@ if __name__ == "__main__":
         }
     }
 
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    csv_file_path = os.path.join(script_dir, 'batch_2_out.csv')
-    
-    # Specify where you want the JSON saved
-    output_json_path = os.path.join(script_dir, 'batch_2_results.json')
+    data_dir         = Path(__file__).parent.parent / "data"
+    csv_file_path    = data_dir / "batch_2" / "simulation_results.csv"
+    output_json_path = data_dir / "batch_2" / "reward_results.json"
 
     reward_function = RewardFunction()
     

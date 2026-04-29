@@ -26,15 +26,22 @@ from pathlib import Path
 # reward functions. Do not rename a token here without updating those.
 
 NAMING_RULES = """### Naming Convention (MUST follow exactly):
-- The input voltage source MUST be named `Vin` (e.g. `Vin in 0 12`).
-- The output load resistor MUST be named `Rload` (e.g. `Rload out 0 10`).
-- Any MOSFET gate-driver pulse source MUST be named `Vgate`.
-- Inductors MUST start with `L` (e.g. `L1`), capacitors with `C`, diodes with `D`.
-- For every MOSFET used, include its model card:
-    `.model NMOS NMOS` and/or `.model PMOS PMOS`.
-- Include exactly ONE transient analysis directive: `.tran <step> <stop>`.
-- The netlist MUST end with `.end` on its own line.
-- Output ONLY the SPICE netlist — no Markdown fences, no commentary.
+- Input voltage source   : Vin  (e.g. `Vin in 0 12`)
+- Load resistor          : Rload  (e.g. `Rload out 0 10`)
+- Gate drive source      : Vgate / Vgate1..N — PULSE with exactly 7 parameters
+                           (e.g. `Vgate gate 0 PULSE(0 12 0 1n 1n <t_on> <period>)`)
+- MOSFET pin order       : M<name> drain gate source bulk model
+    High-side : drain=in,  gate=gate,  source=sw, bulk=0
+    Low-side  : drain=sw,  gate=gate2, source=0,  bulk=0
+- MOSFET model           : .model NMOS NMOS(Vto=1 Kp=2 Lambda=0)  — exactly this, no variations
+- Component prefixes     : M (MOSFETs), D (diodes), L (inductors), C (capacitors),
+                           Rload (load), Rbleed/Rbleed1..N (floating nodes only)
+- Required nodes         : `in` (Vin positive), `out` (Rload positive),
+                           `sw` / `sw1, sw2, ...` (MOSFET source),
+                           `gate` / `gate1, gate2, ...` (gate drive), `0` (GND)
+- Floating nodes         : any node connected only to reactive elements needs
+                           `Rbleed <node> 0 1Meg`
+- Output ONLY the raw SPICE netlist — no Markdown fences, no explanation.
 """
 
 

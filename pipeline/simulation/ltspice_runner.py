@@ -42,8 +42,8 @@ COMPONENT_WEIGHTS = {
 
 class TopologySimulator():
     def __init__(self):
-        self.BASE_DIR  = Path(__file__).parent
-        self.NETLIST_DIR = self.BASE_DIR.parent / "netlist_validation"
+        self.BASE_DIR = Path(__file__).parent
+        self.DATA_DIR = self.BASE_DIR.parent / "data"
 
     def _onSimulationComplete(self, raw_file, log_file):
         """Event informing completion of a simulation of a particular netlist"""
@@ -57,7 +57,8 @@ class TopologySimulator():
                 unwanted.unlink()
 
     def simulate(self, batchID):
-        """Simulates a batch of valid topologies by reading its ID and mapping it onto the actual .net file
+        """Simulates all netlists in data/<batchID>/llm_output/ that passed validation.
+        Reads validation_results.json to determine which netlists to simulate.
 
         PARAMS:
         batchID <string> : The ID of a Batch
@@ -65,21 +66,37 @@ class TopologySimulator():
         RETURNS:
         results <DataFrame> : Refined scalar metrics dataframe, one row per simulation run
         """
+        import json
 
-        # Init paths
+        batch_dir       = self.DATA_DIR / batchID
+        llm_output_dir  = batch_dir / "llm_output"
+        val_results_path = batch_dir / "validation_results.json"
+
+        assert llm_output_dir.exists(),   f"llm_output folder not found: {llm_output_dir.resolve()}"
+        assert val_results_path.exists(), f"validation_results.json not found: {val_results_path.resolve()}"
+
+        # Load validation results and collect only passing netlist stems
+        val_results  = json.loads(val_results_path.read_text())
+        valid_stems  = {stem for stem, data in val_results.items() if data.get("passed", False)}
+
+        if not valid_stems:
+            print(f"WARNING: No valid netlists found in validation_results.json for batch '{batchID}'")
+            return pd.DataFrame()
+
+        # Init temp output path for .raw files (stays local to simulation/)
         output_path = self.BASE_DIR / "output" / batchID
-        netdir      = self.NETLIST_DIR / "valid" / batchID
-        assert netdir.exists(), f"Batch folder not found: {netdir.resolve()}"
-
-        # Ensure output directory exists before runner init
         output_path.mkdir(parents=True, exist_ok=True)
 
         # Init runner
         runner = SimRunner(output_folder=output_path, simulator=LTspice, parallel_sims=4)
 
-        # Extract netlist metadata via SpiceEditor while we already have it open
+        # Extract netlist metadata via SpiceEditor and queue valid ones for simulation
         netlist_map = {}
-        for netpath in netdir.glob("*.net"):
+        for netpath in llm_output_dir.glob("*.net"):
+            if netpath.stem not in valid_stems:
+                print(f"SKIPPING (failed validation): {netpath.name}")
+                continue
+
             net      = SpiceEditor(netpath)
             l_refs   = net.get_components("L")
             l_values = [_to_float(net.get_component_value(l)) for l in l_refs]
@@ -300,9 +317,7 @@ class TopologySimulator():
 
         combined = pd.DataFrame(all_rows)
 
-        results_dir = self.BASE_DIR / "results"
-        results_dir.mkdir(exist_ok=True)
-        csv_path = results_dir / f"{batchID}_out.csv"
+        csv_path = self.DATA_DIR / batchID / "simulation_results.csv"
         combined.to_csv(csv_path, index=False)
         print(f"Saved {len(all_rows)} run(s) -> {csv_path}")
 

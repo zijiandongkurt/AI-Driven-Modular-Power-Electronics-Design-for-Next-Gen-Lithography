@@ -18,6 +18,14 @@ from __future__ import annotations
 from pathlib import Path
 from datetime import datetime
 
+# pipeline/llm_topology_generation/ -> pipeline/
+_PIPELINE_ROOT = Path(__file__).parent.parent
+
+
+def get_llm_output_dir(batchID: str) -> Path:
+    """Return the canonical output path for a batch: data/<batchID>/llm_output/"""
+    return _PIPELINE_ROOT / "data" / batchID / "llm_output"
+
 
 def _format_header(
     constraint: dict,
@@ -71,25 +79,36 @@ def write_single_netlist(
 
 
 def write_netlists(
-    out_dir: str | Path,
     netlists: list[str],
     constraint: dict,
     label: str,
+    batchID: str | None = None,
+    out_dir: str | Path | None = None,
 ) -> list[Path]:
-    """Write each candidate to its own .net file inside out_dir.
+    """Write each candidate to its own .net file inside data/<batchID>/llm_output/.
+
+    Either `batchID` or `out_dir` must be provided. If both are given,
+    `batchID` takes precedence.
 
     File naming:  <label>_cand1.net, <label>_cand2.net, ...
 
     Args:
-        out_dir:    Output directory (created if missing).
         netlists:   list of cleaned netlist strings (one per candidate).
         constraint: Constraint dict (passed through to the header).
-        label:     Filename prefix (typically prompt_input.slug() output).
+        label:      Filename prefix (typically prompt_input.slug() output).
+        batchID:    Batch identifier — resolves to data/<batchID>/llm_output/.
+        out_dir:    Explicit output directory override (used if batchID is None).
 
     Returns:
         List of absolute paths to the written files (in order).
     """
-    out = Path(out_dir)
+    if batchID is not None:
+        out = get_llm_output_dir(batchID)
+    elif out_dir is not None:
+        out = Path(out_dir)
+    else:
+        raise ValueError("Either batchID or out_dir must be provided.")
+
     out.mkdir(parents=True, exist_ok=True)
 
     n = len(netlists)

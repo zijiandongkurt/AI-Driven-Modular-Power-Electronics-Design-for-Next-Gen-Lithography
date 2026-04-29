@@ -20,6 +20,8 @@ from typing import Optional
 
 import torch
 
+from prompt_input import NAMING_RULES
+
 logger = logging.getLogger(__name__)
 
 
@@ -48,7 +50,11 @@ class Constraint:
 
     def to_prompt(self) -> str:
         d = {k: v for k, v in asdict(self).items() if v is not None}
-        return f"### Constraint:\n{json.dumps(d, indent=2)}\n\n### SPICE Netlist:\n"
+        return (
+            f"{NAMING_RULES}\n"
+            f"### Constraint:\n{json.dumps(d, indent=2)}\n\n"
+            f"### SPICE Netlist:\n"
+        )
     
 
 

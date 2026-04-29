@@ -6,7 +6,8 @@ from pathlib import Path
 
 class validator():
     def __init__(self):
-        self.BASE_DIR = Path(__file__).parent
+        self.BASE_DIR  = Path(__file__).parent
+        self.DATA_DIR  = self.BASE_DIR.parent / "data"
         self.VALID_PREFIXES = set("VRICLDMQ")
 
     # ── helpers ──────────────────────────────────────────────────────────────
@@ -85,8 +86,9 @@ class validator():
     # ── public ───────────────────────────────────────────────────────────────
 
     def validate(self, batchID):
-        """Validate all .net files in LLM_output/<batchID>/.
-        Copies valid/invalid netlists into separate folders and writes a results CSV.
+        """Validate all .net files in data/<batchID>/llm_output/.
+        Injects .save and title comment into passing netlists in-place.
+        Writes validation_results.json to data/<batchID>/.
 
         PARAMS:
         batchID <string> : The ID of a batch
@@ -94,27 +96,20 @@ class validator():
         RETURNS:
         results <dict> : { filename: (passed <bool>, checklist <dict>) }
         """
-        import shutil
-        import csv
+        import json
 
-        batch_dir = self.BASE_DIR / "LLM_output" / batchID
+        batch_dir = self.DATA_DIR / batchID / "llm_output"
         assert batch_dir.exists(), f"Batch folder not found: {batch_dir.resolve()}"
 
         net_files = list(batch_dir.glob("*.net"))
         assert net_files, f"No .net files found in: {batch_dir}"
 
-        valid_dir   = self.BASE_DIR / "valid"   / batchID
-        invalid_dir = self.BASE_DIR / "invalid" / batchID
-        results_dir = self.BASE_DIR / "results"
-        for d in (valid_dir, invalid_dir, results_dir):
-            d.mkdir(parents=True, exist_ok=True)
-
-        results  = {}
-        csv_rows = []
+        results     = {}
+        json_output = {}
 
         for net_path in net_files:
-            netlist   = net_path.read_text()
-            checklist = self._validateOne(netlist)
+            raw_text  = net_path.read_text()
+            checklist = self._validateOne(raw_text)
             passed    = all(checklist.values())
 
             for check, result in checklist.items():
@@ -122,29 +117,24 @@ class validator():
                     print(f"[{net_path.name}] Failed: {check}")
             if passed:
                 print(f"[{net_path.name}] Validation passed.")
+                # Inject title comment if missing
+                if not raw_text.lstrip().startswith("*"):
+                    raw_text = f"* {net_path.stem}\n" + raw_text
+                # Inject .save to ensure all currents and voltages are in .raw output
+                if ".save" not in raw_text.lower():
+                    raw_text = raw_text.replace(".end", ".save V(*) I(*)\n.end")
+                net_path.write_text(raw_text)
 
-            dest      = valid_dir if passed else invalid_dir
-            dest_path = dest / net_path.name
-            raw_text  = net_path.read_text()
-            if not raw_text.lstrip().startswith("*"):
-                raw_text = f"* {net_path.stem}\n" + raw_text
-            # Inject .save to ensure all currents and voltages are in .raw output
-            if passed and ".save" not in raw_text.lower():
-                raw_text = raw_text.replace(".end", ".save V(*) I(*)\n.end")
-            dest_path.write_text(raw_text)
+            results[net_path.name]     = (passed, checklist)
+            json_output[net_path.stem] = {"passed": passed, "checks": checklist}
 
-            results[net_path.name] = (passed, checklist)
-            csv_rows.append({"netlist": net_path.name, "valid": passed, **checklist})
+        # Write validation_results.json into the batch folder
+        json_path = self.DATA_DIR / batchID / "validation_results.json"
+        json_path.write_text(json.dumps(json_output, indent=4))
 
-        csv_path = results_dir / f"{batchID}.csv"
-        with open(csv_path, "w", newline="") as f:
-            writer = csv.DictWriter(f, fieldnames=csv_rows[0].keys())
-            writer.writeheader()
-            writer.writerows(csv_rows)
-
-        print(f"Results saved to {csv_path}")
-        print(f"Valid:   {sum(r['valid'] for r in csv_rows)}/{len(csv_rows)}")
-        print(f"Invalid: {sum(not r['valid'] for r in csv_rows)}/{len(csv_rows)}")
+        print(f"Results saved to {json_path}")
+        print(f"Valid:   {sum(v['passed'] for v in json_output.values())}/{len(json_output)}")
+        print(f"Invalid: {sum(not v['passed'] for v in json_output.values())}/{len(json_output)}")
 
         return results
 

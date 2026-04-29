@@ -100,35 +100,60 @@ class TopologyLLM:
         prompt = make_prompt(constraint)
         return self._generate(prompt, n)
 
+    def generate_for_batch(
+        self,
+        constraint: dict,
+        batchID: str,
+        n: int = 4,
+    ) -> list[Path]:
+        """Generate n netlists for a constraint and write to data/<batchID>/llm_output/.
+
+        This is the standard pipeline entry point.
+
+        Args:
+            constraint: dict with constraint keys.
+            batchID:    Batch identifier — files land in data/<batchID>/llm_output/.
+            n:          Number of candidate netlists to generate.
+
+        Returns:
+            List of written .net file paths.
+        """
+        label = slug(constraint, 0)
+        cands = self.generate_from_constraint(constraint, n=n)
+        return write_netlists(
+            netlists=cands,
+            constraint=constraint,
+            label=label,
+            batchID=batchID,
+        )
+
     def generate_from_json(
         self,
         json_path: str | Path,
-        out_dir: str | Path,
+        batchID: str,
         n: int = 4,
     ) -> list[Path]:
-        """Process every constraint in a JSON file.
+        """Process every constraint in a JSON file, writing to data/<batchID>/llm_output/.
 
-        For each constraint, ``n`` candidate topologies are generated and
-        each candidate is written to its OWN ``.net`` file:
-        ``<slug>_cand1.net``, ``<slug>_cand2.net``, …
+        Args:
+            json_path:  Path to a JSON file containing a list of constraint dicts.
+            batchID:    Batch identifier — files land in data/<batchID>/llm_output/.
+            n:          Number of candidates per constraint.
 
         Returns:
-            Flat list of all written .net file paths (across all
-            constraints, in generation order).
+            Flat list of all written .net file paths.
         """
         constraints = load_constraints(json_path)
-        out_root = Path(out_dir)
-        out_root.mkdir(parents=True, exist_ok=True)
 
         written: list[Path] = []
         for i, c in enumerate(constraints):
             label = slug(c, i)
             cands = self.generate_from_constraint(c, n=n)
             paths = write_netlists(
-                out_dir=out_root,
                 netlists=cands,
                 constraint=c,
                 label=label,
+                batchID=batchID,
             )
             written.extend(paths)
         return written
