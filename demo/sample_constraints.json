@@ -1,0 +1,98 @@
+[
+  {
+    "_comment": "Step-Down 1: High Voltage AC/DC to 24V Bus",
+    "vin_min": 208,
+    "vin_max": 400,
+    "vout_target": 24,
+    "efficiency_target": 0.95,
+    "power_in": 500
+  },
+  {
+    "_comment": "Step-Down 2: Commercial Mains to 12V",
+    "vin_min": 220,
+    "vin_max": 380,
+    "vout_target": 12,
+    "efficiency_target": 0.92,
+    "power_in": 300
+  },
+  {
+    "_comment": "Step-Down 3: High Voltage to 5V Logic",
+    "vin_min": 230,
+    "vin_max": 400,
+    "vout_target": 5,
+    "efficiency_target": 0.90,
+    "power_in": 150
+  },
+  {
+    "_comment": "Step-Down 4: 208V/277V Phase to 3.3V MCU",
+    "vin_min": 208,
+    "vin_max": 277,
+    "vout_target": 3.3,
+    "efficiency_target": 0.91,
+    "power_in": 100
+  },
+  {
+    "_comment": "Step-Up 1: 12V/24V Battery to 380V DC Bus",
+    "vin_min": 12,
+    "vin_max": 24,
+    "vout_target": 380,
+    "efficiency_target": 0.94,
+    "power_in": 400
+  },
+  {
+    "_comment": "Step-Up 2: 9V/12V source to 220V",
+    "vin_min": 9,
+    "vin_max": 12,
+    "vout_target": 220,
+    "efficiency_target": 0.93,
+    "power_in": 250
+  },
+  {
+    "_comment": "Step-Up 3: 5V/9V USB to 208V",
+    "vin_min": 5,
+    "vin_max": 9,
+    "vout_target": 208,
+    "efficiency_target": 0.92,
+    "power_in": 100
+  },
+  {
+    "_comment": "Step-Up 4: 12V/24V Industrial to 400V",
+    "vin_min": 12,
+    "vin_max": 24,
+    "vout_target": 400,
+    "efficiency_target": 0.95,
+    "power_in": 500
+  },
+  {
+    "_comment": "Up & Down 1: Wide Input Industrial (Buck-Boost)",
+    "vin_min": 9,
+    "vin_max": 36,
+    "vout_target": 24,
+    "efficiency_target": 0.94,
+    "power_in": 200
+  },
+  {
+    "_comment": "Up & Down 2: Universal High-Voltage Mains Stabilizer",
+    "vin_min": 208,
+    "vin_max": 480,
+    "vout_target": 380,
+    "efficiency_target": 0.95,
+    "power_in": 450
+  },
+  {
+    "_comment": "Up & Down 3: Telecom/Battery Backed (Buck-Boost)",
+    "vin_min": 12,
+    "vin_max": 48,
+    "vout_target": 36,
+    "efficiency_target": 0.93,
+    "power_in": 350
+  },
+  {
+    "_comment": "Up & Down 4: Wide Grid Voltage Stabilizer",
+    "vin_min": 100,
+    "vin_max": 277,
+    "vout_target": 220,
+    "efficiency_target": 0.91,
+    "power_in": 300
+  }
+]
