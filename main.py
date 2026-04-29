@@ -16,11 +16,11 @@ def main():
         "efficiency_target": 0.90,
         "power_in": 100,
     }
-    batch_id = "batch_001"
+    batch_id = "batch_2"
 
     # 1. Generate — writes .net files to data/batch_001/llm_output/
-    written = llm.generate_for_batch(constraint, batchID=batch_id, n=4)
-    print(f"Generated {len(written)} netlists")
+    # written = llm.generate_for_batch(constraint, batchID=batch_id, n=4)
+    # print(f"Generated {len(written)} netlists")
 
     # 2. Validate — reads llm_output/, writes validation_results.json
     val.validate(batch_id)
