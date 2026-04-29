@@ -1,0 +1,249 @@
+"""
+llm_engine.py — Minimal LLM topology generation module.
+
+Only two jobs: load model, generate netlists.
+Everything else (training, validation, simulation, reward) lives elsewhere.
+
+Usage:
+    engine = LLMEngine("Qwen/Qwen2.5-Coder-7B")
+    engine.load_adapter("sft", "./checkpoints/sft-lora/final")
+    netlist = engine.generate({"vin": 12, "vout_target": 5})
+"""
+
+from __future__ import annotations
+
+import json
+import re
+import logging
+from dataclasses import dataclass, field, asdict
+from typing import Optional
+
+import torch
+
+logger = logging.getLogger(__name__)
+
+
+# ── Data contracts ───────────────────────────────────────────────────────
+
+@dataclass
+class Constraint:
+    """Design constraint spec. Shared contract with all other modules."""
+
+    
+    vin: float
+    vout_target: float
+    efficiency_target: float = 0.90
+    ripple_max: float = 0.05
+    converter_type: str = "auto"
+    switching_freq_khz: float = 100.0
+    power_out_w: float = 10.0
+    component_preference: str = "minimal"
+    i_switch_max: Optional[float] = None
+    v_stress_max: Optional[float] = None
+
+    @classmethod
+    def from_dict(cls, d: dict) -> Constraint:
+        fields = {f.name for f in cls.__dataclass_fields__.values()}
+        return cls(**{k: v for k, v in d.items() if k in fields})
+
+    def to_prompt(self) -> str:
+        d = {k: v for k, v in asdict(self).items() if v is not None}
+        return f"### Constraint:\n{json.dumps(d, indent=2)}\n\n### SPICE Netlist:\n"
+    
+
+
+@dataclass
+class GenerationOutput:
+    """What this module returns. Other modules consume this."""
+    netlist: str
+    constraint: Constraint
+    tokens: int = 0
+    time_sec: float = 0.0
+
+
+
+# ── LLM Engine ─────────────────────────────────────────────────────────
+
+class LLMEngine:
+    """
+    Loads a model, manages adapters, generates netlists.
+    
+    Public interface (what other modules call):
+        engine.generate(constraint)        -> GenerationOutput
+        engine.generate_batch(constraint)  -> list[GenerationOutput]
+        engine.load_adapter(name, path)
+        engine.switch_adapter(name)
+    """
+
+    def __init__(
+        self,
+        model_id: str = "Qwen/Qwen2.5-Coder-7B",
+        quantization: Optional[str] = None,
+        max_new_tokens: int = 1024,
+        temperature: float = 0.7,
+        top_p: float = 0.9,
+    ):
+        from transformers import AutoModelForCausalLM, AutoTokenizer
+
+        # Store generation tuning hyperparameters.
+        self._max_new_tokens = max_new_tokens
+        self._temperature = temperature
+        self._top_p = top_p
+
+        # Adapter management state (name -> folder path).
+        self._adapters: dict[str, str] = {}
+        self._active: Optional[str] = None
+        self._is_peft = False
+
+        # Load tokenizer
+        self._tok = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
+        if self._tok.pad_token is None:
+            self._tok.pad_token = self._tok.eos_token
+
+        # Load model
+        kw: dict = dict(torch_dtype=torch.bfloat16, device_map="auto", trust_remote_code=True)
+        if quantization == "4bit":
+            from transformers import BitsAndBytesConfig
+            kw["quantization_config"] = BitsAndBytesConfig(
+                load_in_4bit=True, bnb_4bit_use_double_quant=True,
+                bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.bfloat16,
+            )
+        try:
+            kw["attn_implementation"] = "flash_attention_2"
+            self._model = AutoModelForCausalLM.from_pretrained(model_id, **kw)
+        except Exception:
+            kw.pop("attn_implementation", None)
+            self._model = AutoModelForCausalLM.from_pretrained(model_id, **kw)
+
+        logger.info(f"Model loaded: {model_id} ({self._model.num_parameters()/1e9:.1f}B)")
+
+    # ── Adapter management ───────────────────────────────────────────
+
+    def load_adapter(self, name: str, path: str) -> None:
+        """Load a LoRA adapter from disk. First call wraps model with PEFT."""
+        from peft import PeftModel
+        if not self._is_peft:
+            self._model = PeftModel.from_pretrained(self._model, path, adapter_name=name)
+            self._is_peft = True
+        else:
+            self._model.load_adapter(path, adapter_name=name)
+        self._adapters[name] = path
+        self._active = name
+        self._model.set_adapter(name)
+
+    def switch_adapter(self, name: str) -> None:
+        """Zero-latency adapter swap."""
+        if name not in self._adapters:
+            raise KeyError(f"Unknown adapter '{name}'. Loaded: {list(self._adapters)}")
+        self._model.set_adapter(name)
+        self._active = name
+
+    @property
+    def active_adapter(self) -> Optional[str]:
+        return self._active
+
+    @property
+    def model(self):
+        """Raw model reference — for external trainers that need direct access."""
+        return self._model
+
+    @property
+    def tokenizer(self):
+        """Raw tokenizer reference — for external trainers that need direct access."""
+        return self._tok
+
+    # ── Generation ───────────────────────────────────────────────────
+
+    def generate(
+        self,
+        constraint: dict | Constraint,
+        feedback: str = "",
+        **overrides,
+    ) -> GenerationOutput:
+        """
+        Generate one SPICE netlist from a constraint spec.
+
+        Args:
+            constraint: Design constraints (dict or Constraint).
+            feedback:   Optional error text from a failed prior attempt.
+            **overrides: temperature, top_p, max_new_tokens overrides.
+
+        Returns:
+            GenerationOutput with the netlist string.
+        """
+        import time
+        t0 = time.time()
+
+        if isinstance(constraint, dict):
+            constraint = Constraint.from_dict(constraint)
+
+        prompt = self._build_prompt(constraint, feedback)
+        # Tokenize the prompt and make sure the tensors are on the model device.
+        ids = self._tok(prompt, return_tensors="pt")
+        ids = {k: v.to(self._model.device) for k, v in ids.items()}
+
+        # Run generation in inference mode (no gradient tracking).
+        with torch.no_grad():
+            out = self._model.generate(
+                **ids,
+                max_new_tokens=overrides.get("max_new_tokens", self._max_new_tokens),
+                do_sample=True,
+                temperature=overrides.get("temperature", self._temperature),
+                top_p=overrides.get("top_p", self._top_p),
+                pad_token_id=self._tok.pad_token_id,
+            )
+
+        gen_ids = out[0][ids["input_ids"].shape[1]:]
+        raw = self._tok.decode(gen_ids, skip_special_tokens=True)
+        netlist = self._clean(raw)
+
+        return GenerationOutput(
+            netlist=netlist,
+            constraint=constraint,
+            tokens=len(gen_ids),
+            time_sec=round(time.time() - t0, 3),
+        )
+
+    def generate_batch(
+        self,
+        constraint: dict | Constraint,
+        n: int = 8,
+        **overrides,
+    ) -> list[GenerationOutput]:
+        """Generate n candidate netlists for the same constraint."""
+        return [self.generate(constraint, **overrides) for _ in range(n)]
+
+    # ── Internals ────────────────────────────────────────────────────
+
+    @staticmethod
+    def _build_prompt(c: Constraint, feedback: str) -> str:
+        prompt = c.to_prompt()
+        if feedback:
+            prompt += f"\n### Feedback:\n{feedback}\n\n### Corrected SPICE Netlist:\n"
+        return prompt
+
+    @staticmethod
+    def _clean(raw: str) -> str:
+        """Clean generated text and keep only the first full netlist.
+
+        - Trim whitespace
+        - Remove Markdown code fences
+        - Stop at .end if present (SPICE convention)
+        """
+        lines = []
+        for line in raw.strip().split("\n"):
+            line = line.strip()
+            if line.startswith("```"):
+                continue
+            lines.append(line)
+            if line.lower() == ".end":
+                break
+        return "\n".join(lines)
+
+    @staticmethod
+    def parse_constraint_from_prompt(prompt: str) -> Constraint:
+        """Utility for external modules that receive raw prompt strings."""
+        m = re.search(r"### Constraint:\s*\n(.*?)### SPICE Netlist:", prompt, re.DOTALL)
+        if m:
+            return Constraint.from_dict(json.loads(m.group(1).strip()))
+        raise ValueError("Cannot parse constraint from prompt")
