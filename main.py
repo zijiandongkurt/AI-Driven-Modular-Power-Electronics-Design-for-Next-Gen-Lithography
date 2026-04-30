@@ -11,7 +11,7 @@ def main():
     simulator  = TopologySimulator()
     reward_fn  = RewardFunction()
     constraint = load_constraint("pipeline/data/datasets/constraints.json", idx=0)
-    batch_id = "batch_4"
+    batch_id = "batch_7"
 
     # 1. Generate — writes .net files to data/batch_001/llm_output/
     # written = llm.generate_for_batch(constraint, batchID=batch_id, n=4)

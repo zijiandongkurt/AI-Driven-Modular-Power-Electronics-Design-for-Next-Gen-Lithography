@@ -1,0 +1,72 @@
+{
+    "active_constraints": {
+        "_comment": "12V to 5V step-down",
+        "vin_min": 12,
+        "vin_max": 100,
+        "vout_target": 5,
+        "efficiency_target": 0.9,
+        "power_in": 100
+    },
+    "circuits": {
+        "top1": {
+            "fitness_score": -139.8097576407199,
+            "loss_breakdown": {
+                "voltage_tracking_loss": 50.71459906215889,
+                "efficiency_loss": 6.993520433163772,
+                "volume_loss": 78.10163814539725,
+                "component_cost_loss": 4.0
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 2.748009789937823,
+                "efficiency": 0.5503239783418115,
+                "total_volume_cm3": 39.05081907269862,
+                "total_components": 4
+            }
+        },
+        "top2": {
+            "fitness_score": -228.2706760885223,
+            "loss_breakdown": {
+                "voltage_tracking_loss": 145.8947016814269,
+                "efficiency_loss": 13.273441634553176,
+                "volume_loss": 65.10253277254222,
+                "component_cost_loss": 4.0
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 1.1803835050960036,
+                "efficiency": 0.2363279182723412,
+                "total_volume_cm3": 32.55126638627111,
+                "total_components": 4
+            }
+        },
+        "top3": {
+            "fitness_score": -294.73506335350646,
+            "loss_breakdown": {
+                "voltage_tracking_loss": 220.66095695190307,
+                "efficiency_loss": 16.78912305532297,
+                "volume_loss": 53.2849833462804,
+                "component_cost_loss": 4.0
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 0.3025436994911485,
+                "efficiency": 0.0605438472338515,
+                "total_volume_cm3": 26.6424916731402,
+                "total_components": 4
+            }
+        },
+        "top4": {
+            "fitness_score": -329.36700867999997,
+            "loss_breakdown": {
+                "voltage_tracking_loss": 249.71686166068181,
+                "efficiency_loss": 17.99083667874279,
+                "volume_loss": 57.65931034057535,
+                "component_cost_loss": 4.0
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 0.0028321855206642,
+                "efficiency": 0.0004581660628604,
+                "total_volume_cm3": 28.829655170287676,
+                "total_components": 4
+            }
+        }
+    }
+}
