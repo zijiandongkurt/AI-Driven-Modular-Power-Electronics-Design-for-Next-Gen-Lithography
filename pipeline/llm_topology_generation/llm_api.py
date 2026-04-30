@@ -2,35 +2,36 @@
 llm_api.py — Packaged Python interface for the topology-generation LLM.
 
 This is a thin wrapper over LLMEngine + prompt_input + net_writer that
-exposes three high-level methods:
+exposes four high-level methods:
 
-    - generate_from_constraint(constraint, n)  →  list[str]
-    - generate_from_json(json_path, out_dir, n) →  list[Path]
-    - generate_from_text(prompt, n)            →  list[str]
+    - generate_from_constraint(constraint, n)             → list[str]
+    - generate_for_batch(constraint, batchID, n)          → list[Path]
+    - generate_from_json(json_path, batchID, n)           → list[Path]
+    - generate_from_text(prompt, n)                       → list[str]
 
 All callers should reuse the same `TopologyLLM` instance because model
-loading takes ~12-20s and consumes ~5.5 GB VRAM.
+loading takes ~12–20s and consumes ~5.5 GB VRAM.
 
 Example:
-    from llm_api import TopologyLLM
-    llm = TopologyLLM(model_id=r"D:\\...\\qwen25-coder-7b")
-    cands = llm.generate_from_constraint(
-        {"vin_min": 12, "vin_max": 24, "vout_target": 5,
-         "efficiency_target": 0.9, "power_in": 50}, n=4
-    )
-    for c in cands: print(c)
+    from pipeline.llm_topology_generation.llm_api import TopologyLLM
+    from pipeline.llm_topology_generation.prompt_input import load_constraint
+
+    llm = TopologyLLM()
+    c   = load_constraint("pipeline/data/datasets/constraints.json", idx=0)
+    paths = llm.generate_for_batch(c, batchID="batch_3", n=4)
+    # → [pipeline/data/batch_3/llm_output/top1.net, ...]
 """
 
 from __future__ import annotations
 
+import threading
 from pathlib import Path
-from typing import Iterable
 
 import torch
 
-from llm_engine_minimal import LLMEngine
-from prompt_input import load_constraints, make_prompt, slug
-from net_writer import write_netlists
+from .llm_engine_minimal import LLMEngine
+from .prompt_input import load_constraints, make_prompt
+from .net_writer import write_netlists
 
 
 DEFAULT_MODEL_ID = r"D:\Document\Course\Team_intership\LLM\models\qwen25-coder-7b"
@@ -53,10 +54,9 @@ class TopologyLLM:
             model_id,
             quantization=quantization,
             max_new_tokens=max_new_tokens,
+            temperature=temperature,
+            top_p=top_p,
         )
-        # Override sampling defaults if needed
-        self.engine._temperature = temperature
-        self.engine._top_p = top_p
 
     # ── Internal generation primitive ──────────────────────────────────
 
@@ -100,40 +100,69 @@ class TopologyLLM:
         prompt = make_prompt(constraint)
         return self._generate(prompt, n)
 
+    def generate_for_batch(
+        self,
+        constraint: dict,
+        batchID: str,
+        n: int = 4,
+    ) -> list[Path]:
+        """Generate n netlists for a constraint and write them as
+        ``data/<batchID>/llm_output/top1.net`` ... ``topN.net``.
+
+        This is the standard pipeline entry point — `main.py` calls this.
+
+        Args:
+            constraint: dict with constraint keys (vin_min, vin_max, …).
+            batchID:    Batch identifier — files land in
+                        ``pipeline/data/<batchID>/llm_output/``.
+            n:          Number of candidate netlists to generate.
+
+        Returns:
+            List of absolute paths to the written .net files (in order).
+        """
+        cands = self.generate_from_constraint(constraint, n=n)
+        return write_netlists(netlists=cands, batchID=batchID)
+
     def generate_from_json(
         self,
         json_path: str | Path,
-        out_dir: str | Path,
+        batchID: str,
         n: int = 4,
     ) -> list[Path]:
-        """Process every constraint in a JSON file.
+        """Process every constraint in a JSON file, writing all candidates
+        sequentially as ``top1.net`` ... ``topM.net`` into
+        ``data/<batchID>/llm_output/``.
 
-        For each constraint, ``n`` candidate topologies are generated and
-        each candidate is written to its OWN ``.net`` file:
-        ``<slug>_cand1.net``, ``<slug>_cand2.net``, …
+        With K constraints and n candidates each, M = K*n files are
+        produced. The numbering is global to the batch (constraint 0
+        gets ``top1..topN``, constraint 1 gets ``topN+1..top2N``, …) so
+        nothing gets overwritten.
+
+        Args:
+            json_path: Path to a JSON file containing a list of constraint dicts.
+            batchID:   Batch identifier — files land in
+                       ``pipeline/data/<batchID>/llm_output/``.
+            n:         Number of candidates per constraint.
 
         Returns:
-            Flat list of all written .net file paths (across all
-            constraints, in generation order).
+            Flat list of absolute paths to all written .net files.
         """
         constraints = load_constraints(json_path)
-        out_root = Path(out_dir)
-        out_root.mkdir(parents=True, exist_ok=True)
 
         written: list[Path] = []
-        for i, c in enumerate(constraints):
-            label = slug(c, i)
+        next_idx = 1
+        for c in constraints:
             cands = self.generate_from_constraint(c, n=n)
             paths = write_netlists(
-                out_dir=out_root,
                 netlists=cands,
-                constraint=c,
-                label=label,
+                batchID=batchID,
+                start_index=next_idx,
             )
             written.extend(paths)
+            next_idx += len(cands)
         return written
 
-    def generate_from_text(self, prompt: str, n: int = 1) -> list[str]:
+    def generate_from_text(self, prompt: str, n: int = 4) -> list[str]:
         """Generate from a raw text prompt — no template applied.
 
         Use this when you want full manual control over the prompt
@@ -142,24 +171,21 @@ class TopologyLLM:
         return self._generate(prompt, n)
 
 
-# ── Convenience singleton (lazy-loaded) ────────────────────────────────
+# ── Convenience singleton (lazy-loaded, thread-safe) ───────────────────
 
 _singleton: TopologyLLM | None = None
+_singleton_lock = threading.Lock()
 
 
 def get_llm(**kwargs) -> TopologyLLM:
     """Return a process-wide singleton TopologyLLM.
 
-    Subsequent calls ignore kwargs and return the already-loaded instance.
+    Thread-safe: concurrent first-time callers will only load the model
+    once. Subsequent calls ignore kwargs and return the cached instance.
     """
     global _singleton
     if _singleton is None:
-        _singleton = TopologyLLM(**kwargs)
+        with _singleton_lock:
+            if _singleton is None:
+                _singleton = TopologyLLM(**kwargs)
     return _singleton
-
-
-if __name__ == "__main__":
-    # Quick smoke test
-    llm = TopologyLLM()
-    out = llm.generate_from_text("### Hello world:\n", n=1)
-    print(out[0][:200])

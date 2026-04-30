@@ -8,9 +8,9 @@ a structural target to aim at.
 
 Public API
 ----------
-- load_constraints(json_path)  → list[dict]
-- make_prompt(constraint)      → str   (full prompt with naming rules)
-- slug(constraint, idx)        → str   (filename-safe label)
+- load_constraints(json_path)       → list[dict]
+- load_constraint(json_path, idx)   → dict   (single constraint by index)
+- make_prompt(constraint)           → str    (full prompt with naming rules)
 """
 
 from __future__ import annotations
@@ -22,19 +22,28 @@ from pathlib import Path
 # ── Naming-convention preamble (injected into every prompt) ──────────────
 #
 # These rules MUST stay in sync with the netlist-evaluator regex used by
-# `pipeline/llm_topology_generation/netlist_filter.py` and the SFT/GRPO
-# reward functions. Do not rename a token here without updating those.
+# `pipeline/netlist_validation/validator.py` and the SFT/GRPO reward
+# functions. Do not rename a token here without updating those.
 
 NAMING_RULES = """### Naming Convention (MUST follow exactly):
-- The input voltage source MUST be named `Vin` (e.g. `Vin in 0 12`).
-- The output load resistor MUST be named `Rload` (e.g. `Rload out 0 10`).
-- Any MOSFET gate-driver pulse source MUST be named `Vgate`.
-- Inductors MUST start with `L` (e.g. `L1`), capacitors with `C`, diodes with `D`.
-- For every MOSFET used, include its model card:
-    `.model NMOS NMOS` and/or `.model PMOS PMOS`.
-- Include exactly ONE transient analysis directive: `.tran <step> <stop>`.
-- The netlist MUST end with `.end` on its own line.
-- Output ONLY the SPICE netlist — no Markdown fences, no commentary.
+- Input voltage source   : Vin  (e.g. `Vin in 0 12`)
+- Load resistor          : Rload  (e.g. `Rload out 0 10`)
+- Gate drive source      : Vgate / Vgate1..N — PULSE with exactly 7 parameters
+                           (e.g. `Vgate gate 0 PULSE(0 12 0 1n 1n <t_on> <period>)`)
+- MOSFET pin order       : M<name> drain gate source bulk model
+    High-side : drain=in,  gate=gate,  source=sw, bulk=0
+    Low-side  : drain=sw,  gate=gate2, source=0,  bulk=0
+- MOSFET model           : .model NMOS NMOS(Vto=1 Kp=2 Lambda=0)  — exactly this, no variations
+- Diode model            : .model DIODE D  — exactly this line, required whenever any D* component is used
+- Component prefixes     : V (voltage sources: Vin / Vgate / Vgate1..N),
+                           M (MOSFETs), D (diodes), L (inductors), C (capacitors),
+                           R (resistors: Rload for the load, Rbleed/Rbleed1..N for floating nodes)
+- Required nodes         : `in` (Vin positive), `out` (Rload positive),
+                           `sw` / `sw1, sw2, ...` (MOSFET source),
+                           `gate` / `gate1, gate2, ...` (gate drive), `0` (GND)
+- Floating nodes         : any node connected only to reactive elements needs
+                           `Rbleed <node> 0 1Meg`
+- Output ONLY the raw SPICE netlist — no Markdown fences, no explanation.
 """
 
 
@@ -46,6 +55,24 @@ def load_constraints(json_path: str | Path) -> list[dict]:
     if not isinstance(data, list):
         raise ValueError(f"Expected a JSON list, got {type(data).__name__}")
     return data
+
+
+def load_constraint(json_path: str | Path, idx: int = 0) -> dict:
+    """Load a single constraint dict from a JSON file by index.
+
+    Args:
+        json_path: Path to a JSON file containing a list of constraint dicts.
+        idx:       Index of the constraint to return (default: 0).
+
+    Returns:
+        A single constraint dict.
+    """
+    constraints = load_constraints(json_path)
+    if idx >= len(constraints) or idx < 0:
+        raise IndexError(
+            f"Index {idx} out of range — file has {len(constraints)} constraints"
+        )
+    return constraints[idx]
 
 
 def make_prompt(constraint: dict) -> str:
@@ -73,20 +100,15 @@ def make_prompt(constraint: dict) -> str:
     )
 
 
-def slug(constraint: dict, idx: int) -> str:
-    """Generate a short filename slug from the constraint comment."""
-    comment = constraint.get("_comment", f"constraint_{idx:02d}")
-    safe = "".join(c if c.isalnum() else "_" for c in comment)
-    safe = "_".join(filter(None, safe.split("_")))  # collapse repeats
-    return f"{idx:02d}_{safe[:50]}"
-
-
 if __name__ == "__main__":
-    # Quick self-test
+    # Quick self-test — prints the prompt for the first 2 constraints in
+    # the canonical dataset.
     import sys
-    path = sys.argv[1] if len(sys.argv) > 1 else "sample_constraints.json"
+
+    default_path = "pipeline/data/datasets/constraints.json"
+    path = sys.argv[1] if len(sys.argv) > 1 else default_path
     items = load_constraints(path)
-    print(f"Loaded {len(items)} constraints from {path}")
+    print(f"Loaded {len(items)} constraints from {path}\n")
     for i, c in enumerate(items[:2]):
-        print(f"\n--- Slug: {slug(c, i)} ---")
+        print(f"--- Constraint #{i}: {c.get('_comment', 'n/a')} ---")
         print(make_prompt(c))
