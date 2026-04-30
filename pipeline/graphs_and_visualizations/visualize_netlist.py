@@ -157,6 +157,15 @@ if __name__ == "__main__":
     # 1. Define the folder where all the AI netlists live
     netlist_dir = os.path.join(script_dir, "..", "data", "batch_2", "LLM_output")
     
+    # --- NEW FOLDER LOGIC ---
+    # Get the parent batch directory (e.g., "batch_2")
+    batch_dir = os.path.dirname(netlist_dir)
+    
+    # Create a new folder named "schematics" inside the batch directory
+    svg_output_dir = os.path.join(batch_dir, "schematics")
+    os.makedirs(svg_output_dir, exist_ok=True)
+    # ------------------------
+    
     # Check if the directory actually exists to prevent crashes
     if not os.path.exists(netlist_dir):
         print(f"❌ Error: Cannot find directory at {netlist_dir}")
@@ -172,12 +181,12 @@ if __name__ == "__main__":
                 # Construct the full path to the input .net file
                 input_spice = os.path.join(netlist_dir, filename)
                 
-                # Create a matching output name (e.g., "top1.net" becomes "top1_schematic.svg")
+                # Create a matching output name and save it in the newly created folder
                 base_name = os.path.splitext(filename)[0] 
-                output_image = os.path.join(script_dir, f"{base_name}_schematic.svg")
+                output_image = os.path.join(svg_output_dir, f"{base_name}_schematic.svg")
                 
                 # 3. Run the generator for this specific file
                 generate_schematic(input_spice, output_image)
                 print("-" * 40) # Print a divider line for terminal readability
                 
-        print("✅ Batch processing complete! All SVGs generated.")
+        print(f"✅ Batch processing complete! All SVGs generated in: {svg_output_dir}")
