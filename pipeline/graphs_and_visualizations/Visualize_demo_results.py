@@ -5,8 +5,10 @@ import matplotlib.pyplot as plt
 import re
 
 # --- Configuration ---
-# Path points to the data directory based on image_f3da75.png
-DATA_DIR = os.path.join('pipeline', 'data')
+# Dynamic pathing relative to the script location
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, '..', 'data'))
+RESULTS_DIR = os.path.join(DATA_DIR, 'results')
 
 def extract_batch_number(folder_name):
     """Extracts the integer batch number from the folder name."""
@@ -22,122 +24,170 @@ def main():
         print(f"No batch folders found in {DATA_DIR}. Please check your path.")
         return
 
+    # Create the results directory if it doesn't exist
+    os.makedirs(RESULTS_DIR, exist_ok=True)
+    print(f"📁 Saving plots to: {RESULTS_DIR}\n")
+
+    # Master list of all batches to keep the x-axis consistent
+    batches = [extract_batch_number(os.path.basename(folder)) for folder in batch_folders]
+    
     # Lists to store our aggregated data
-    batches = []
     avg_fitness_history = []
     best_fitness_history = []
     all_voltages_history = []
     all_volumes_history = []
     all_components_history = []
+    valid_counts_history = [] 
     
     target_voltage = None
 
+    # --- DATA EXTRACTION ---
     for folder in batch_folders:
         batch_num = extract_batch_number(os.path.basename(folder))
         
-        # As per image_f3da75.png, the files are inside the "LLM_output" directory
-        reward_file = os.path.join(folder, 'LLM_output', 'reward_results.json')
+        reward_file = os.path.join(folder, 'reward_results.json')
+        valid_file = os.path.join(folder, 'validation_results.json')
 
-        try:
-            with open(reward_file, 'r') as f:
-                reward_data = json.load(f)
-            
-            # Extract target voltage from the first batch's constraints
-            if target_voltage is None:
-                target_voltage = reward_data.get('active_constraints', {}).get('vout_target', 5.0)
-
-            circuits = reward_data.get('circuits', {})
-            
-            batch_fitness = []
-            batch_voltages = []
-            batch_volumes = []
-            batch_components = []
-
-            for circ_id, circ_data in circuits.items():
-                batch_fitness.append(circ_data['fitness_score'])
+        # 1. Read Reward Data (Fitness, Voltage, Volume, Components)
+        if os.path.exists(reward_file):
+            try:
+                with open(reward_file, 'r') as f:
+                    reward_data = json.load(f)
                 
-                raw_metrics = circ_data.get('raw_metrics', {})
-                batch_voltages.append(raw_metrics.get('simulation_output_voltage', 0))
-                
-                # Handle potential excessively large volumes or inf
-                vol = raw_metrics.get('total_volume_cm3', 0)
-                batch_volumes.append(vol)
-                
-                batch_components.append(raw_metrics.get('total_components', 0))
-            
-            # Only append to main history if we found circuit data
-            if batch_fitness:
-                batches.append(batch_num)
-                avg_fitness_history.append(sum(batch_fitness) / len(batch_fitness))
-                best_fitness_history.append(max(batch_fitness)) # Using max since higher is usually better, change to min if lower score is better
-                all_voltages_history.append(batch_voltages)
-                all_volumes_history.append(batch_volumes)
-                all_components_history.append(batch_components)
+                # Grab target voltage if we haven't yet
+                if target_voltage is None:
+                    target_voltage = reward_data.get('active_constraints', {}).get('vout_target', 5.0)
 
-        except FileNotFoundError:
-            print(f"Warning: reward_results.json not found for batch {batch_num}. Skipping.")
-        except json.JSONDecodeError:
-            print(f"Warning: Could not parse JSON in batch {batch_num}. Skipping.")
-        except KeyError as e:
-            print(f"Warning: Missing expected data key {e} in batch {batch_num}. Skipping.")
+                circuits = reward_data.get('circuits', {})
+                b_fit, b_volt, b_vol, b_comp = [], [], [], []
 
-    if not batches:
-        print("No valid data could be extracted to plot.")
-        return
+                for circ_id, circ_data in circuits.items():
+                    b_fit.append(circ_data['fitness_score'])
+                    raw_metrics = circ_data.get('raw_metrics', {})
+                    b_volt.append(raw_metrics.get('simulation_output_voltage', 0))
+                    b_vol.append(raw_metrics.get('total_volume_cm3', 0))
+                    b_comp.append(raw_metrics.get('total_components', 0))
 
-    # -----------------------------------------------------------------
-    # PLOTTING SECTION
-    # -----------------------------------------------------------------
-    fig, axs = plt.subplots(2, 2, figsize=(14, 10))
-    fig.suptitle('Evolutionary Pipeline Metrics Over Time', fontsize=16)
+                avg_fitness_history.append(sum(b_fit) / len(b_fit) if b_fit else None)
+                best_fitness_history.append(max(b_fit) if b_fit else None)
+                all_voltages_history.append(b_volt)
+                all_volumes_history.append(b_vol)
+                all_components_history.append(b_comp)
 
-    # Plot 1: Average and Best Fitness
-    axs[0, 0].plot(batches, avg_fitness_history, label='Average Fitness', marker='o', linestyle='-', color='blue')
-    axs[0, 0].plot(batches, best_fitness_history, label='Best Fitness', marker='*', linestyle='--', color='green', markersize=8)
-    axs[0, 0].set_title('Fitness Score Over Batches')
-    axs[0, 0].set_xlabel('Batch Number')
-    axs[0, 0].set_ylabel('Fitness Score')
-    axs[0, 0].grid(True, alpha=0.3)
-    axs[0, 0].legend()
+            except json.JSONDecodeError:
+                print(f"Warning: Could not parse {reward_file}.")
+                avg_fitness_history.append(None)
+                best_fitness_history.append(None)
+                all_voltages_history.append([])
+                all_volumes_history.append([])
+                all_components_history.append([])
+        else:
+            print(f"Notice: {reward_file} missing. Leaving gap in graphs.")
+            avg_fitness_history.append(None)
+            best_fitness_history.append(None)
+            all_voltages_history.append([])
+            all_volumes_history.append([])
+            all_components_history.append([])
 
-    # Plot 2: Output Voltage (Scatter)
+        # 2. Read Validation Data (Valid Topologies Count)
+        if os.path.exists(valid_file):
+            try:
+                with open(valid_file, 'r') as vf:
+                    valid_data = json.load(vf)
+                valid_count = sum(1 for circ in valid_data.values() if circ.get('passed') is True)
+                valid_counts_history.append(valid_count)
+            except json.JSONDecodeError:
+                print(f"Warning: Could not parse {valid_file}.")
+                valid_counts_history.append(0)
+        else:
+            print(f"Notice: {valid_file} missing. Recording 0 valid circuits.")
+            valid_counts_history.append(0)
+
+    # Make sure we use integers for the X-axis
+    x_ticks = batches
+
+    # --- PLOTTING SECTION ---
+    
+    # Plot 1: Fitness
+    plt.figure(figsize=(8, 6))
+    plt.plot(batches, avg_fitness_history, label='Average Fitness', marker='o', linestyle='-', color='blue')
+    plt.plot(batches, best_fitness_history, label='Best Fitness', marker='*', linestyle='--', color='green', markersize=8)
+    plt.title('Fitness Score Over Batches')
+    plt.xlabel('Batch Number')
+    plt.ylabel('Fitness Score')
+    plt.xticks(x_ticks)
+    plt.grid(True, alpha=0.3)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(os.path.join(RESULTS_DIR, '01_fitness_scores.png'), dpi=300)
+    plt.close()
+    print("✅ Saved 01_fitness_scores.png")
+
+    # Plot 2: Output Voltage
+    plt.figure(figsize=(8, 6))
     for i, batch_voltages in enumerate(all_voltages_history):
-        x_coords = [batches[i]] * len(batch_voltages)
-        axs[0, 1].scatter(x_coords, batch_voltages, color='dodgerblue', alpha=0.7)
-    
+        if batch_voltages: # Only plot if we have data
+            plt.scatter([batches[i]] * len(batch_voltages), batch_voltages, color='dodgerblue', alpha=0.7)
     if target_voltage is not None:
-        axs[0, 1].axhline(y=target_voltage, color='red', linestyle='--', label=f'Target ({target_voltage}V)')
-        axs[0, 1].legend()
-        
-    axs[0, 1].set_title('Output Voltage of Candidate Circuits')
-    axs[0, 1].set_xlabel('Batch Number')
-    axs[0, 1].set_ylabel('Voltage (V)')
-    axs[0, 1].grid(True, alpha=0.3)
+        plt.axhline(y=target_voltage, color='red', linestyle='--', label=f'Target ({target_voltage}V)')
+        plt.legend()
+    plt.title('Output Voltage of Candidate Circuits')
+    plt.xlabel('Batch Number')
+    plt.ylabel('Voltage (V)')
+    plt.xticks(x_ticks)
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(os.path.join(RESULTS_DIR, '02_output_voltage.png'), dpi=300)
+    plt.close()
+    print("✅ Saved 02_output_voltage.png")
 
-    # Plot 3: Total Volume (Scatter)
+    # Plot 3: Total Volume
+    plt.figure(figsize=(8, 6))
     for i, batch_volumes in enumerate(all_volumes_history):
-        x_coords = [batches[i]] * len(batch_volumes)
-        axs[1, 0].scatter(x_coords, batch_volumes, color='darkorange', alpha=0.7)
-    
-    # Optional: Use a log scale for volume if some values are astronomically high (like the 10000.0 in top3)
-    axs[1, 0].set_yscale('log') 
-    axs[1, 0].set_title('Total Volume Over Batches (Log Scale)')
-    axs[1, 0].set_xlabel('Batch Number')
-    axs[1, 0].set_ylabel('Volume (cm³)')
-    axs[1, 0].grid(True, alpha=0.3)
+        if batch_volumes:
+            plt.scatter([batches[i]] * len(batch_volumes), batch_volumes, color='darkorange', alpha=0.7)
+    plt.yscale('log') 
+    plt.title('Total Volume Over Batches (Log Scale)')
+    plt.xlabel('Batch Number')
+    plt.ylabel('Volume (cm³)')
+    plt.xticks(x_ticks)
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(os.path.join(RESULTS_DIR, '03_total_volume.png'), dpi=300)
+    plt.close()
+    print("✅ Saved 03_total_volume.png")
 
-    # Plot 4: Number of Components (Scatter)
+    # Plot 4: Components
+    plt.figure(figsize=(8, 6))
     for i, batch_components in enumerate(all_components_history):
-        x_coords = [batches[i]] * len(batch_components)
-        axs[1, 1].scatter(x_coords, batch_components, color='purple', alpha=0.7)
-        
-    axs[1, 1].set_title('Total Components Per Circuit Over Batches')
-    axs[1, 1].set_xlabel('Batch Number')
-    axs[1, 1].set_ylabel('Number of Components')
-    axs[1, 1].grid(True, alpha=0.3)
+        if batch_components:
+            plt.scatter([batches[i]] * len(batch_components), batch_components, color='purple', alpha=0.7)
+    plt.title('Total Components Per Circuit Over Batches')
+    plt.xlabel('Batch Number')
+    plt.ylabel('Number of Components')
+    plt.xticks(x_ticks)
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(os.path.join(RESULTS_DIR, '04_total_components.png'), dpi=300)
+    plt.close()
+    print("✅ Saved 04_total_components.png")
 
-    plt.tight_layout(rect=[0, 0.03, 1, 0.95]) # Adjust layout so suptitle fits cleanly
-    plt.show()
+    # Plot 5: Valid Topologies
+    plt.figure(figsize=(8, 6))
+    plt.bar(batches, valid_counts_history, color='mediumseagreen', alpha=0.8, edgecolor='black')
+    plt.title('Amount of Valid Topologies Per Batch')
+    plt.xlabel('Batch Number')
+    plt.ylabel('Valid Circuits')
+    plt.xticks(x_ticks)
+    max_valid = max(valid_counts_history) if valid_counts_history else 4
+    plt.yticks(range(0, max_valid + 2)) 
+    plt.grid(axis='y', alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(os.path.join(RESULTS_DIR, '05_valid_topologies.png'), dpi=300)
+    plt.close()
+    print("✅ Saved 05_valid_topologies.png")
+
+    print(f"\n🎉 All charts generated successfully in {RESULTS_DIR}!")
 
 if __name__ == '__main__':
     main()
