@@ -11,7 +11,7 @@ def main():
     simulator  = TopologySimulator()
     reward_fn  = RewardFunction()
     constraint = load_constraint("pipeline/data/datasets/constraints.json", idx=0)
-    batch_id = "batch_2"
+    batch_id = "batch_4"
 
     # 1. Generate — writes .net files to data/batch_001/llm_output/
     # written = llm.generate_for_batch(constraint, batchID=batch_id, n=4)
@@ -31,6 +31,8 @@ def main():
         "components": {"mosfet": 1.0, "diode": 1.0,
                     "inductor": 1.0, "capacitor": 1.0}
     })
+
+
 
 if __name__ == "__main__":
     main()
