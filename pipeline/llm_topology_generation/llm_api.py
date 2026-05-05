@@ -9,11 +9,11 @@ exposes three high-level methods:
     - generate_from_text(prompt, n)            →  list[str]
 
 All callers should reuse the same `TopologyLLM` instance because model
-loading is slow and Qwen 27B consumes ~52GB of GPU memory.
+loading is slow and Qwen3-14B consumes ~28GB of GPU memory.
 
 Snellius usage:
     from llm_api import TopologyLLM
-    llm = TopologyLLM()   # loads Qwen-3.5 27B from shared cache, no download
+    llm = TopologyLLM()   # loads Qwen3-14B from shared cache, no download
     cands = llm.generate_from_constraint(
         {"vin": 12, "vout_target": 5, "efficiency_target": 0.9}, n=4
     )
@@ -28,7 +28,14 @@ import torch
 
 from .llm_engine_minimal import LLMEngine, SNELLIUS_HF_CACHE, DEFAULT_MODEL_ID
 from .prompt_input import load_constraints, make_prompt, slug
-from .net_writer import write_netlists
+from .net_writer import write_netlists, get_llm_output_dir
+
+
+def _save_prompt(prompt: str, batchID: str) -> None:
+    """Save the prompt used for generation to data/<batchID>/prompt.txt."""
+    batch_dir = get_llm_output_dir(batchID).parent  # data/<batchID>/
+    batch_dir.mkdir(parents=True, exist_ok=True)
+    (batch_dir / "prompt.txt").write_text(prompt, encoding="utf-8")
 
 
 class TopologyLLM:
@@ -105,7 +112,7 @@ class TopologyLLM:
     ) -> list[Path]:
         """Generate n netlists for a constraint and write to data/<batchID>/llm_output/.
 
-        This is the standard pipeline entry point.
+        Also saves the prompt to data/<batchID>/prompt.txt for traceability.
 
         Args:
             constraint: dict with constraint keys.
@@ -115,8 +122,11 @@ class TopologyLLM:
         Returns:
             List of written .net file paths.
         """
+        prompt = make_prompt(constraint)
+        _save_prompt(prompt, batchID)
+
         label = slug(constraint, 0)
-        cands = self.generate_from_constraint(constraint, n=n)
+        cands = self._generate(prompt, n)
         return write_netlists(
             netlists=cands,
             constraint=constraint,
@@ -132,6 +142,8 @@ class TopologyLLM:
     ) -> list[Path]:
         """Process every constraint in a JSON file, writing to data/<batchID>/llm_output/.
 
+        Saves the prompt of the first constraint to data/<batchID>/prompt.txt.
+
         Args:
             json_path:  Path to a JSON file containing a list of constraint dicts.
             batchID:    Batch identifier — files land in data/<batchID>/llm_output/.
@@ -144,8 +156,12 @@ class TopologyLLM:
 
         written: list[Path] = []
         for i, c in enumerate(constraints):
+            prompt = make_prompt(c)
+            if i == 0:
+                # Save once per batch — all constraints share the same template
+                _save_prompt(prompt, batchID)
             label = slug(c, i)
-            cands = self.generate_from_constraint(c, n=n)
+            cands = self._generate(prompt, n)
             paths = write_netlists(
                 netlists=cands,
                 constraint=c,

@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 # Shared HuggingFace cache on Snellius — no download needed.
 SNELLIUS_HF_CACHE = "/projects/2/managed_datasets/hf_cache_dir"
 
-# Qwen-3.5 27B — free access, Apache 2.0, 52GB on disk.
+# Qwen-3 14B — free access, Apache 2.0, 52GB on disk.
 # Verify the exact folder name with:
 #   ls /projects/2/managed_datasets/hf_cache_dir | grep -i qwen
 DEFAULT_MODEL_ID = "Qwen/Qwen3-14B"
