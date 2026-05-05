@@ -1,0 +1,14 @@
+* Generated: 2026-05-05T15:03:32
+* Constraint: 12V to 5V step-down
+*   vin_min = 12
+*   vin_max = 100
+*   vout_target = 5
+*   efficiency_target = 0.9
+*   power_in = 100
+* Candidate: 2 of 4
+*
+Okay, let's tackle this design. The user wants a non-isolated DC/DC converter that steps down from 12V to 5V with 90% efficiency and 100W input power. First, I need to determine the output power. Since efficiency is 0.9, the output power should be 90W. The load resistor Rload would be Vout squared over power: (5^2)/90 ≈ 0.278 ohms. But wait, that's a very low resistance. Maybe I should check the calculations again. Wait, power is P = V^2 / R, so R = V^2 / P. So 5^2 / 90 = 25/90 ≈ 0.278Ω. That seems correct, but such a low resistor might be hard to model accurately, but SPICE can handle it.
+
+Next, choosing the converter topology. For a non-isolated step-down, a buck converter is the obvious choice. Let's go with a synchronous buck converter using two MOSFETs for higher efficiency, which would help meet the 90% efficiency target. However, the problem allows for diodes as well. But using MOSFETs for both high-side and low-side switches would reduce conduction losses.
+
+The input voltage range is from 12V to 100V. The duty cycle for a buck converter is Vout / Vin. At minimum Vin (12V), the duty cycle would be 5/12 ≈ 0.4167, and at maximum Vin (100V), it's 5/100 = 0.05. So the duty cycle varies a lot, which might require a control circuit, but since the user hasn't specified control, maybe a fixed duty cycle? But that might not be efficient across the input range. However, the problem says "design constraints" but doesn't specify if it's for a fixed input or variable. Since Vin is given as a range, maybe the converter should be designed for a specific Vin? Wait, the user says "given a set of design constraints" which includes vin_min and vin_max. But the SPICE netlist would need to simulate for a specific Vin. The example given in the problem uses a fixed Vin, so perhaps the user expects a design that works for a specific Vin. But the problem says "non-isolated

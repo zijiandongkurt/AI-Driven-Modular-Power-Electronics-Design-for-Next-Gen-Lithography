@@ -1,0 +1,19 @@
+* Generated: 2026-05-05T15:03:32
+* Constraint: 12V to 5V step-down
+*   vin_min = 12
+*   vin_max = 100
+*   vout_target = 5
+*   efficiency_target = 0.9
+*   power_in = 100
+* Candidate: 3 of 4
+*
+* Boost converter with MOSFET and diode
+Vin in 0 100
+Rload out 0 1
+L1 in sw 100u
+D1 out sw D
+C1 out 0 100u
+M1 sw in gate 0 NMOS
+Vgate gate 0 PULSE(0 12 0 1n 1n 100n 500n)
+Rbleed sw 0 1Meg
+.end

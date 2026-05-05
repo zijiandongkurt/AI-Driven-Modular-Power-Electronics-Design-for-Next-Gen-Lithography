@@ -19,30 +19,53 @@ import json
 from pathlib import Path
 
 
-# ── Naming-convention preamble (injected into every prompt) ──────────────
+# ── System prompt ────────────────────────────────────────────────────────
 #
-# These rules MUST stay in sync with the netlist-evaluator regex used by
-# `pipeline/llm_topology_generation/netlist_filter.py` and the SFT/GRPO
-# reward functions. Do not rename a token here without updating those.
+# Defines the model's role, allowed components, fixed rules, required nodes,
+# and output format. Injected into every prompt.
+#
+# MUST stay in sync with the netlist validator and reward function.
+# Do not rename nodes or component prefixes without updating those too.
 
-NAMING_RULES = """### Naming Convention (MUST follow exactly):
-- Input voltage source   : Vin  (e.g. `Vin in 0 12`)
-- Load resistor          : Rload  (e.g. `Rload out 0 10`)
-- Gate drive source      : Vgate / Vgate1..N — PULSE with exactly 7 parameters
-                           (e.g. `Vgate gate 0 PULSE(0 12 0 1n 1n <t_on> <period>)`)
-- MOSFET pin order       : M<name> drain gate source bulk model
-    High-side : drain=in,  gate=gate,  source=sw, bulk=0
-    Low-side  : drain=sw,  gate=gate2, source=0,  bulk=0
-- MOSFET model           : .model NMOS NMOS(Vto=1 Kp=2 Lambda=0)  — exactly this, no variations
-- Component prefixes     : M (MOSFETs), D (diodes), L (inductors), C (capacitors),
-                           Rload (load), Rbleed/Rbleed1..N (floating nodes only)
-- Required nodes         : `in` (Vin positive), `out` (Rload positive),
-                           `sw` / `sw1, sw2, ...` (MOSFET source),
-                           `gate` / `gate1, gate2, ...` (gate drive), `0` (GND)
-- Floating nodes         : any node connected only to reactive elements needs
-                           `Rbleed <node> 0 1Meg`
-- Output ONLY the raw SPICE netlist — no Markdown fences, no explanation.
-"""
+SYSTEM_PROMPT = """You are an AI electrical engineer that designs non-isolated DC/DC converters.
+Given a set of design constraints, output a single SPICE netlist that attempts to meet them.
+
+ALLOWED COMPONENTS:
+  Voltage sources : Vin (input), Vgate / Vgate1..N (gate drives)
+  MOSFETs         : M1, M2, ...   — switching elements
+  Diodes          : D1, D2, ...   — freewheeling or rectification
+  Inductors       : L1, L2, ...   — energy storage
+  Capacitors      : C1, C2, ...   — filtering or energy transfer
+  Resistors       : Rload (mandatory load), Rbleed / Rbleed1..N (floating nodes only)
+
+FIXED RULES — do not deviate:
+  - Input source   : Vin in 0 <vin>
+  - Load resistor  : Rload out 0 <value>
+  - MOSFET model   : .model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+  - MOSFET pins    : M<n> drain gate source bulk NMOS
+      High-side    : drain=in,  gate=gate,  source=sw,  bulk=0
+      Low-side     : drain=sw,  gate=gate2, source=0,   bulk=0
+  - Gate drive     : Vgate gate 0 PULSE(0 12 0 1n 1n <t_on> <period>)
+                     — exactly 7 parameters, choose t_on and period to meet switching frequency
+  - Floating nodes : any node connected only to reactive elements needs Rbleed <node> 0 1Meg
+  - Simulation     : .tran 1n 5m
+
+REQUIRED NODES:
+  in   — positive terminal of Vin
+  out  — output node, positive terminal of Rload
+  sw   — switch node (use sw1, sw2, ... for multiple switches)
+  gate — gate drive node (use gate1, gate2, ... for multiple switches)
+  0    — GND reference
+
+OUTPUT FORMAT:
+  Output raw SPICE netlist text only.
+  No markdown fences, no explanation, no prose.
+  Start with an optional single-line title comment (* <title>).
+  End with .end"""
+
+
+# Kept for backward compatibility with llm_engine_minimal.py Constraint.to_prompt()
+NAMING_RULES = SYSTEM_PROMPT
 
 
 def load_constraints(json_path: str | Path) -> list[dict]:
@@ -74,10 +97,8 @@ def load_constraint(json_path: str | Path, idx: int = 0) -> dict:
 def make_prompt(constraint: dict) -> str:
     """Build the full prompt for one constraint dict.
 
-    Layout::
-
-        ### Naming Convention (MUST follow exactly):
-        - <rules ...>
+    Layout:
+        <SYSTEM_PROMPT>
 
         ### Constraint:
         { ...JSON... }
@@ -90,7 +111,7 @@ def make_prompt(constraint: dict) -> str:
     """
     payload = {k: v for k, v in constraint.items() if not k.startswith("_")}
     return (
-        f"{NAMING_RULES}\n"
+        f"{SYSTEM_PROMPT}\n\n"
         f"### Constraint:\n{json.dumps(payload, indent=2)}\n\n"
         f"### SPICE Netlist:\n"
     )
