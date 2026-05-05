@@ -69,7 +69,7 @@ class TopologySimulator():
         import json
 
         batch_dir       = self.DATA_DIR / batchID
-        llm_output_dir  = batch_dir / "llm_output"
+        llm_output_dir  = batch_dir / "LLM_output"
         val_results_path = batch_dir / "validation_results.json"
 
         assert llm_output_dir.exists(),   f"llm_output folder not found: {llm_output_dir.resolve()}"
