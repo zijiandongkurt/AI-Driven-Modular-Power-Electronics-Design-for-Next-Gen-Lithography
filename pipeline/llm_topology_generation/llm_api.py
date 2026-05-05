@@ -9,14 +9,13 @@ exposes three high-level methods:
     - generate_from_text(prompt, n)            →  list[str]
 
 All callers should reuse the same `TopologyLLM` instance because model
-loading takes ~12-20s and consumes ~5.5 GB VRAM.
+loading is slow and Qwen 27B consumes ~52GB of GPU memory.
 
-Example:
+Snellius usage:
     from llm_api import TopologyLLM
-    llm = TopologyLLM(model_id=r"D:\\...\\qwen25-coder-7b")
+    llm = TopologyLLM()   # loads Qwen-3.5 27B from shared cache, no download
     cands = llm.generate_from_constraint(
-        {"vin_min": 12, "vin_max": 24, "vout_target": 5,
-         "efficiency_target": 0.9, "power_in": 50}, n=4
+        {"vin": 12, "vout_target": 5, "efficiency_target": 0.9}, n=4
     )
     for c in cands: print(c)
 """
@@ -24,16 +23,12 @@ Example:
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Iterable
 
 import torch
 
-from .llm_engine_minimal import LLMEngine
+from .llm_engine_minimal import LLMEngine, SNELLIUS_HF_CACHE, DEFAULT_MODEL_ID
 from .prompt_input import load_constraints, make_prompt, slug
 from .net_writer import write_netlists
-
-
-DEFAULT_MODEL_ID = r"D:\Document\Course\Team_intership\LLM\models\qwen25-coder-7b"
 
 
 class TopologyLLM:
@@ -42,21 +37,22 @@ class TopologyLLM:
     def __init__(
         self,
         model_id: str = DEFAULT_MODEL_ID,
-        quantization: str = "4bit",
+        quantization: str | None = None,  # None = full bfloat16 (fits on A100 80GB)
         max_new_tokens: int = 512,
         temperature: float = 0.7,
         top_p: float = 0.9,
+        hf_cache_dir: str = SNELLIUS_HF_CACHE,
     ):
         self.model_id = model_id
         self.max_new_tokens = max_new_tokens
         self.engine = LLMEngine(
-            model_id,
+            model_id=model_id,
             quantization=quantization,
             max_new_tokens=max_new_tokens,
+            temperature=temperature,
+            top_p=top_p,
+            hf_cache_dir=hf_cache_dir,
         )
-        # Override sampling defaults if needed
-        self.engine._temperature = temperature
-        self.engine._top_p = top_p
 
     # ── Internal generation primitive ──────────────────────────────────
 
@@ -64,7 +60,8 @@ class TopologyLLM:
         """Generate `n` cleaned completions for a raw prompt string."""
         tok = self.engine.tokenizer
         model = self.engine.model
-        ids = tok(prompt, return_tensors="pt").to(model.device)
+        ids = tok(prompt, return_tensors="pt")
+        ids = {k: v.to(model.device) for k, v in ids.items()}
 
         results: list[str] = []
         for _ in range(n):
@@ -90,8 +87,8 @@ class TopologyLLM:
         """Apply the constraint→prompt template, generate n candidates.
 
         Args:
-            constraint: dict with keys vin_min, vin_max, vout_target,
-                        efficiency_target, power_in (and optional _comment).
+            constraint: dict with keys vin, vout_target, efficiency_target,
+                        power_out_w (and optional _comment).
             n:          number of candidate netlists.
 
         Returns:
@@ -184,7 +181,7 @@ def get_llm(**kwargs) -> TopologyLLM:
 
 
 if __name__ == "__main__":
-    # Quick smoke test
+    # Quick smoke test — verify model loads from Snellius cache
     llm = TopologyLLM()
     out = llm.generate_from_text("### Hello world:\n", n=1)
     print(out[0][:200])

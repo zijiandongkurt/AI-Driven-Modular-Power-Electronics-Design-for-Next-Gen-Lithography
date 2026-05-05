@@ -24,7 +24,7 @@ _PIPELINE_ROOT = Path(__file__).parent.parent
 
 def get_llm_output_dir(batchID: str) -> Path:
     """Return the canonical output path for a batch: data/<batchID>/llm_output/"""
-    return _PIPELINE_ROOT / "data" / batchID / "llm_output"
+    return _PIPELINE_ROOT / "data" / batchID / "LLM_output"
 
 
 def _format_header(
