@@ -1,0 +1,38 @@
+* Generated: 2026-05-05T14:49:14
+* Constraint: 12V to 5V step-down
+*   vin_min = 12
+*   vin_max = 100
+*   vout_target = 5
+*   efficiency_target = 0.9
+*   power_in = 100
+* Candidate: 3 of 4
+*
+Vin in 0 12
+Rload out 0 10
+M1 in gate sw 0 NMOS
+M2 sw 0 0 0 NMOS
+Vgate gate 0 PULSE(0 12 0 1n 1n 10n 50n)
+Rbleed sw 0 1Meg
+C1 in out 10n
+L1 out 0 10u
+D1 out 0 D1N5401
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model D1N5401 D(IS=1e-8 N=1.5)
+.model Rbleed R
+.model Rload R
+.model C1 C
+.model L1 L
+.model D1 D
+.model Vgate V
+.model Vin V
+.model gate GND
+.model sw GND
+.model in GND
+.model out GND
+.model 0 GND
+
+Okay, let's see. The user wants me to generate a SPICE netlist based on their specific naming conventions and constraints. First, I need to make sure I follow all the rules they've outlined.
+
+Starting with the input voltage source, it should be named Vin with nodes in and 0, and the value is 12V. The load resistor is Rload connected between out and 0 with a value of 10 ohms. The gate drive source is Vgate, which is a pulse. The parameters for the pulse need to be exactly seven, so I'll check that. The example given uses PULSE(0 12 0 1n 1n 10n 50n), so that's the format.
+
+For the MOSFETs, high-side is M1 with drain=in, gate=gate, source=sw, bulk=0. Low-side is M2 with drain=sw, gate=gate2, source=0, bulk=0. Wait, but in the example, the low-side gate is gate2? But the user's example shows Vgate as gate1, but in the netlist they provided, there's only one gate. Hmm, maybe in this case, since there's only one MOSFET, perhaps it's a half-bridge? Or maybe the user is using a single MOSFET for some configuration. Wait, looking back, the example in the constraints has power_in of 1

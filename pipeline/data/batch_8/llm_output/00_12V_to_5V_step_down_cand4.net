@@ -1,0 +1,22 @@
+* Generated: 2026-05-05T14:49:14
+* Constraint: 12V to 5V step-down
+*   vin_min = 12
+*   vin_max = 100
+*   vout_target = 5
+*   efficiency_target = 0.9
+*   power_in = 100
+* Candidate: 4 of 4
+*
+Vin in 0 12
+Rload out 0 10
+M1 in gate sw 0 NMOS
+M2 sw 0 out 0 NMOS
+Vgate gate 0 PULSE(0 12 0 1n 1n 100n 1000n)
+Rbleed sw 0 1Meg
+Rbleed gate 0 1Meg
+C1 in sw 10u
+L1 sw out 10uH
+D1 out 0 D1N5401
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model D1N5401 D(Is=1e-8 Rs=0.01 N=1.95 Cjo=50n Vj=0.8)
+.end
