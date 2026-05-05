@@ -5,18 +5,29 @@ from pipeline.reward_evaluation.reward_function import RewardFunction
 from pipeline.reward_evaluation.reward_function_norm import RewardFunctionNorm
 from pipeline.llm_topology_generation.prompt_input import load_constraint
 from pipeline.reinforcement_algorithm.grpo_trainer import GRPOTrainer
-from pipeline.llm_topology_generation.rl_updater import RLUpdater, RLConfig
+from pipeline.reinforcement_algorithm.new_rl_updater import RLUpdater, RLConfig
 
 def main():
     llm        = TopologyLLM(model_id="Qwen/Qwen3-14B")
     val        = validator()
     simulator  = TopologySimulator()
     reward_fn  = RewardFunctionNorm()
-    grpo = GRPOTrainer()
-    rl_updater = RLUpdater(config=RLConfig())
     constraint = load_constraint("pipeline/data/datasets/constraints.json", idx=0)
     batch_id   = "batch_1"
 
+# to run GRPOTrainer:
+    # the GRPOTrainer includes the steps 1-4.
+    """
+    grpo = GRPOTrainer(
+        llm=llm,
+        validator=val,
+        simulator=simulator,
+        reward_fn=reward_fn,
+        constraint=constraint,
+    )
+    grpo.train_from_existing_batch(batch_id="batch_1")
+    """ 
+#
     # 1. Generate — writes .net files to data/batch_7/llm_output/
     written = llm.generate_for_batch(constraint, batchID=batch_id, n=4)
     print(f"Generated {len(written)} netlists")
@@ -35,6 +46,8 @@ def main():
         "components": {"mosfet": 1.0, "diode": 1.0,
                     "inductor": 1.0, "capacitor": 1.0}
     })
+
+    
 
     
 

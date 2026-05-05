@@ -8,6 +8,8 @@ from pipeline.reinforcement_algorithm.grpo_trainer import GRPOTrainer
 
 def main():
     llm = TopologyLLM(model_id="Qwen/Qwen3-14B")
+    #llm = TopologyLLM(model_id="Qwen/Qwen2.5-Coder-7B")
+    
     val = validator()
     simulator = TopologySimulator()
     reward_fn = RewardFunctionNorm()
@@ -21,8 +23,8 @@ def main():
         constraint=constraint,
     )
 
-    grpo.train(batch_id="batch_1", n=4)
-
+#    grpo.train(batch_id="batch_1", n=4)
+    grpo.train_from_existing_batch(batch_id="batch_1")
 
 if __name__ == "__main__":
     main()

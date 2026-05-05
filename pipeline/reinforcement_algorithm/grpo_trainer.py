@@ -2,12 +2,11 @@ import json
 from pathlib import Path
 from typing import Dict, List, Optional
 
-from pipeline.llm_topology_generation.rl_updater import RLUpdater, RLConfig
-
+from pipeline.reinforcement_algorithm.new_rl_updater import RLUpdater, RLConfig
 
 class GRPOTrainer:
     """
-    GRPO trainer / RL orchestrator.
+    GRPO trainer:
 
     It uses the existing project pipeline:
         LLM generation
@@ -115,21 +114,29 @@ class GRPOTrainer:
         """
         Build prompt/completion/reward lists for RLUpdater.
 
-        reward_results.json example:
+        reward_results.json structure:
             {
-              "circuits": {
-                "top1": {
-                  "fitness_score": -0.21,
-                  "grpo_reward": 0.30
+                "active_constraints": {...},
+                "circuits": {
+                    "top1": {
+                        "fitness_score": -0.2135,
+                        "grpo_reward": 0.3078,
+                        "loss_breakdown": {...},
+                        "raw_metrics": {...}
+                    }
                 }
-              }
             }
 
-        Netlist file:
-            pipeline/data/<batch_id>/LLM_output/top1.net
+        RL uses:
+            prompt      = system_prompt.txt + constraint
+            completion  = pipeline/data/<batch_id>/LLM_output/<topology_id>.net
+            reward      = grpo_reward if available, otherwise fitness_score
         """
         reward_data = self._load_rewards(batch_id)
         circuits = reward_data.get("circuits", {})
+
+        if not circuits:
+            raise RuntimeError(f"No circuits found in reward_results.json for {batch_id}")
 
         prompt_text = self._load_prompt()
 
@@ -144,24 +151,66 @@ class GRPOTrainer:
                 print(f"Skipping {topology_id}: {e}")
                 continue
 
-            # Prefer grpo_reward if available, otherwise use fitness_score.
+            # Use normalized GRPO reward when available.
             if "grpo_reward" in info:
                 reward = float(info["grpo_reward"])
+                reward_source = "grpo_reward"
             elif "fitness_score" in info:
                 reward = float(info["fitness_score"])
+                reward_source = "fitness_score"
             else:
-                print(f"Skipping {topology_id}: no reward field found.")
+                print(f"Skipping {topology_id}: no grpo_reward or fitness_score found.")
                 continue
 
             prompts.append(prompt_text)
             completions.append(completion_text)
             rewards.append(reward)
 
+            print(f"Loaded {topology_id}: reward={reward:.4f} ({reward_source})")
+
         if not rewards:
             raise RuntimeError("No valid prompt/completion/reward pairs found.")
 
         return prompts, completions, rewards
 
+    def _save_metrics(self, batch_id: str, metrics: Dict):
+        save_path = self._batch_dir(batch_id) / "grpo_metrics.json"
+        save_path.parent.mkdir(parents=True, exist_ok=True)
+
+        with save_path.open("w", encoding="utf-8") as f:
+            json.dump(metrics, f, indent=2)
+
+        print(f"Saved metrics to {save_path}")
+
+#Tesr RL loop with this method, incase the LTspice not working on HPC:
+    def train_from_existing_batch(self, batch_id: str = "batch_1"):
+        """
+        Run RL update using existing LLM_output and reward_results.json.
+        This does not run generation, validation, simulation, or reward evaluation.
+        """
+        prompts, completions, rewards = self._build_training_batch(batch_id)
+        #Added these bcs of Out of Memory:
+        prompts = prompts[:2]
+        completions = completions[:2]
+        rewards = rewards[:2]
+        ####
+
+        print(f"RL samples: {len(rewards)}")
+        print(f"Rewards: {rewards}")
+
+        metrics = self.rl_updater.update(
+            prompts=prompts,
+            completions=completions,
+            rewards=rewards,
+        )
+        self._save_metrics(batch_id, metrics)   
+        self.rl_updater.save(self.output_dir)
+
+        print("=== GRPO Training From Existing Batch Done ===")
+        print(json.dumps(metrics, indent=2))
+
+        return metrics
+# The real train method, once the LTspice works in HPC:
     def train(self, batch_id: str = "batch_1", n: int = 4):
         """
         Run one GRPO training iteration.
@@ -207,10 +256,10 @@ class GRPOTrainer:
         # 5. Build RL training data from saved files.
         prompts, completions, rewards = self._build_training_batch(batch_id)
 
-        print(f"RL samples: {len(rewards)}")
-        print(f"Rewards: {rewards}")
+        print(f"RL samples: {len(rewards)}")    # for debugging
+        print(f"Rewards: {rewards}")            # for debugging
 
-        # Optional: print failure logs if available.
+        # print failure logs if available, for debugging
         for topology_id in self._load_rewards(batch_id).get("circuits", {}).keys():
             fail_log = self._load_failure_log(batch_id, topology_id)
             if fail_log:
