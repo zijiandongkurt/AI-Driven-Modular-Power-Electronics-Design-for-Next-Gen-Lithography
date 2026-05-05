@@ -1,3 +1,4 @@
+* top3
 .tran 1n 5m
 Vin in 0 12
 M1 in gate sw 0 NMOS W=1 L=1
@@ -9,4 +10,5 @@ Rbleed sw 0 1Meg
 Vgate  gate  0 PULSE(0 12 0 1n 1n 4.06667e-06 1e-05)
 Vgate2 gate2 0 PULSE(0 12 4.16667e-06 1n 1n 5.73333e-06 1e-05)
 .model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.save V(*) I(*)
 .end
