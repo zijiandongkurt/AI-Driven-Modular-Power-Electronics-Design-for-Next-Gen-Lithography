@@ -1,0 +1,20 @@
+* Generated: 2026-05-05T15:03:32
+* Constraint: 12V to 5V step-down
+*   vin_min = 12
+*   vin_max = 100
+*   vout_target = 5
+*   efficiency_target = 0.9
+*   power_in = 100
+* Candidate: 1 of 4
+*
+Okay, let's tackle this design problem. The user wants a non-isolated DC/DC converter that meets specific constraints. The input voltage ranges from 12V to 100V, and the output needs to be 5V with 90% efficiency at 100W input.
+
+First, I need to decide on the topology. Since it's non-isolated, common options are buck, boost, or buck-boost. But with a high input voltage (up to 100V) and a lower output (5V), a buck converter seems appropriate. However, a buck converter typically steps down voltage, but with a wide input range, maybe a SEPIC or a Cuk converter could be better? Wait, but the user might prefer a simpler topology. Let's stick with a buck converter for simplicity, but check if it can handle the input range.
+
+Wait, the input is 12V to 100V, and output is 5V. A buck converter would require the input to be higher than the output. Since the input can be as low as 12V, which is higher than 5V, that's okay. However, if the input were lower than the output, a boost would be needed. But here, the input is always higher than the output. So a buck converter is suitable.
+
+Next, the power. The input power is 100W, and efficiency is 90%, so output power is 90W. The output voltage is 5V, so the output current would be 90W / 5V = 18A. That's a high current, so the design needs to handle that.
+
+The components: Let's outline the basic buck converter. The input is Vin connected to the in node. The MOSFET (M1) is high-side, with drain connected to in, gate to gate1, source to sw. The low-side MOSFET (M2) would be connected from sw to ground, but maybe a diode is used instead for simplicity. Wait, but the allowed components include diodes, so maybe a synchronous buck would be better for efficiency, but using a diode as a freewheeling diode (D1) might be simpler here.
+
+Wait, the user allows MOSFETs and diodes. For a buck converter, the standard configuration is a high-side MOSFET (M1) and a low-side di

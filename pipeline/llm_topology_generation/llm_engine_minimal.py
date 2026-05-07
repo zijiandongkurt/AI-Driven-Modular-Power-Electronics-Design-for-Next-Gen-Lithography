@@ -5,7 +5,7 @@ Only two jobs: load model, generate netlists.
 Everything else (training, validation, simulation, reward) lives elsewhere.
 
 Usage:
-    engine = LLMEngine("Qwen/Qwen2.5-Coder-7B")
+    engine = LLMEngine()  # loads Qwen-3.5 27B from Snellius shared cache
     engine.load_adapter("sft", "./checkpoints/sft-lora/final")
     netlist = engine.generate({"vin": 12, "vout_target": 5})
 """
@@ -13,6 +13,7 @@ Usage:
 from __future__ import annotations
 
 import json
+import os
 import re
 import logging
 from dataclasses import dataclass, field, asdict
@@ -25,13 +26,23 @@ from .prompt_input import NAMING_RULES
 logger = logging.getLogger(__name__)
 
 
+# ── Snellius model config ────────────────────────────────────────────────
+
+# Shared HuggingFace cache on Snellius — no download needed.
+SNELLIUS_HF_CACHE = "/projects/2/managed_datasets/hf_cache_dir"
+
+# Qwen-3 14B — free access, Apache 2.0, 52GB on disk.
+# Verify the exact folder name with:
+#   ls /projects/2/managed_datasets/hf_cache_dir | grep -i qwen
+DEFAULT_MODEL_ID = "Qwen/Qwen3-14B"
+
+
 # ── Data contracts ───────────────────────────────────────────────────────
 
 @dataclass
 class Constraint:
     """Design constraint spec. Shared contract with all other modules."""
 
-    
     vin: float
     vout_target: float
     efficiency_target: float = 0.90
@@ -55,7 +66,6 @@ class Constraint:
             f"### Constraint:\n{json.dumps(d, indent=2)}\n\n"
             f"### SPICE Netlist:\n"
         )
-    
 
 
 @dataclass
@@ -67,13 +77,12 @@ class GenerationOutput:
     time_sec: float = 0.0
 
 
-
 # ── LLM Engine ─────────────────────────────────────────────────────────
 
 class LLMEngine:
     """
     Loads a model, manages adapters, generates netlists.
-    
+
     Public interface (what other modules call):
         engine.generate(constraint)        -> GenerationOutput
         engine.generate_batch(constraint)  -> list[GenerationOutput]
@@ -83,13 +92,19 @@ class LLMEngine:
 
     def __init__(
         self,
-        model_id: str = "Qwen/Qwen2.5-Coder-7B",
+        model_id: str = DEFAULT_MODEL_ID,
         quantization: Optional[str] = None,
         max_new_tokens: int = 1024,
         temperature: float = 0.7,
         top_p: float = 0.9,
+        hf_cache_dir: str = SNELLIUS_HF_CACHE,
     ):
         from transformers import AutoModelForCausalLM, AutoTokenizer
+
+        # Point HuggingFace at the Snellius shared cache so no download occurs.
+        os.environ["HF_HUB_CACHE"] = hf_cache_dir
+        os.environ["HF_HUB_OFFLINE"] = "1"  # never attempt a download
+        os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
         # Store generation tuning hyperparameters.
         self._max_new_tokens = max_new_tokens
@@ -101,19 +116,42 @@ class LLMEngine:
         self._active: Optional[str] = None
         self._is_peft = False
 
+        logger.info(f"Loading tokenizer from cache: {hf_cache_dir}")
+
         # Load tokenizer
-        self._tok = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
+        self._tok = AutoTokenizer.from_pretrained(
+            model_id,
+            cache_dir=hf_cache_dir,
+            trust_remote_code=True,
+            local_files_only=True,
+        )
         if self._tok.pad_token is None:
             self._tok.pad_token = self._tok.eos_token
 
-        # Load model
-        kw: dict = dict(torch_dtype=torch.bfloat16, device_map="auto", trust_remote_code=True)
+        # Build model load kwargs
+        kw: dict = dict(
+            torch_dtype=torch.bfloat16,
+            device_map="auto",
+            trust_remote_code=True,
+            cache_dir=hf_cache_dir,
+            local_files_only=True,
+        )
+
+        # 4-bit quantisation — useful if VRAM is tight even on Snellius A100s.
+        # For Qwen 27B on a single 80GB A100, bfloat16 fits without quantisation.
+        # Enable only if you are running on smaller GPUs or want to fit more
+        # parallel workers on the same node.
         if quantization == "4bit":
             from transformers import BitsAndBytesConfig
             kw["quantization_config"] = BitsAndBytesConfig(
-                load_in_4bit=True, bnb_4bit_use_double_quant=True,
-                bnb_4bit_quant_type="nf4", bnb_4bit_compute_dtype=torch.bfloat16,
+                load_in_4bit=True,
+                bnb_4bit_use_double_quant=True,
+                bnb_4bit_quant_type="nf4",
+                bnb_4bit_compute_dtype=torch.bfloat16,
             )
+
+        # Try flash-attention-2 first (available on Snellius A100 nodes),
+        # fall back to standard attention if not installed.
         try:
             kw["attn_implementation"] = "flash_attention_2"
             self._model = AutoModelForCausalLM.from_pretrained(model_id, **kw)
@@ -121,7 +159,7 @@ class LLMEngine:
             kw.pop("attn_implementation", None)
             self._model = AutoModelForCausalLM.from_pretrained(model_id, **kw)
 
-        logger.info(f"Model loaded: {model_id} ({self._model.num_parameters()/1e9:.1f}B)")
+        logger.info(f"Model loaded: {model_id} ({self._model.num_parameters()/1e9:.1f}B params)")
 
     # ── Adapter management ───────────────────────────────────────────
 
@@ -184,11 +222,9 @@ class LLMEngine:
             constraint = Constraint.from_dict(constraint)
 
         prompt = self._build_prompt(constraint, feedback)
-        # Tokenize the prompt and make sure the tensors are on the model device.
         ids = self._tok(prompt, return_tensors="pt")
         ids = {k: v.to(self._model.device) for k, v in ids.items()}
 
-        # Run generation in inference mode (no gradient tracking).
         with torch.no_grad():
             out = self._model.generate(
                 **ids,

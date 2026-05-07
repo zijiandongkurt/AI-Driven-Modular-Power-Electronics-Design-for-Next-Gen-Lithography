@@ -1,231 +1,282 @@
 import json
 from pathlib import Path
-from typing import List, Dict
-from reward_normalizer import normalize_relative_rewards
-from policy_update import build_policy_update_entries, update_policy
-from rl_demo import update_model
+from typing import Dict, List, Optional
+
+from pipeline.reinforcement_algorithm.new_rl_updater import RLUpdater, RLConfig
 
 class GRPOTrainer:
+    """
+    GRPO trainer:
 
-    def __init__(self, 
-                 batch_size: int = 8, 
-                 k_iterations: int = 50, 
-                 kl_beta: float = 0.1, 
-                 early_stop_fitness: float = 0.92, 
-                 invalid_penalty: float = -1.0, 
-                 epsilon: float = 1e-8):
-        self.batch_size: int = batch_size
-        self.k_iterations: int = k_iterations
-        self.kl_beta: float = kl_beta
-        self.early_stop_fitness: float = early_stop_fitness
-        self.invalid_penalty: float = invalid_penalty
-        self.epsilon: float = epsilon
+    It uses the existing project pipeline:
+        LLM generation
+        -> validation
+        -> simulation
+        -> reward evaluation
+        -> RLUpdater.update()
 
-    def load_sample_batch(self, batch_path: Path) -> Dict:
-        # Load the raw sample_batch.json file.
-        # Current format: {topology_id: {"fitness_score": value}}
-        with batch_path.open("r", encoding="utf-8") as f:
+    The trainer then aligns:
+        prompt      = system_prompt.txt + constraint
+        completion  = pipeline/data/<batch_id>/LLM_output/*.net
+        reward      = pipeline/data/<batch_id>/reward_results.json
+    """
+
+    def __init__(
+        self,
+        llm,
+        validator,
+        simulator,
+        reward_fn,
+        constraint: Dict,
+        rl_config: Optional[RLConfig] = None,
+        output_dir: str = "./checkpoints/grpo-lora/final",
+        system_prompt_path: str = "system_prompt.txt",
+    ):
+        self.llm = llm
+        self.validator = validator
+        self.simulator = simulator
+        self.reward_fn = reward_fn
+        self.constraint_dict = constraint
+        self.output_dir = output_dir
+        self.system_prompt_path = Path(system_prompt_path)
+
+        # Reuse the already-loaded LLM engine from TopologyLLM.
+        self.rl_updater = RLUpdater(
+            self.llm.engine,
+            rl_config or RLConfig(
+                learning_rate=1e-5,
+                kl_beta=0.0,
+                save_every=5,
+                lora_r=8,
+                lora_alpha=16,
+            ),
+        )
+
+    def _batch_dir(self, batch_id: str) -> Path:
+        return Path("pipeline") / "data" / batch_id
+
+    def _llm_output_dir(self, batch_id: str) -> Path:
+        # Current project uses uppercase LLM_output.
+        return self._batch_dir(batch_id) / "LLM_output"
+
+    def _reward_path(self, batch_id: str) -> Path:
+        return self._batch_dir(batch_id) / "reward_results.json"
+
+    def _simulation_output_dir(self, batch_id: str) -> Path:
+        return Path("pipeline") / "simulation" / "output" / batch_id
+
+    def _load_rewards(self, batch_id: str) -> Dict:
+        reward_path = self._reward_path(batch_id)
+
+        if not reward_path.exists():
+            raise FileNotFoundError(f"Missing reward file: {reward_path}")
+
+        with reward_path.open("r", encoding="utf-8") as f:
             return json.load(f)
 
-    def parse_simple_sample_batch(self, raw_batch: Dict) -> List[Dict]:
-        # Convert input JSON from dict format to list format.
-        # This makes later reward normalization easier.
-        topologies = []
+    def _load_prompt(self) -> str:
+        """
+        Build the prompt used for RL log-prob calculation.
 
-        for topology_id, data in raw_batch.items():
-            topologies.append({
-                "topology_id": topology_id,
-                "fitness_score": float(data["fitness_score"]),
-            })
-        return topologies
+        The prompt is reconstructed from:
+            system_prompt.txt + current constraint
+        """
+        if self.system_prompt_path.exists():
+            system_prompt = self.system_prompt_path.read_text(encoding="utf-8")
+        else:
+            print(f"Warning: {self.system_prompt_path} not found. Using constraint only.")
+            system_prompt = ""
 
+        return (
+            system_prompt.strip()
+            + "\n\n### Constraint:\n"
+            + json.dumps(self.constraint_dict, indent=2)
+            + "\n\n### SPICE Netlist:\n"
+        )
 
+    def _load_netlist(self, batch_id: str, topology_id: str) -> str:
+        netlist_path = self._llm_output_dir(batch_id) / f"{topology_id}.net"
 
-#     def apply_invalid_penalty_to_topologies(self, topologies: List[Dict], invalid_penalty: float) -> List[Dict]:
-#         processed = []
-#
-#         for item in topologies:
-#             item_copy = dict(item)
-#             if not item_copy.get("valid", False):
-#                 item_copy["fitness_score"] = invalid_penalty
-#             processed.append(item_copy)
-# #
-#         return processed  #Comment out for now
+        if not netlist_path.exists():
+            raise FileNotFoundError(f"Missing netlist file: {netlist_path}")
 
+        return netlist_path.read_text(encoding="utf-8")
 
-    def compute_group_summary(
-            self,
-            constraint_id: str,
-            prompt_text: str,
-            topologies: List[Dict],
-            advantages: List[float],
-    ) -> Dict:
-        fitness_scores = [item["fitness_score"] for item in topologies]
-        best_item = max(topologies, key=lambda x: x["fitness_score"])
+    def _load_failure_log(self, batch_id: str, topology_id: str) -> Optional[str]:
+        fail_path = self._simulation_output_dir(batch_id) / f"{topology_id}.fail"
 
-        mean_fitness = sum(fitness_scores) / len(fitness_scores) if fitness_scores else 0.0
-        mean_advantage = sum(advantages) / len(advantages) if advantages else 0.0
-        group_objective = best_item["fitness_score"] - mean_fitness
+        if not fail_path.exists():
+            return None
 
-        return {
-            "constraint_id": constraint_id,
-            "prompt_text": prompt_text,
-            "num_topologies": len(topologies),
-            "mean_fitness": mean_fitness,
-            "mean_advantage": mean_advantage,
-            "group_objective": group_objective,
-            "best_topology": best_item["topology_path"],
-            "best_fitness": best_item["fitness_score"],
-        }
+        return fail_path.read_text(encoding="utf-8")
 
+    def _build_training_batch(self, batch_id: str):
+        """
+        Build prompt/completion/reward lists for RLUpdater.
 
-    def compute_batch_summary(
-            self,
-            all_update_entries: List[Dict],
-            group_summaries: List[Dict],
-    ) -> Dict:
-        if not all_update_entries:
-            return {
-                "num_constraints": 0,
-                "num_total_topologies": 0,
-                "batch_mean_fitness": 0.0,
-                "batch_mean_advantage": 0.0,
-                "batch_objective": 0.0,
-                "best_topology": None,
-                "best_fitness": None,
+        reward_results.json structure:
+            {
+                "active_constraints": {...},
+                "circuits": {
+                    "top1": {
+                        "fitness_score": -0.2135,
+                        "grpo_reward": 0.3078,
+                        "loss_breakdown": {...},
+                        "raw_metrics": {...}
+                    }
+                }
             }
 
-        all_fitness = [item["fitness_score"] for item in all_update_entries]
-        all_advantages = [item["advantage"] for item in all_update_entries]
+        RL uses:
+            prompt      = system_prompt.txt + constraint
+            completion  = pipeline/data/<batch_id>/LLM_output/<topology_id>.net
+            reward      = grpo_reward if available, otherwise fitness_score
+        """
+        reward_data = self._load_rewards(batch_id)
+        circuits = reward_data.get("circuits", {})
 
-        best_item = max(all_update_entries, key=lambda x: x["fitness_score"])
+        if not circuits:
+            raise RuntimeError(f"No circuits found in reward_results.json for {batch_id}")
 
-        batch_mean_fitness = sum(all_fitness) / len(all_fitness)
-        batch_mean_advantage = sum(all_advantages) / len(all_advantages)
+        prompt_text = self._load_prompt()
 
-        # Batch-level optimization signal
-        batch_objective = best_item["fitness_score"] - batch_mean_fitness
+        prompts: List[str] = []
+        completions: List[str] = []
+        rewards: List[float] = []
 
-        return {
-            "num_constraints": len(group_summaries),
-            "num_total_topologies": len(all_update_entries),
-            "batch_mean_fitness": batch_mean_fitness,
-            "batch_mean_advantage": batch_mean_advantage,
-            "batch_objective": batch_objective,
-            "best_topology": best_item["topology_id"],
-            "best_fitness": best_item["fitness_score"],
-        }
+        for topology_id, info in circuits.items():
+            try:
+                completion_text = self._load_netlist(batch_id, topology_id)
+            except FileNotFoundError as e:
+                print(f"Skipping {topology_id}: {e}")
+                continue
 
+            # Use normalized GRPO reward when available.
+            if "grpo_reward" in info:
+                reward = float(info["grpo_reward"])
+                reward_source = "grpo_reward"
+            elif "fitness_score" in info:
+                reward = float(info["fitness_score"])
+                reward_source = "fitness_score"
+            else:
+                print(f"Skipping {topology_id}: no grpo_reward or fitness_score found.")
+                continue
 
-    # def process_single_constraint_group(
-    #         self,
-    #         constraint_group: Dict,
-    #         invalid_penalty: float,
-    #         epsilon: float,
-    # ) -> Tuple[List[Dict], Dict]:
-    #     constraint_id = constraint_group["constraint_id"]
-    #     prompt_text = constraint_group["prompt_text"]
-    #     topologies = constraint_group["topologies"]
-    #
-    #     processed_topologies = self.apply_invalid_penalty_to_topologies(topologies, invalid_penalty)
-    #
-    #     fitness_scores = [item["fitness_score"] for item in processed_topologies]
-    #     advantages = normalize_relative_rewards(fitness_scores, epsilon)
-    #
-    #     update_entries = build_policy_update_entries(
-    #         constraint_id=constraint_id,
-    #         prompt_text=prompt_text,
-    #         topologies=processed_topologies,
-    #         relative_rewards=advantages,
-    #     )
-    #
-    #     group_summary = self.compute_group_summary(
-    #         constraint_id=constraint_id,
-    #         prompt_text=prompt_text,
-    #         topologies=processed_topologies,
-    #         advantages=advantages,
-    #     )
-    #
-    #     return update_entries, group_summary
+            prompts.append(prompt_text)
+            completions.append(completion_text)
+            rewards.append(reward)
 
-    def train(self):
-        batch_path = Path(__file__).parent / "sample_batch.json"
+            print(f"Loaded {topology_id}: reward={reward:.4f} ({reward_source})")
 
-        # 1. Load raw input JSON.
-        raw_batch = self.load_sample_batch(batch_path)
+        if not rewards:
+            raise RuntimeError("No valid prompt/completion/reward pairs found.")
 
-        # 2. Convert raw dict format to list of topology records.
-        topologies = self.parse_simple_sample_batch(raw_batch)
+        return prompts, completions, rewards
 
-        # 3. Extract raw fitness scores.
-        fitness_scores = [item["fitness_score"] for item in topologies]
+    def _save_metrics(self, batch_id: str, metrics: Dict):
+        save_path = self._batch_dir(batch_id) / "grpo_metrics.json"
+        save_path.parent.mkdir(parents=True, exist_ok=True)
 
-        # 4. Compute advantages inside RL module.
-        advantages = normalize_relative_rewards(fitness_scores, self.epsilon)
+        with save_path.open("w", encoding="utf-8") as f:
+            json.dump(metrics, f, indent=2)
 
-        # 5. Build policy update entries.
-        all_update_entries = build_policy_update_entries(
-            topologies=topologies,
-            relative_rewards=advantages,
+        print(f"Saved metrics to {save_path}")
+
+#Tesr RL loop with this method, incase the LTspice not working on HPC:
+    def train_from_existing_batch(self, batch_id: str = "batch_1"):
+        """
+        Run RL update using existing LLM_output and reward_results.json.
+        This does not run generation, validation, simulation, or reward evaluation.
+        """
+        prompts, completions, rewards = self._build_training_batch(batch_id)
+        #Added these bcs of Out of Memory:
+        prompts = prompts[:2]
+        completions = completions[:2]
+        rewards = rewards[:2]
+        ####
+
+        print(f"RL samples: {len(rewards)}")
+        print(f"Rewards: {rewards}")
+
+        metrics = self.rl_updater.update(
+            prompts=prompts,
+            completions=completions,
+            rewards=rewards,
         )
-        # Try to connect to policy update stage.
-        # Currently this is only a placeholder because model/tokenizer/optimizer are not available yet.
-        update_result = update_policy(
-            model=None,
-            tokenizer=None,
-            optimizer=None,
-            update_entries=all_update_entries,
-)
+        self._save_metrics(batch_id, metrics)   
+        self.rl_updater.save(self.output_dir)
 
-        update_result = update_model(
-            model=None,
-            tokenizer=None,
-            optimizer=None,
-            update_entries=all_update_entries,
+        print("=== GRPO Training From Existing Batch Done ===")
+        print(json.dumps(metrics, indent=2))
+
+        return metrics
+# The real train method, once the LTspice works in HPC:
+    def train(self, batch_id: str = "batch_1", n: int = 4):
+        """
+        Run one GRPO training iteration.
+
+        This function still runs the full pipeline:
+            generate -> validate -> simulate -> reward -> RL update
+        """
+
+        # 1. Generate netlists.
+        written = self.llm.generate_for_batch(
+            self.constraint_dict,
+            batchID=batch_id,
+            n=n,
+        )
+        print(f"Generated {len(written)} netlists")
+
+        # 2. Validate generated netlists.
+        self.validator.validate(batch_id)
+
+        # 3. Simulate valid netlists.
+        simulation_results = self.simulator.simulate(batch_id)
+        print("Simulation Results:")
+        print(simulation_results)
+
+        # 4. Compute rewards.
+        self.reward_fn.process_batch(
+            batch_id,
+            self.constraint_dict,
+            weights={
+                "v_out": 10.0,
+                "efficiency": 20.0,
+                "volume": 2.0,
+                "component_cost": 1.0,
+                "components": {
+                    "mosfet": 1.0,
+                    "diode": 1.0,
+                    "inductor": 1.0,
+                    "capacitor": 1.0,
+                },
+            },
         )
 
+        # 5. Build RL training data from saved files.
+        prompts, completions, rewards = self._build_training_batch(batch_id)
 
-        # 6. No group summaries for now because there is no constraint_id.
-        group_summaries: List[Dict] = []
+        print(f"RL samples: {len(rewards)}")    # for debugging
+        print(f"Rewards: {rewards}")            # for debugging
 
-        # 7. Compute batch-level summary.
-        batch_summary = self.compute_batch_summary(
-            all_update_entries=all_update_entries,
-            group_summaries=group_summaries,
+        # print failure logs if available, for debugging
+        for topology_id in self._load_rewards(batch_id).get("circuits", {}).keys():
+            fail_log = self._load_failure_log(batch_id, topology_id)
+            if fail_log:
+                print(f"\nFailure log for {topology_id}:")
+                print(fail_log[:1000])
+
+        # 6. Update LoRA policy.
+        metrics = self.rl_updater.update(
+            prompts=prompts,
+            completions=completions,
+            rewards=rewards,
         )
 
-        out_dir = Path(__file__).parent
-        update_batch_path = out_dir / "policy_update_batch.json"
-        batch_summary_path = out_dir / "batch_summary.json"
-        update_status_path = out_dir / "policy_update_status.json"
+        # 7. Save adapter.
+        self.rl_updater.save(self.output_dir)
 
+        print("=== GRPO Training Done ===")
+        print(json.dumps(metrics, indent=2))
 
-        with update_batch_path.open("w", encoding="utf-8") as f:
-            json.dump(all_update_entries, f, indent=2)
-
-        with update_status_path.open("w", encoding="utf-8") as f:
-            json.dump(update_result, f, indent=2)
-
-        with batch_summary_path.open("w", encoding="utf-8") as f:
-            json.dump(batch_summary, f, indent=2)
-
-        print("=== Simple Offline GRPO Prototype ===")
-        print(f"Total topologies: {batch_summary['num_total_topologies']}")
-        print(f"Best topology: {batch_summary['best_topology']}")
-        print(f"Best fitness: {batch_summary['best_fitness']:.4f}")
-        print(f"Batch objective: {batch_summary['batch_objective']:.4f}")
-        print(f"Batch mean advantage: {batch_summary['batch_mean_advantage']:.4f}")
-        print(f"Saved update batch to: {update_batch_path}")
-        print(f"Saved batch summary to: {batch_summary_path}")
-
-        print(f"Policy updated: {update_result['updated']}")
-        print(f"Update reason: {update_result['reason']}")
-        print(f"Saved update status to: {update_status_path}")
-
-        print(f"Model updated: {update_result['updated']}")
-        print(f"Update reason: {update_result['reason']}")
-
-
-if __name__ == "__main__":
-    grpo = GRPOTrainer()
-    grpo.train()
+        return metrics

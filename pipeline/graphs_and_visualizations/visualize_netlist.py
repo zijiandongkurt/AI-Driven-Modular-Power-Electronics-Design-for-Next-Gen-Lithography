@@ -155,7 +155,7 @@ if __name__ == "__main__":
     script_dir = os.path.dirname(os.path.abspath(__file__))
     
     # 1. Define the folder where all the AI netlists live
-    netlist_dir = os.path.join(script_dir, "..", "data", "batch_2", "LLM_output")
+    netlist_dir = os.path.join(script_dir, "..", "data", "batch_6", "LLM_output")
     
     # --- NEW FOLDER LOGIC ---
     # Get the parent batch directory (e.g., "batch_2")

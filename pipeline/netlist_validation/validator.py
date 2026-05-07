@@ -98,7 +98,7 @@ class validator():
         """
         import json
 
-        batch_dir = self.DATA_DIR / batchID / "llm_output"
+        batch_dir = self.DATA_DIR / batchID / "LLM_output"
         assert batch_dir.exists(), f"Batch folder not found: {batch_dir.resolve()}"
 
         net_files = list(batch_dir.glob("*.net"))
