@@ -7,11 +7,12 @@ from pipeline.reward_evaluation.reward_function_norm import RewardFunctionNorm
 from pipeline.llm_topology_generation.prompt_input import load_constraint
 from pipeline.reinforcement_algorithm.grpo_trainer import GRPOTrainer
 from pipeline.reinforcement_algorithm.new_rl_updater import RLUpdater, RLConfig
+from pathlib import Path
 
 def main():
-    llm        = TopologyLLM(model_id="Qwen/Qwen3-14B")
+    # llm        = TopologyLLM(model_id="Qwen/Qwen3-14B")
     val        = validator()
-    simulator  = NGSpiceSimulator()
+    simulator = NGSpiceSimulator(ngspice_command=str(Path.home() / ".local/bin/ngspice"))
     reward_fn  = RewardFunctionNorm()
     constraint = load_constraint("pipeline/data/datasets/constraints.json", idx=0)
     batch_id   = "batch_1"

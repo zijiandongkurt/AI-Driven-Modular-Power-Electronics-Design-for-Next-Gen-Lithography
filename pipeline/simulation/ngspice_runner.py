@@ -1,4 +1,4 @@
-from PySpice.Spice.NgSpice.Server import SpiceServer
+from PySpice.Spice.NgSpice.RawFile import RawFile
 from pathlib import Path
 import re
 import subprocess
@@ -97,7 +97,6 @@ class NGSpiceSimulator():
         self.BASE_DIR = Path(__file__).parent
         self.DATA_DIR = self.BASE_DIR.parent / "data"
         self.ngspice_command = ngspice_command
-        self._server = SpiceServer(spice_command=ngspice_command)
 
     def _verify_ngspice(self):
         """Check that the ngspice binary is reachable before attempting any simulation."""
@@ -109,6 +108,66 @@ class NGSpiceSimulator():
             return result.returncode == 0
         except FileNotFoundError:
             return False
+
+    def _run_ngspice(self, netlist_text):
+        """Write netlist to a temp file, run ngspice in batch mode to produce
+        a .raw file, then parse the .raw file with PySpice's RawFile.
+        This avoids the server mode (-s) limitation where only a small initial
+        buffer of data is captured.
+
+        PARAMS:
+        netlist_text <str> : Full text of the .net file
+
+        RETURNS:
+        raw_file : PySpice RawFile instance
+        """
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmpdir:
+            tmpdir = Path(tmpdir)
+            net_path = tmpdir / "sim.net"
+            raw_path = tmpdir / "sim.raw"
+
+            # Append .control block to write raw output to file
+            control_block = f"""
+.control
+run
+write {raw_path} all
+quit
+.endc
+"""
+            net_path.write_text(netlist_text + control_block)
+
+            result = subprocess.run(
+                [self.ngspice_command, "-b", "-o", str(tmpdir / "sim.log"), str(net_path)],
+                capture_output=True, timeout=120
+            )
+
+            stderr_str = result.stderr.decode("utf-8") + (tmpdir / "sim.log").read_text()                 if (tmpdir / "sim.log").exists() else result.stderr.decode("utf-8")
+
+            if "run simulation(s) aborted" in stderr_str or not raw_path.exists():
+                raise RuntimeError("Simulation aborted:\n" + stderr_str)
+
+            # Read the .raw file directly — no header mangling needed
+            raw_bytes = raw_path.read_bytes()
+
+        # PySpice's RawFile expects (stdout_bytes, number_of_points) but in
+        # batch mode the .raw file IS the stdout format. We still need to
+        # extract number_of_points from the file header itself.
+        binary_marker = b'Binary:\n'
+        binary_location = raw_bytes.find(binary_marker)
+        if binary_location < 0:
+            raise RuntimeError("Could not locate binary data in .raw file")
+
+        # Extract No. Points from the raw file header
+        number_of_points = None
+        for line in raw_bytes[:binary_location].splitlines():
+            if line.startswith(b'No. Points:'):
+                number_of_points = int(line.split(b':')[1].strip())
+                break
+        if number_of_points is None:
+            raise RuntimeError("Could not find No. Points in .raw file header")
+
+        return RawFile(raw_bytes, number_of_points)
 
     def simulate(self, batchID):
         """Simulates all netlists in data/<batchID>/llm_output/ that passed validation.
@@ -123,8 +182,7 @@ class NGSpiceSimulator():
         if not self._verify_ngspice():
             raise EnvironmentError(
                 f"ngspice binary not found at '{self.ngspice_command}'.\n"
-                f"Install it with:  conda install -c conda-forge ngspice\n"
-                f"Or if compiled into user space, pass the full path:\n"
+                f"If compiled into user space, pass the full path:\n"
                 f"    NGSpiceSimulator(ngspice_command='~/.local/bin/ngspice')"
             )
 
@@ -155,7 +213,7 @@ class NGSpiceSimulator():
 
             print(f"Simulating: {netpath.name}")
             try:
-                raw_file = self._server(spice_input=netlist_text)
+                raw_file = self._run_ngspice(netlist_text)
                 rows = self._extract_metrics(raw_file, stem=netpath.stem, meta=meta)
                 all_rows.extend(rows)
                 ok += 1
@@ -183,15 +241,13 @@ class NGSpiceSimulator():
         (e.g. 'v(out)', 'i(vin)'), each with a .data numpy array.
 
         PARAMS:
-        raw_file : PySpice RawFile returned by SpiceServer
+        raw_file : PySpice RawFile returned by _run_ngspice
         stem     <str>  : netlist filename stem (for tagging rows)
         meta     <dict> : pre-parsed netlist metadata (counts, l_values, f_sw)
 
         RETURNS:
         rows <list[dict]> : one dict per simulation step
         """
-        # PySpice doesn't expose steps the same way PyLTSpice does.
-        # For a plain .tran run there is exactly one dataset — treat as step 0.
         vars_ = {k.lower(): v.data for k, v in raw_file.variables.items()}
 
         if "time" not in vars_:
@@ -330,5 +386,5 @@ class NGSpiceSimulator():
 
 
 # # testing
-# simo = NGSpiceSimulator()
-# _ = simo.simulate("batch_2")
+# simo = NGSpiceSimulator(ngspice_command=str(Path.home() / ".local/bin/ngspice"))
+# _ = simo.simulate("batch_1")

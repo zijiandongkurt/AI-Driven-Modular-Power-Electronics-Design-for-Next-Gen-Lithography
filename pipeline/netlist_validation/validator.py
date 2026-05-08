@@ -117,13 +117,16 @@ class validator():
                     print(f"[{net_path.name}] Failed: {check}")
             if passed:
                 print(f"[{net_path.name}] Validation passed.")
-                # Inject title comment if missing
-                if not raw_text.lstrip().startswith("*"):
-                    raw_text = f"* {net_path.stem}\n" + raw_text
-                # Inject .save to ensure all currents and voltages are in .raw output
-                if ".save" not in raw_text.lower():
-                    #raw_text = raw_text.replace(".end", ".save V(*) I(*)\n.end") #LTSPICE
-                    raw_text = raw_text.replace(".end", ".probe V(*) I(*)\n.end") #NGSPICE
+                # Inject plain title line if missing (no * prefix — ngspice treats
+                # the first line as a title regardless, and PySpice expects no *)
+                if not raw_text.lstrip().startswith(net_path.stem):
+                    raw_text = f"{net_path.stem}\n" + raw_text
+                # Inject .probe to ensure all signals appear in output.
+                # Only probe V(*) — ngspice automatically includes branch currents
+                # for voltage sources and inductors. Explicit I() probes cause
+                # duplicates which corrupt the binary data layout.
+                if ".probe" not in raw_text.lower() and ".save" not in raw_text.lower():
+                    raw_text = raw_text.replace(".end", ".probe V(*)\n.end")
                 net_path.write_text(raw_text)
 
             results[net_path.name]     = (passed, checklist)
