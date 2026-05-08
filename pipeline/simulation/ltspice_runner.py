@@ -40,7 +40,7 @@ COMPONENT_WEIGHTS = {
 }
 
 
-class TopologySimulator():
+class LTSpiceSimulator():
     def __init__(self):
         self.BASE_DIR = Path(__file__).parent
         self.DATA_DIR = self.BASE_DIR.parent / "data"

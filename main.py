@@ -1,6 +1,7 @@
 from pipeline.llm_topology_generation.llm_api import TopologyLLM
 from pipeline.netlist_validation.validator import validator
-from pipeline.simulation.ltspice_runner import TopologySimulator
+from pipeline.simulation.ltspice_runner import LTSpiceSimulator
+from pipeline.simulation.ngspice_runner import NGSpiceSimulator
 from pipeline.reward_evaluation.reward_function import RewardFunction
 from pipeline.reward_evaluation.reward_function_norm import RewardFunctionNorm
 from pipeline.llm_topology_generation.prompt_input import load_constraint
@@ -10,7 +11,7 @@ from pipeline.reinforcement_algorithm.new_rl_updater import RLUpdater, RLConfig
 def main():
     llm        = TopologyLLM(model_id="Qwen/Qwen3-14B")
     val        = validator()
-    simulator  = TopologySimulator()
+    simulator  = NGSpiceSimulator()
     reward_fn  = RewardFunctionNorm()
     constraint = load_constraint("pipeline/data/datasets/constraints.json", idx=0)
     batch_id   = "batch_1"
@@ -28,9 +29,9 @@ def main():
     grpo.train_from_existing_batch(batch_id="batch_1")
     """ 
 #
-    # 1. Generate — writes .net files to data/batch_7/llm_output/
-    written = llm.generate_for_batch(constraint, batchID=batch_id, n=4)
-    print(f"Generated {len(written)} netlists")
+    # # 1. Generate — writes .net files to data/batch_7/llm_output/
+    # written = llm.generate_for_batch(constraint, batchID=batch_id, n=4)
+    # print(f"Generated {len(written)} netlists")
 
     # 2. Validate — reads llm_output/, writes validation_results.json
     val.validate(batch_id)
