@@ -44,31 +44,53 @@ import torch
 from pipeline.llm_topology_generation.llm_api import TopologyLLM
 
 
+_HARDCODED_CONSTRAINT = {
+    "_comment": "12V to 5V step-down (fallback used when constraints.json missing)",
+    "vin_min": 12,
+    "vin_max": 100,
+    "vout_target": 5,
+    "efficiency_target": 0.90,
+    "power_in": 100,
+}
+
+
 def _build_prompt() -> str:
-    """Use the project's normal constraint-prompt template by default,
-    so the demo exercises the same prompt path as GRPO would."""
+    """Build the prompt for Qwen.
+
+    Priority:
+      1. QWEN_DEMO_PROMPT env var (raw override)
+      2. pipeline/data/datasets/constraints.json[idx=0] via make_prompt()
+      3. Hard-coded constraint dict + NAMING_RULES via make_prompt()
+
+    All paths that go through make_prompt() inject NAMING_RULES, so the
+    model always sees the convention contract that downstream validator
+    / reward function expect.
+    """
     custom = os.environ.get("QWEN_DEMO_PROMPT")
     if custom:
         return custom
 
-    # Default: pull constraint idx=0 and run it through make_prompt
+    from pipeline.llm_topology_generation.prompt_input import (
+        load_constraint, make_prompt,
+    )
+
+    # Try the canonical dataset path first
+    constraints_path = (
+        _REPO_ROOT / "pipeline" / "data" / "datasets" / "constraints.json"
+    )
     try:
-        from pipeline.llm_topology_generation.prompt_input import (
-            load_constraint, make_prompt,
-        )
-        constraint = load_constraint(
-            str(_REPO_ROOT / "pipeline" / "data" / "datasets" / "constraints.json"),
-            idx=0,
-        )
+        constraint = load_constraint(str(constraints_path), idx=0)
+        print(f"[prompt] loaded constraint idx=0 from {constraints_path}")
         return make_prompt(constraint)
+    except FileNotFoundError:
+        print(f"[prompt] {constraints_path} not found — using hard-coded "
+              f"constraint (still goes through make_prompt → NAMING_RULES "
+              f"will be injected).")
+        return make_prompt(_HARDCODED_CONSTRAINT)
     except Exception as e:
-        print(f"[qwen_demo] couldn't load constraint ({e}), falling back to "
-              f"a hard-coded prompt.")
-        return (
-            "You are a SPICE expert. Produce a 12V→5V buck converter netlist.\n"
-            "Output ONLY the SPICE netlist — no commentary.\n\n"
-            "### SPICE Netlist:\n"
-        )
+        print(f"[prompt] failed to load constraint ({type(e).__name__}: {e}), "
+              f"falling back to hard-coded constraint.")
+        return make_prompt(_HARDCODED_CONSTRAINT)
 
 
 def _gpu_summary(stage: str):
