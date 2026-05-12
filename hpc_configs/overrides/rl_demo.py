@@ -56,12 +56,21 @@ if _cache:
     os.environ["TRANSFORMERS_CACHE"] = _hub
 
 from pipeline.llm_topology_generation.llm_api import TopologyLLM
-from pipeline.netlist_validation.validator import validator
-from pipeline.simulation.ltspice_runner import LTSpiceSimulator
-from pipeline.reward_evaluation.reward_function_norm import RewardFunctionNorm
 from pipeline.llm_topology_generation.prompt_input import load_constraint
 from pipeline.reinforcement_algorithm.grpo_trainer import GRPOTrainer
 from pipeline.reinforcement_algorithm.new_rl_updater import RLConfig
+
+# Lazy imports — only required when GRPO_FULL_TRAIN=1 (full pipeline loop).
+# In `train_from_existing_batch` mode we only need to read magic JSON files,
+# so we tolerate validator/simulator/reward_function_norm being stubs.
+def _import_downstream():
+    """Import validator + simulator + reward modules. Returns (val, sim, rew).
+    Caller decides what to do if these fail.
+    """
+    from pipeline.netlist_validation.validator import validator as _V
+    from pipeline.simulation.ltspice_runner import LTSpiceSimulator as _S
+    from pipeline.reward_evaluation.reward_function_norm import RewardFunctionNorm as _R
+    return _V(), _S(), _R()
 
 
 # ── Read SLURM-side env vars ────────────────────────────────────────────
@@ -112,10 +121,30 @@ def main():
     print(f"[rl_demo] FULL_TRAIN={FULL_TRAIN}")
 
     llm        = TopologyLLM(model_id=MODEL_ID, quantization=QUANTIZATION)
-    val        = validator()
-    simulator  = LTSpiceSimulator()
-    reward_fn  = RewardFunctionNorm()
     constraint = load_constraint("pipeline/data/datasets/constraints.json", idx=0)
+
+    # Validator / simulator / reward are only needed when running the FULL
+    # generate→validate→simulate→reward→update loop.
+    # `train_from_existing_batch` reads pre-computed JSON from disk, so it
+    # works fine even if these modules are stubs on this branch.
+    if FULL_TRAIN:
+        try:
+            val, simulator, reward_fn = _import_downstream()
+        except ImportError as e:
+            raise RuntimeError(
+                f"GRPO_FULL_TRAIN=1 requires the full downstream pipeline "
+                f"(validator/simulator/reward_function_norm), but importing "
+                f"them failed: {e!r}.\n"
+                f"Fix: bring them over from main with\n"
+                f"    git checkout origin/main -- "
+                f"pipeline/netlist_validation/validator.py "
+                f"pipeline/simulation/ltspice_runner.py "
+                f"pipeline/reward_evaluation/reward_function_norm.py"
+            ) from e
+    else:
+        print("[rl_demo] FULL_TRAIN=0 → skipping validator/simulator/reward "
+              "instantiation (not needed for train_from_existing_batch)")
+        val = simulator = reward_fn = None
 
     grpo = GRPOTrainer(
         llm=llm,
