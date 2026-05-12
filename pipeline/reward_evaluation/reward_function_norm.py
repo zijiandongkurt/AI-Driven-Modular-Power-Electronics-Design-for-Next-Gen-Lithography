@@ -62,8 +62,9 @@ class RewardFunctionNorm:
         A netlist that passed all structural checks but failed simulation
         directives returns close to -0.5.
 
-        This range is intentionally below the simulation reward range [-0.5, 0.0]
-        so that any valid+simulated topology always outranks an invalid one.
+        This range is intentionally separated from the simulation reward range [0.5, 1.0]
+        to create a strict distinction (a gap from -0.5 to 0.5) so that any 
+        valid/simulated topology vastly outranks an invalid one.
 
         Args:
             checks: dict of check_name -> bool from validation_results.json
@@ -176,14 +177,18 @@ class RewardFunctionNorm:
         return total_loss, details
 
     def calculate_reward(self, row, constraints, weights):
-        """Convert loss into a reward in [-0.5, 0.0].
+        """Convert loss into a reward in [0.5, 1.0].
 
-        Simulation rewards are always in [-0.5, 0.0] so they rank above
-        invalid topology rewards which are in [-1.0, -0.5].
+        Simulation rewards are always in [0.5, 1.0] so they strictly rank above
+        invalid topology rewards which are in [-1.0, -0.5]. This creates a 
+        large numerical gap (0.5 to -0.5) penalizing invalid structure.
         """
         loss, details = self.calculate_loss(row, constraints, weights)
-        # loss in [0, 1] → reward in [-0.5, 0.0]
-        reward = -0.5 * loss
+        
+        # loss is in [0, 1], where 0 is perfect and 1 is worst.
+        # Map loss=0 to reward=1.0, and loss=1 to reward=0.5
+        reward = 1.0 - (0.5 * loss)
+        
         return float(reward), details
 
     # ── Batch normalization for GRPO ─────────────────────────────────────
