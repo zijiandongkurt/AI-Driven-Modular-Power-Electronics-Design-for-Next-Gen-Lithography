@@ -78,6 +78,17 @@ export GRPO_QUANTIZATION=""
 # Model: leave default unless you want to test with the smaller 7B
 export GRPO_MODEL_ID="Qwen/Qwen3-14B"
 
+# ── H100-tuned RLConfig defaults (no override needed) ──────────────────────
+# overrides/new_rl_updater.py already ships H100-tuned defaults:
+#   lora_r=16, lora_alpha=32, learning_rate=2e-5,
+#   max_length=2048, max_prompt=1536, max_completion=1024, save_every=5
+# So we do NOT export GRPO_LORA_R / GRPO_LR / GRPO_MAX_LENGTH here —
+# letting rl_demo.py fall through to those defaults is the recipe we want.
+# If you want to experiment, you can override any of them, e.g.:
+##export GRPO_LORA_R=32
+##export GRPO_LR=5e-5
+##export GRPO_MAX_LENGTH=2560
+
 # ============================================================================
 # Run
 # ============================================================================

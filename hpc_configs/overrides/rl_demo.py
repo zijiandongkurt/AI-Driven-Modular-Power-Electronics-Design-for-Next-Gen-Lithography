@@ -5,14 +5,32 @@ This version reads SLURM-side environment variables so the same Python
 file can power any of the three SLURM scripts (single 80GB, quad 40GB,
 single 40GB) without code edits.
 
+Defaults match the H100 80GB recommended config in
+`hpc_configs/overrides/new_rl_updater.py`.  Tighter cards (40GB) scale
+these down via env vars set in their SLURM script.
+
 Knobs (set in the SLURM script via `export GRPO_*`):
 
-    GRPO_MODEL_ID         default "Qwen/Qwen3-14B"
-    GRPO_QUANTIZATION     "" (full bf16) or "4bit"           ← required on 40GB
-    GRPO_BATCH_ID         default "batch_1"
-    GRPO_N_SAMPLES        default unset  (use full batch)    ← OOM escape hatch
-    GRPO_MAX_LENGTH       default unset  (use override defaults)
-    GRPO_FULL_TRAIN       "0" / "1"  — call train() vs train_from_existing_batch()
+    Model                                                            ← H100 default
+    ─────────────────────────────────────────────────────────────────
+    GRPO_MODEL_ID         "Qwen/Qwen3-14B"                            ← Qwen3-14B
+    GRPO_QUANTIZATION     "" (full bf16) or "4bit"                    ← bf16 on H100, 4bit on 40GB
+    GRPO_BATCH_ID         "batch_1"
+    GRPO_FULL_TRAIN       "0" / "1"  — train() vs train_from_existing_batch()
+
+    Sequence  (defaults from new_rl_updater.py RLConfig)              ← H100 default
+    ─────────────────────────────────────────────────────────────────
+    GRPO_MAX_LENGTH       unset → 2048                                ← 2048
+    GRPO_N_SAMPLES        unset → full batch (no cap)                 ← OOM escape hatch
+
+    LoRA  (defaults from new_rl_updater.py RLConfig)                  ← H100 default
+    ─────────────────────────────────────────────────────────────────
+    GRPO_LORA_R           unset → 16                                  ← 16
+    GRPO_LORA_ALPHA       unset → 32                                  ← 32 (= 2 × r)
+
+    Training  (defaults from new_rl_updater.py RLConfig)              ← H100 default
+    ─────────────────────────────────────────────────────────────────
+    GRPO_LR               unset → 2e-5                                ← 2e-5
 """
 
 import os
@@ -56,15 +74,25 @@ FULL_TRAIN    = os.environ.get("GRPO_FULL_TRAIN", "0") == "1"
 
 
 def _build_rl_config() -> RLConfig:
-    """Build an RLConfig, applying env-var overrides on top of the override
-    file's HPC defaults."""
-    cfg = RLConfig(
-        learning_rate=1e-5,
-        kl_beta=0.0,
-        save_every=5,
-        lora_r=8,
-        lora_alpha=16,
-    )
+    """Build an RLConfig, starting from the H100-tuned defaults in
+    new_rl_updater.py's RLConfig() dataclass, then applying env-var
+    overrides on top (used by 40GB SLURM to scale things down)."""
+    cfg = RLConfig()        # ← H100 defaults (lora_r=16, max_length=2048, lr=2e-5)
+
+    # LoRA scaling (env-var override)
+    if "GRPO_LORA_R" in os.environ:
+        cfg.lora_r = int(os.environ["GRPO_LORA_R"])
+        print(f"[rl_demo] GRPO_LORA_R override → lora_r={cfg.lora_r}")
+    if "GRPO_LORA_ALPHA" in os.environ:
+        cfg.lora_alpha = int(os.environ["GRPO_LORA_ALPHA"])
+        print(f"[rl_demo] GRPO_LORA_ALPHA override → lora_alpha={cfg.lora_alpha}")
+
+    # Learning rate (env-var override)
+    if "GRPO_LR" in os.environ:
+        cfg.learning_rate = float(os.environ["GRPO_LR"])
+        print(f"[rl_demo] GRPO_LR override → learning_rate={cfg.learning_rate}")
+
+    # Sequence-length (env-var override)
     if MAX_LENGTH:
         L = int(MAX_LENGTH)
         cfg.max_length = L
@@ -72,6 +100,7 @@ def _build_rl_config() -> RLConfig:
         cfg.max_completion_length = min(cfg.max_completion_length, L)
         print(f"[rl_demo] GRPO_MAX_LENGTH override → max_length={cfg.max_length}, "
               f"max_prompt={cfg.max_prompt_length}, max_completion={cfg.max_completion_length}")
+
     return cfg
 
 

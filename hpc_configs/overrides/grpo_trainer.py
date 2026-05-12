@@ -66,15 +66,13 @@ class GRPOTrainer:
         self.system_prompt_path = sp if sp.is_absolute() else (_REPO_ROOT / sp)
 
         # Reuse the already-loaded LLM engine from TopologyLLM.
+        # When no rl_config is supplied, use the H100-tuned defaults from
+        # RLConfig (see new_rl_updater.py header for the memory budget).
+        # For 40GB cards the SLURM script exports env vars that rl_demo.py
+        # uses to scale these values down — we don't override them here.
         self.rl_updater = RLUpdater(
             self.llm.engine,
-            rl_config or RLConfig(
-                learning_rate=1e-5,
-                kl_beta=0.0,
-                save_every=5,
-                lora_r=8,
-                lora_alpha=16,
-            ),
+            rl_config or RLConfig(),     # ← H100 defaults
         )
 
     # ── Path helpers ────────────────────────────────────────────────────

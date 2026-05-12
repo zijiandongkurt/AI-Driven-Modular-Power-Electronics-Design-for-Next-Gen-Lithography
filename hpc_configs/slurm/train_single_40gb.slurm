@@ -90,15 +90,21 @@ export GRPO_QUANTIZATION="4bit"
 export TOKENIZERS_PARALLELISM=false
 export OMP_NUM_THREADS=18
 
-# ── Sequence-length budget for this scenario ───────────────────────────────
-# Override values defined in hpc_configs/overrides/new_rl_updater.py:
-#   max_length = 1024, max_prompt = 768, max_completion = 512
-# These are SAFE for 4-bit + 40GB. If you OOM, the SLURM-readable knobs
-# below give you a fallback ladder without editing the python file:
-#   step 1: max_length=768
-#   step 2: max_length=512  (back to "very safe")
-#   step 3: also set GRPO_N_SAMPLES=2  (matches old [:2] hack)
+# ── Scale H100 defaults DOWN for 40GB ──────────────────────────────────────
+# The overrides default to H100 80GB-tuned values:
+#   lora_r=16, lora_alpha=32, lr=2e-5, max_length=2048
+# 4-bit-quantized 14B on 40GB can't afford those.  Override via env vars:
+export GRPO_LORA_R=8
+export GRPO_LORA_ALPHA=16
+export GRPO_LR=1e-5
+export GRPO_MAX_LENGTH=1024     # max_prompt and max_completion auto-shrink
+
+# OOM ladder (uncomment progressively if still OOM):
+#   step 1: tighter seq
 ##export GRPO_MAX_LENGTH=768
+#   step 2: tighter seq again
+##export GRPO_MAX_LENGTH=512
+#   step 3: also cap samples
 ##export GRPO_N_SAMPLES=2
 
 export GRPO_MODEL_ID="Qwen/Qwen3-14B"

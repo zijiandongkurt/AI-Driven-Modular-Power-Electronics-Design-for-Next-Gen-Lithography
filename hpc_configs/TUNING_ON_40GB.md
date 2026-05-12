@@ -6,6 +6,13 @@ Everything in this doc has been sized against the real memory budget
 
 ---
 
+> **Note on defaults**: as of the latest commit, `new_rl_updater.py`
+> ships **H100-tuned defaults** (`lora_r=16, lora_alpha=32, lr=2e-5,
+> max_length=2048`). The 40GB SLURM script scales these down via env
+> vars (`GRPO_LORA_R=8, GRPO_LORA_ALPHA=16, GRPO_LR=1e-5,
+> GRPO_MAX_LENGTH=1024`) to fit 4-bit + 40GB. This document still
+> uses the **40GB scaled-down values** as the baseline.
+
 ## 0. One-time setup
 
 ```bash

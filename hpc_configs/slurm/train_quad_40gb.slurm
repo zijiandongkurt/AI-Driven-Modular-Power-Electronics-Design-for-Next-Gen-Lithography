@@ -89,6 +89,14 @@ export GRPO_QUANTIZATION=""    # try "4bit" if you OOM
 
 export GRPO_MODEL_ID="Qwen/Qwen3-14B"
 
+# ── RLConfig: shard's per-GPU budget = ~30GB, keep H100-tuned defaults ─────
+# Don't override anything here — let rl_demo.py use new_rl_updater.py's
+# H100-tuned defaults (lora_r=16, max_length=2048, lr=2e-5, ...).
+# If you OOM, scale down the same way 40GB single-GPU does:
+##export GRPO_LORA_R=8
+##export GRPO_LR=1e-5
+##export GRPO_MAX_LENGTH=1024
+
 # ============================================================================
 # Run
 # ============================================================================
