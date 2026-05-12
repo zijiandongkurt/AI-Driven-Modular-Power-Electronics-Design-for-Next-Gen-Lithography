@@ -61,7 +61,14 @@ OUTPUT FORMAT:
   Output raw SPICE netlist text only.
   No markdown fences, no explanation, no prose.
   Start with an optional single-line title comment (* <title>).
-  End with .end"""
+  End with .end
+  NO EXPLENTATION, NO EXPLENTATION, NO EXPLENTATION
+  NEVER EXPLAIN YOURSELF. JUST raw SPICE NETLISTS
+
+  NEVER REPEAT ANY CONSTRAINTS
+  """
+
+
 
 
 # Kept for backward compatibility with llm_engine_minimal.py Constraint.to_prompt()
@@ -113,6 +120,20 @@ def make_prompt(constraint: dict) -> str:
     return (
         f"{SYSTEM_PROMPT}\n\n"
         f"### Constraint:\n{json.dumps(payload, indent=2)}\n\n"
+        f"### SPICE Netlist:\n"
+    )
+
+def make_prompt_demo(constraint: dict, previous_feedback: str) -> str:
+    """
+    Build the full prompt for one constraint dict in DEMO mode.
+    This injects the performance feedback of the previous batch so the LLM 
+    can learn and improve its topology generation.
+    """
+    payload = {k: v for k, v in constraint.items() if not k.startswith("_")}
+    return (
+        f"{SYSTEM_PROMPT}\n\n"
+        f"### Constraint:\n{json.dumps(payload, indent=2)}\n\n"
+        f"{previous_feedback}\n"
         f"### SPICE Netlist:\n"
     )
 

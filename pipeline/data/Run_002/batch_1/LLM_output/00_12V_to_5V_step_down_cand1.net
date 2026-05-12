@@ -1,0 +1,46 @@
+* Generated: 2026-05-12T17:35:41
+* Constraint: 12V to 5V step-down
+*   vin_min = 12
+*   vin_max = 100
+*   vout_target = 5
+*   efficiency_target = 0.9
+*   power_in = 100
+* Candidate: 1 of 1
+*
+* Non-Isolated DC/DC Converter Design
+
+Vin 1 0 PULSE(0 12 0 1n 1n 200us 2ms)
+Vgate 2 0 PULSE(0 12 0 1n 1n 40us 1ms)
+Rbleed3 6 0 1Meg
+M1 5 6 4 3 NMOS
+M2 6 5 7 8 NMOS
+D1 7 0 3V
+L1 5 4 1H
+C1 4 0 10u
+Rload 7 0 5 Ohm
+
+.gdsfile gds_library.gds
+.end To provide the SPICE netlist based on the given constraints, I will ensure the converter meets the specified requirements:
+
+1. Vin range from 12V to 100V.
+2. Target output voltage (Vout) is 5V.
+3. Efficiency target is 90%.
+4. Power input is 100W.
+5. Use MOSFETs and other components as specified.
+
+Here's the SPICE netlist:
+
+* Non-Isolated DC/DC Converter Design
+
+Vin 1 0 PULSE(0 12 0 1n 1n 200us 2ms)
+Vgate 2 0 PULSE(0 12 0 1n 1n 40us 1ms)
+Rbleed3 6 0 1Meg
+M1 5 6 4 3 NMOS
+M2 6 5 7 8 NMOS
+D1 7 0 3V
+L1 5 4 1H
+C1 4 0 10u
+Rload 7 0 5 Ohm
+
+.gdsfile gds_library.gds
+.end

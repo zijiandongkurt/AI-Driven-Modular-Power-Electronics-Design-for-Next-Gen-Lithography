@@ -18,6 +18,7 @@ import re
 import logging
 from dataclasses import dataclass, field, asdict
 from typing import Optional
+from transformers import TextStreamer
 
 import torch
 
@@ -123,7 +124,7 @@ class LLMEngine:
             model_id,
             cache_dir=hf_cache_dir,
             trust_remote_code=True,
-            local_files_only=True,
+            local_files_only=False,
         )
         if self._tok.pad_token is None:
             self._tok.pad_token = self._tok.eos_token
@@ -134,7 +135,7 @@ class LLMEngine:
             device_map="auto",
             trust_remote_code=True,
             cache_dir=hf_cache_dir,
-            local_files_only=True,
+            local_files_only=False,
         )
 
         # 4-bit quantisation — useful if VRAM is tight even on Snellius A100s.
