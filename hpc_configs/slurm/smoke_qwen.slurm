@@ -50,7 +50,9 @@ GPU_MEM_MB=$(nvidia-smi --query-gpu=memory.total --format=csv,noheader,nounits |
 # ============================================================================
 # Knobs
 # ============================================================================
-export HF_CACHE_DIR=/projects/2/managed_datasets/hf_cache_dir
+export HF_HOME=/projects/2/managed_datasets/hf_cache_dir
+export HF_HUB_CACHE="$HF_HOME/hub"
+export TRANSFORMERS_CACHE="$HF_HOME/hub"
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 export TOKENIZERS_PARALLELISM=false

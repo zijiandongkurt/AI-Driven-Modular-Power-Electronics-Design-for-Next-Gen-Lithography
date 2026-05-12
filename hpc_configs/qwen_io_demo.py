@@ -81,7 +81,31 @@ def _gpu_summary(stage: str):
           f"used={used:.2f} GB / total={total/1024**3:.2f} GB")
 
 
+def _wire_hf_cache_env():
+    """Convert our nonstandard GRPO_*/HF_CACHE_DIR knobs into the standard
+    HF_HOME / HF_HUB_CACHE env vars that transformers + huggingface_hub
+    actually read.  Must be called BEFORE any `from transformers import ...`.
+    """
+    # Accept either HF_CACHE_DIR (our custom name in SLURM scripts) or
+    # HF_HOME (the standard) — whichever is set first.
+    custom_cache = (os.environ.get("HF_CACHE_DIR")
+                    or os.environ.get("HF_HOME"))
+    if custom_cache:
+        os.environ["HF_HOME"]      = custom_cache
+        os.environ["HF_HUB_CACHE"] = os.path.join(custom_cache, "hub")
+        # Older transformers reads this name instead
+        os.environ.setdefault("TRANSFORMERS_CACHE",
+                              os.path.join(custom_cache, "hub"))
+        print(f"[cache] HF_HOME      = {os.environ['HF_HOME']}")
+        print(f"[cache] HF_HUB_CACHE = {os.environ['HF_HUB_CACHE']}")
+    else:
+        print("[cache] No HF_CACHE_DIR / HF_HOME set — using HF default "
+              "(~/.cache/huggingface).")
+
+
 def main():
+    _wire_hf_cache_env()
+
     model_id = os.environ.get("GRPO_MODEL_ID", "Qwen/Qwen3-14B")
     quant_env = os.environ.get("GRPO_QUANTIZATION", "")
     quantization = quant_env or None  # "" → None (full bf16)

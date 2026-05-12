@@ -17,6 +17,14 @@ Knobs (set in the SLURM script via `export GRPO_*`):
 
 import os
 
+# Wire our nonstandard cache knob (HF_CACHE_DIR) into the standard
+# HF env vars BEFORE importing anything that touches transformers.
+_cache = os.environ.get("HF_CACHE_DIR") or os.environ.get("HF_HOME")
+if _cache:
+    os.environ["HF_HOME"]              = _cache
+    os.environ["HF_HUB_CACHE"]         = os.path.join(_cache, "hub")
+    os.environ.setdefault("TRANSFORMERS_CACHE", os.path.join(_cache, "hub"))
+
 from pipeline.llm_topology_generation.llm_api import TopologyLLM
 from pipeline.netlist_validation.validator import validator
 from pipeline.simulation.ltspice_runner import LTSpiceSimulator
