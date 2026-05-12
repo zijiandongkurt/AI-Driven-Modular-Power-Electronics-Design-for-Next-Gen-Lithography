@@ -16,14 +16,26 @@ Knobs (set in the SLURM script via `export GRPO_*`):
 """
 
 import os
+import glob
 
-# Wire our nonstandard cache knob (HF_CACHE_DIR) into the standard
-# HF env vars BEFORE importing anything that touches transformers.
-_cache = os.environ.get("HF_CACHE_DIR") or os.environ.get("HF_HOME")
+# Wire our nonstandard cache knobs into the standard HF env vars BEFORE
+# importing anything that touches transformers.  Auto-detect flat vs
+# nested cache layout (Snellius is flat: $CACHE/models--<org>--<name>).
+_cache = (os.environ.get("HF_HUB_CACHE")
+          or os.environ.get("HF_CACHE_DIR")
+          or os.environ.get("HF_HOME"))
 if _cache:
-    os.environ["HF_HOME"]              = _cache
-    os.environ["HF_HUB_CACHE"]         = os.path.join(_cache, "hub")
-    os.environ.setdefault("TRANSFORMERS_CACHE", os.path.join(_cache, "hub"))
+    _flat   = glob.glob(os.path.join(_cache, "models--*"))
+    _nested = glob.glob(os.path.join(_cache, "hub", "models--*"))
+    if _flat and not _nested:
+        _hub = _cache
+    elif _nested:
+        _hub = os.path.join(_cache, "hub")
+    else:
+        _hub = os.path.join(_cache, "hub")
+    os.environ["HF_HOME"]            = _cache
+    os.environ["HF_HUB_CACHE"]       = _hub
+    os.environ["TRANSFORMERS_CACHE"] = _hub
 
 from pipeline.llm_topology_generation.llm_api import TopologyLLM
 from pipeline.netlist_validation.validator import validator

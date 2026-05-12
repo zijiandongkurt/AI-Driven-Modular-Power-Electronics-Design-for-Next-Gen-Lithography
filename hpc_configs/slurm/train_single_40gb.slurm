@@ -78,8 +78,8 @@ python --version
 # Environment knobs (read by overrides/rl_demo.py — see README §7)
 # ============================================================================
 export HF_HOME=/projects/2/managed_datasets/hf_cache_dir
-export HF_HUB_CACHE="$HF_HOME/hub"
-export TRANSFORMERS_CACHE="$HF_HOME/hub"
+export HF_HUB_CACHE="$HF_HOME"
+export TRANSFORMERS_CACHE="$HF_HOME"
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
 

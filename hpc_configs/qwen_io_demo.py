@@ -83,24 +83,45 @@ def _gpu_summary(stage: str):
 
 def _wire_hf_cache_env():
     """Convert our nonstandard GRPO_*/HF_CACHE_DIR knobs into the standard
-    HF_HOME / HF_HUB_CACHE env vars that transformers + huggingface_hub
-    actually read.  Must be called BEFORE any `from transformers import ...`.
+    HF_HUB_CACHE / TRANSFORMERS_CACHE env vars that transformers +
+    huggingface_hub actually read.  Must be called BEFORE any
+    `from transformers import ...`.
+
+    Auto-detects whether the cache layout is:
+        $CACHE/hub/models--<org>--<name>/    (HF default)   → hub_dir = $CACHE/hub
+        $CACHE/models--<org>--<name>/        (Snellius flat) → hub_dir = $CACHE
     """
-    # Accept either HF_CACHE_DIR (our custom name in SLURM scripts) or
-    # HF_HOME (the standard) — whichever is set first.
-    custom_cache = (os.environ.get("HF_CACHE_DIR")
-                    or os.environ.get("HF_HOME"))
-    if custom_cache:
-        os.environ["HF_HOME"]      = custom_cache
-        os.environ["HF_HUB_CACHE"] = os.path.join(custom_cache, "hub")
-        # Older transformers reads this name instead
-        os.environ.setdefault("TRANSFORMERS_CACHE",
-                              os.path.join(custom_cache, "hub"))
-        print(f"[cache] HF_HOME      = {os.environ['HF_HOME']}")
-        print(f"[cache] HF_HUB_CACHE = {os.environ['HF_HUB_CACHE']}")
-    else:
-        print("[cache] No HF_CACHE_DIR / HF_HOME set — using HF default "
+    import glob
+
+    cache = (os.environ.get("HF_HUB_CACHE")
+             or os.environ.get("HF_CACHE_DIR")
+             or os.environ.get("HF_HOME"))
+    if not cache:
+        print("[cache] No HF_HUB_CACHE / HF_CACHE_DIR / HF_HOME set — using HF default "
               "(~/.cache/huggingface).")
+        return
+
+    # Detect which layout this cache uses
+    flat_layout   = glob.glob(os.path.join(cache, "models--*"))
+    nested_layout = glob.glob(os.path.join(cache, "hub", "models--*"))
+
+    if flat_layout and not nested_layout:
+        hub_dir = cache
+        layout = "flat ($CACHE/models--<org>--<name>)"
+    elif nested_layout:
+        hub_dir = os.path.join(cache, "hub")
+        layout = "nested ($CACHE/hub/models--<org>--<name>)"
+    else:
+        # Fallback to HF's default expectation
+        hub_dir = os.path.join(cache, "hub")
+        layout = "unknown (defaulting to $CACHE/hub)"
+
+    os.environ["HF_HOME"]              = cache
+    os.environ["HF_HUB_CACHE"]         = hub_dir
+    os.environ["TRANSFORMERS_CACHE"]   = hub_dir
+    print(f"[cache] layout       = {layout}")
+    print(f"[cache] HF_HOME      = {os.environ['HF_HOME']}")
+    print(f"[cache] HF_HUB_CACHE = {os.environ['HF_HUB_CACHE']}")
 
 
 def main():
