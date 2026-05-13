@@ -1,0 +1,15 @@
+* 5V to 208V boost, 100W, 100kHz
+* D=1-5/208=0.976, t_on=9.76u, Rload=208^2/100=432
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 432
+Rbleed sw 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 9.76u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1n 5m
+.probe V(*) I(*)
+.end

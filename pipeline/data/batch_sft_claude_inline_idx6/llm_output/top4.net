@@ -1,0 +1,14 @@
+* 9V to 220V boost, 250W, 100kHz, smaller L
+Vin in 0 9
+L1 in sw 47u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Rbleed sw 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 9.59u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1n 5m
+.probe V(*) I(*)
+.end
