@@ -39,17 +39,16 @@ underlying TopologyLLM and the same SFTConfig works.
 from __future__ import annotations
 
 import json
-import logging
 import random
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional, List, Dict, Iterable
+from typing import Optional, List, Dict
 
 import torch
-import torch.nn.functional as F
-
-logger = logging.getLogger(__name__)
+# Note: we don't need torch.nn.functional explicitly — HF's
+# `model(input_ids=..., labels=...)` auto-computes cross-entropy with
+# ignore_index=-100, so we just unpack `outputs.loss`.
 
 
 # ────────────────────────────────────────────────────────────────────────

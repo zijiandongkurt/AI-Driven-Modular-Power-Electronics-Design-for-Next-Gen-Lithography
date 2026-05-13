@@ -1,0 +1,27 @@
+# =====================================================================
+# Python deps for the AI-Driven Power-Electronics Design pipeline
+# Tested on Python 3.11.3 (Snellius module Python/3.11.3-GCCcore-12.3.0)
+# =====================================================================
+
+# --- Core deep learning (required for SFT + GRPO LoRA training) ------
+torch
+transformers
+peft
+accelerate
+bitsandbytes                # 4-bit NF4 quantization (needed on 40GB cards)
+
+# --- Tokenizer / HF ecosystem ----------------------------------------
+sentencepiece               # Qwen tokenizer dependency
+huggingface_hub
+
+# --- Scientific / pipeline -------------------------------------------
+numpy
+pandas
+networkx                    # used by pipeline.netlist_validation.validator
+
+# --- Optional but recommended ----------------------------------------
+matplotlib                  # plots in pipeline.graphs_and_visualizations
+PyLTSpice                   # only needed if running LTspice on Windows;
+                            # ignore on Linux/HPC if not using simulator
+anthropic                   # only needed if running
+                            # scripts/generate_sft_via_claude.py

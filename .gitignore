@@ -1,6 +1,39 @@
-venv/
+# --- Python ----------------------------------------------------------
 __pycache__/
 *.pyc
+*.pyo
+
+# --- Virtual envs ----------------------------------------------------
+venv/
+.venv/
+
+# --- IDE -------------------------------------------------------------
 .idea/
+.vscode/
+
+# --- Training artifacts (LoRA adapters, optimizer state, model dumps)
+# These can be huge (100 MB - several GB).  Keep them off Git.
+checkpoints/
+runs/
+outputs/
+*.safetensors
+*.bin
+*.pt
+
+# --- Simulator outputs ----------------------------------------------
 *.log
 *.raw
+*.fail
+pipeline/simulation/output/
+
+# --- Local scratch / test artifacts ----------------------------------
+pipeline/data/batch_loop_iter*/
+pipeline/data/batch_2_wsl/
+pipeline/data/_loop/
+experiment_logs/
+demo/interface_outputs/
+demo/interface_outputs.zip
+
+# --- HuggingFace cache (when set inside repo) -----------------------
+.cache/
+.hf_cache/
