@@ -112,6 +112,13 @@ def _wire_hf_cache_env():
     Auto-detects whether the cache layout is:
         $CACHE/hub/models--<org>--<name>/    (HF default)   → hub_dir = $CACHE/hub
         $CACHE/models--<org>--<name>/        (Snellius flat) → hub_dir = $CACHE
+
+    IMPORTANT: we intentionally do NOT set HF_HOME to the shared dir.
+    HF_HOME controls where huggingface_hub reads its auth `token` file,
+    and the Snellius shared cache contains a token owned by another user
+    that we can't read (PermissionError, which HF Hub does not catch).
+    Leaving HF_HOME at its default (~/.cache/huggingface) lets the token
+    lookup return None cleanly via FileNotFoundError.
     """
     import glob
 
@@ -138,12 +145,12 @@ def _wire_hf_cache_env():
         hub_dir = os.path.join(cache, "hub")
         layout = "unknown (defaulting to $CACHE/hub)"
 
-    os.environ["HF_HOME"]              = cache
-    os.environ["HF_HUB_CACHE"]         = hub_dir
-    os.environ["TRANSFORMERS_CACHE"]   = hub_dir
+    os.environ["HF_HUB_CACHE"]       = hub_dir
+    os.environ["TRANSFORMERS_CACHE"] = hub_dir
+    os.environ.setdefault("HF_HUB_DISABLE_IMPLICIT_TOKEN", "1")
     print(f"[cache] layout       = {layout}")
-    print(f"[cache] HF_HOME      = {os.environ['HF_HOME']}")
     print(f"[cache] HF_HUB_CACHE = {os.environ['HF_HUB_CACHE']}")
+    print(f"[cache] (HF_HOME left at default = {os.environ.get('HF_HOME', '~/.cache/huggingface')})")
 
 
 def main():

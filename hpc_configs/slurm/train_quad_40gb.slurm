@@ -61,11 +61,14 @@ python --version
 # ============================================================================
 # Environment knobs
 # ============================================================================
-export HF_HOME=/projects/2/managed_datasets/hf_cache_dir
-export HF_HUB_CACHE="$HF_HOME"
-export TRANSFORMERS_CACHE="$HF_HOME"
+# IMPORTANT: do NOT set HF_HOME to the shared cache dir.  HF Hub reads
+# its auth `token` from $HF_HOME/token, and the shared cache contains a
+# token file owned by another user we can't read (PermissionError).
+export HF_HUB_CACHE=/projects/2/managed_datasets/hf_cache_dir
+export TRANSFORMERS_CACHE=/projects/2/managed_datasets/hf_cache_dir
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
+export HF_HUB_DISABLE_IMPLICIT_TOKEN=1
 
 # ── Multi-GPU control ───────────────────────────────────────────────────────
 # device_map="auto" inside llm_engine_minimal.py will auto-shard across visible

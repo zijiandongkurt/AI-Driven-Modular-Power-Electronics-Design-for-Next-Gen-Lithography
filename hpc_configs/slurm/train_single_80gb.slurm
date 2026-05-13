@@ -66,11 +66,14 @@ python --version
 # HuggingFace cache. /projects/2/managed_datasets/hf_cache_dir is the Snellius
 # shared cache that already contains Qwen3-14B. If it's not readable to you,
 # point this at a /scratch path you `huggingface-cli download`ed into yourself.
-export HF_HOME=/projects/2/managed_datasets/hf_cache_dir
-export HF_HUB_CACHE="$HF_HOME"
-export TRANSFORMERS_CACHE="$HF_HOME"
+# IMPORTANT: do NOT set HF_HOME to the shared cache dir.  HF Hub reads
+# its auth `token` from $HF_HOME/token, and the shared cache contains a
+# token file owned by another user we can't read (PermissionError).
+export HF_HUB_CACHE=/projects/2/managed_datasets/hf_cache_dir
+export TRANSFORMERS_CACHE=/projects/2/managed_datasets/hf_cache_dir
 export HF_HUB_OFFLINE=1
 export TRANSFORMERS_OFFLINE=1
+export HF_HUB_DISABLE_IMPLICIT_TOKEN=1
 
 # Quantization: leave EMPTY for full bf16 on 80GB (best quality, what we want here).
 export GRPO_QUANTIZATION=""

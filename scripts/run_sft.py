@@ -48,6 +48,13 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
 # ── 1. Wire HF cache env vars (auto-detect flat vs nested layout) ──────────
+# IMPORTANT: We deliberately do NOT set HF_HOME to a shared cache dir.
+# HF_HOME controls where huggingface_hub reads its auth `token` file.
+# Snellius's /projects/2/managed_datasets/hf_cache_dir/ contains a `token`
+# owned by another user that we cannot read; HF Hub only catches
+# FileNotFoundError there, so it crashes with PermissionError.
+# Leave HF_HOME at its default (~/.cache/huggingface) and only point the
+# model cache vars at the shared dir.
 _cache = (os.environ.get("HF_HUB_CACHE")
           or os.environ.get("HF_CACHE_DIR")
           or os.environ.get("HF_HOME"))
@@ -55,9 +62,9 @@ if _cache:
     _flat   = glob.glob(os.path.join(_cache, "models--*"))
     _nested = glob.glob(os.path.join(_cache, "hub", "models--*"))
     _hub    = _cache if (_flat and not _nested) else os.path.join(_cache, "hub")
-    os.environ["HF_HOME"]            = _cache
     os.environ["HF_HUB_CACHE"]       = _hub
     os.environ["TRANSFORMERS_CACHE"] = _hub
+    os.environ.setdefault("HF_HUB_DISABLE_IMPLICIT_TOKEN", "1")
 
 # ── 2. Imports (after env vars are in place) ───────────────────────────────
 from pipeline.llm_topology_generation.llm_api import TopologyLLM

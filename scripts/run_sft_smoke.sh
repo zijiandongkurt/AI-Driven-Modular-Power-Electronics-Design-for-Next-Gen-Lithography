@@ -32,11 +32,24 @@ source .venv/bin/activate
 
 # ── Python / HF env ──────────────────────────────────────────────────
 export PYTHONPATH="$(pwd)"
+
+# IMPORTANT: do NOT set HF_HOME to the shared cache dir.  HF Hub reads
+# its auth `token` from $HF_HOME/token, and Snellius's shared cache has
+# a token file owned by another user we can't read (PermissionError).
+# Leave HF_HOME at its default (~/.cache/huggingface) and only point the
+# model cache vars at the shared dir.
 export HF_HUB_CACHE=${HF_HUB_CACHE:-/projects/2/managed_datasets/hf_cache_dir}
 export TRANSFORMERS_CACHE=${TRANSFORMERS_CACHE:-$HF_HUB_CACHE}
 export HF_HUB_OFFLINE=${HF_HUB_OFFLINE:-1}
 export TRANSFORMERS_OFFLINE=${TRANSFORMERS_OFFLINE:-1}
+export HF_HUB_DISABLE_IMPLICIT_TOKEN=${HF_HUB_DISABLE_IMPLICIT_TOKEN:-1}
 export TOKENIZERS_PARALLELISM=${TOKENIZERS_PARALLELISM:-false}
+# Defensive: if a previous shell had HF_HOME pointing at the shared dir,
+# unset it.  Default location is ~/.cache/huggingface.
+if [ "${HF_HOME:-}" = "/projects/2/managed_datasets/hf_cache_dir" ]; then
+    echo "  → unsetting HF_HOME (it was pointing at the shared cache)"
+    unset HF_HOME
+fi
 
 # ── Auto-detect GPU & decide quantization ────────────────────────────
 GPU_MEM_MB=$(nvidia-smi --query-gpu=memory.total --format=csv,noheader,nounits 2>/dev/null | head -1 || echo "0")

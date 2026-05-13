@@ -13,6 +13,7 @@ Usage:
 from __future__ import annotations
 
 import json
+import os
 import re
 import logging
 from dataclasses import dataclass, field, asdict
@@ -21,6 +22,26 @@ from typing import Optional
 import torch
 
 logger = logging.getLogger(__name__)
+
+
+# ── Cache + auth knobs ────────────────────────────────────────────────────
+#
+# Default to Snellius's shared HF cache where Qwen3-14B already lives.
+# Override by exporting HF_HUB_CACHE (or passing hf_cache_dir= to
+# LLMEngine).  We INTENTIONALLY do NOT pull HF_HOME from the same place —
+# HF_HOME controls where the auth `token` file is read from, and the
+# shared dir contains a token belonging to another user that we can't
+# read (PermissionError).  Keeping HF_HOME at its default (~/.cache/
+# huggingface) lets the offline token lookup gracefully return None.
+
+SNELLIUS_HF_CACHE: str = os.environ.get(
+    "HF_HUB_CACHE",
+    "/projects/2/managed_datasets/hf_cache_dir",
+)
+
+# Belt-and-suspenders: tell HF Hub to never even attempt the implicit
+# token-from-file lookup.  Only takes effect on huggingface_hub >= 0.20.
+os.environ.setdefault("HF_HUB_DISABLE_IMPLICIT_TOKEN", "1")
 
 
 # ── Data contracts ───────────────────────────────────────────────────────
@@ -82,6 +103,7 @@ class LLMEngine:
         max_new_tokens: int = 1024,
         temperature: float = 0.7,
         top_p: float = 0.9,
+        hf_cache_dir: str = SNELLIUS_HF_CACHE,
     ):
         from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -95,13 +117,27 @@ class LLMEngine:
         self._active: Optional[str] = None
         self._is_peft = False
 
-        # Load tokenizer
-        self._tok = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
+        # ── Load tokenizer ────────────────────────────────────────────
+        # cache_dir + local_files_only=True forces transformers to read
+        # from the shared Snellius cache and never attempt a download.
+        logger.info(f"Loading tokenizer from cache: {hf_cache_dir}")
+        self._tok = AutoTokenizer.from_pretrained(
+            model_id,
+            cache_dir=hf_cache_dir,
+            local_files_only=True,
+            trust_remote_code=True,
+        )
         if self._tok.pad_token is None:
             self._tok.pad_token = self._tok.eos_token
 
-        # Load model
-        kw: dict = dict(torch_dtype=torch.bfloat16, device_map="auto", trust_remote_code=True)
+        # ── Load model ────────────────────────────────────────────────
+        kw: dict = dict(
+            torch_dtype=torch.bfloat16,
+            device_map="auto",
+            cache_dir=hf_cache_dir,
+            local_files_only=True,
+            trust_remote_code=True,
+        )
         if quantization == "4bit":
             from transformers import BitsAndBytesConfig
             kw["quantization_config"] = BitsAndBytesConfig(

@@ -39,6 +39,11 @@ import glob
 # Wire our nonstandard cache knobs into the standard HF env vars BEFORE
 # importing anything that touches transformers.  Auto-detect flat vs
 # nested cache layout (Snellius is flat: $CACHE/models--<org>--<name>).
+#
+# IMPORTANT: do NOT set HF_HOME to a shared dir — HF Hub reads its
+# auth `token` from $HF_HOME/token, and Snellius's shared cache has a
+# token owned by another user that we can't read.  Keep HF_HOME at its
+# default (~/.cache/huggingface).
 _cache = (os.environ.get("HF_HUB_CACHE")
           or os.environ.get("HF_CACHE_DIR")
           or os.environ.get("HF_HOME"))
@@ -51,9 +56,9 @@ if _cache:
         _hub = os.path.join(_cache, "hub")
     else:
         _hub = os.path.join(_cache, "hub")
-    os.environ["HF_HOME"]            = _cache
     os.environ["HF_HUB_CACHE"]       = _hub
     os.environ["TRANSFORMERS_CACHE"] = _hub
+    os.environ.setdefault("HF_HUB_DISABLE_IMPLICIT_TOKEN", "1")
 
 from pipeline.llm_topology_generation.llm_api import TopologyLLM
 from pipeline.llm_topology_generation.prompt_input import load_constraint
