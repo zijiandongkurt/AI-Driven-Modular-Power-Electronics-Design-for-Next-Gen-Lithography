@@ -1,0 +1,13 @@
+.tran 1n 5m
+Vin in 0 12
+Rbleed in 0 1Meg
+M1 in gate sw 0 NMOS W=2 L=1
+M2 sw 0 gate 0 NMOS W=2 L=1
+D1 sw 0 DIODE
+L1 sw out 220u
+C1 out 0 220u
+Rload out 0 1
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16667e-06 1e-05)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.end

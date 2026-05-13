@@ -1,0 +1,17 @@
+* top8
+.tran 1n 5m
+Vin in 0 9
+M1 in gate sw 0 NMOS W=2 L=2
+M2 in gate2 sw2 0 NMOS W=2 L=2
+D1 0 sw DIODE
+D2 0 sw2 DIODE
+L1 sw out 22u
+L2 sw2 out 22u
+C1 out 0 470u
+Rload out 0 1.0204
+Vgate gate 0 PULSE(0 9 0 1n 1n 1e-6 2e-5)
+Vgate2 gate2 0 PULSE(0 9 2e-5 1n 1n 1e-6 2e-5)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.probe V(*) I(*)
+.end

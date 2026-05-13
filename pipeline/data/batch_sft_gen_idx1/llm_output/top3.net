@@ -1,0 +1,22 @@
+.tran 1n 5m
+Vin in 0 208
+M1 in gate1 sw1 0 NMOS W=0.3 L=0.2
+M2 in gate2 sw2 0 NMOS W=0.5 L=0.4
+M3 in gate3 sw3 0 NMOS W=0.7 L=0.6
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+D3 0 sw3 DIODE
+L1 sw1 out 10u
+L2 sw2 out 15u
+L3 sw3 out 20u
+C1 out 0 300u
+Rload out 0 2.2222
+Vgate gate1 0 PULSE(0 208 0 1n 1n 100ns 500ns)
+Vgate2 gate2 0 PULSE(0 208 0 1n 1n 150ns 600ns)
+Vgate3 gate3 0 PULSE(0 208 0 1n 1n 200ns 700ns)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+Rbleed sw1 0 1Meg
+Rbleed sw2 0 1Meg
+Rbleed sw3 0 1Meg
+.end

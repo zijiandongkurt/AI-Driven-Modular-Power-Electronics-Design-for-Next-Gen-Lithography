@@ -1,0 +1,12 @@
+.tran 1n 5m
+Vin in 0 220
+M1 in gate sw 0 NMOS W=2 L=0.5
+M2 sw 0 gate2 0 NMOS W=2 L=0.5
+M3 gate gate2 0 0 NMOS W=2 L=0.5
+D1 0 sw DIODE
+D2 0 sw 0 DIODE
+Rload out 0 5
+Vgate gate 0 PULSE(0 220 0 1n 1n 4.16667e-06 1e-05)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.end

@@ -1,0 +1,11 @@
+.tran 1n 100m
+Vin in 0 36
+M1 in gate sw 0 NMOS W=2 L=0.5
+D1 0 sw DIODE
+L1 sw out 10u
+C1 out 0 100u
+Rload out 0 8.333333333333334
+Vgate gate 0 PULSE(0 24 0 1n 1n 8.333333333333333 100e-6)
+.model NMOS NMOS(Vto=1.2 Kp=1.5 Lambda=0)
+.model DIODE D
+.end
