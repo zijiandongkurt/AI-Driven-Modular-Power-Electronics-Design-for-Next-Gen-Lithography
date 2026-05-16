@@ -96,7 +96,7 @@ class TopologyLLM:
         ids = tok(prompt, return_tensors="pt")
         ids = {k: v.to(model.device) for k, v in ids.items()}
 
-        streamer = TextStreamer(tok, skip_prompt=True) #
+        #streamer = TextStreamer(tok, skip_prompt=True) #
 
         results: list[dict[str, str]] = []
         for i in range(n):
@@ -111,7 +111,7 @@ class TopologyLLM:
                     temperature=self.engine._temperature,
                     top_p=self.engine._top_p,
                     pad_token_id=tok.pad_token_id,
-                    streamer=streamer,
+                    #streamer=streamer,
                 )
             
             gen_ids = out[0][ids["input_ids"].shape[1]:]

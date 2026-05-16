@@ -104,7 +104,8 @@ class LLMEngine:
 
         # Point HuggingFace at the Snellius shared cache so no download occurs.
         os.environ["HF_HUB_CACHE"] = hf_cache_dir
-        os.environ["HF_HUB_OFFLINE"] = "1"  # never attempt a download
+        os.environ["TRANSFORMERS_CACHE"] = hf_cache_dir
+        os.environ["HF_HUB_OFFLINE"] = "1"
         os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
         # Store generation tuning hyperparameters.
@@ -124,7 +125,7 @@ class LLMEngine:
             model_id,
             cache_dir=hf_cache_dir,
             trust_remote_code=True,
-            local_files_only=False,
+            local_files_only=True,
         )
         if self._tok.pad_token is None:
             self._tok.pad_token = self._tok.eos_token
@@ -135,7 +136,7 @@ class LLMEngine:
             device_map="auto",
             trust_remote_code=True,
             cache_dir=hf_cache_dir,
-            local_files_only=False,
+            local_files_only=True,
         )
 
         # 4-bit quantisation — useful if VRAM is tight even on Snellius A100s.

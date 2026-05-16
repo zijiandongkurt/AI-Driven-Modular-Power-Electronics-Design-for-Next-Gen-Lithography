@@ -4,7 +4,7 @@ from pathlib import Path
 
 from pipeline.llm_topology_generation.llm_api import TopologyLLM
 from pipeline.netlist_validation.validator import validator
-from pipeline.simulation.ltspice_runner import LTSpiceSimulator
+from pipeline.simulation.ltspice_runner_snellius import LTSpiceSimulator
 #from pipeline.simulation.ngspice_runner import NGSpiceSimulator
 from pipeline.reward_evaluation.reward_function import RewardFunction
 from pipeline.reward_evaluation.reward_function_norm import RewardFunctionNorm
@@ -36,13 +36,13 @@ def get_next_run_folder(data_dir: Path) -> str:
 
 def main():
     # --- Configuration ---
-    N_batch = 2  # Number of batches to run sequentially
-    n_generations_per_batch = 1 # Number of circuits per batch
+    N_batch = 5  # Number of batches to run sequentially
+    n_generations_per_batch = 2 # Number of circuits per batch
     
     UPDATE_PLOTS_PER_BATCH = True # <-- TOGGLE: Set to False to only plot at the very end
     
     # NEW: Context window hyperparameter
-    MAX_TOKENS = 10 * 2048  # Increase this if your netlists are getting cut off
+    MAX_TOKENS = 1024  # Increase this if your netlists are getting cut off
 
     # Define weight distribution for the reward function
     weights = {
@@ -54,7 +54,7 @@ def main():
 
     # --- Setup Pipeline Components ---
     llm = TopologyLLM(
-        model_id="Qwen/Qwen2.5-3B-Instruct",
+        #model_id="Qwen/Qwen2.5-3B-Instruct",
         max_new_tokens=MAX_TOKENS 
     )
     val        = validator()
