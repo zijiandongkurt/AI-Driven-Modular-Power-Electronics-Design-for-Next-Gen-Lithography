@@ -69,13 +69,59 @@ run_full() {
   echo ""; echo "================================================================="
   echo " STAGE: GRPO full loop (needs LTspice container)"
   echo "================================================================="
-  # Verify Atakan's container hooks exist
-  if [ ! -f "$HOME/run_ltspice_snellius.sh" ]; then
-    echo "WARN: ~/run_ltspice_snellius.sh not found."
-    echo "      Full-loop training requires Atakan's containerized LTspice."
-    echo "      Skipping. Re-run with the container script in place."
-    return 1
+
+  # Resolve the LTspice launcher:  user env var first,
+  # then in-repo defaults (docker → snellius → workstation),
+  # then Atakan's legacy ~/run_ltspice_snellius.sh as last resort.
+  CANDIDATES=(
+      "${LTSPICE_LAUNCHER:-}"
+      "$(pwd)/containers/ltspice/run_ltspice_docker.sh"
+      "$(pwd)/containers/ltspice/run_ltspice_snellius.sh"
+      "$(pwd)/containers/ltspice/run_ltspice.sh"
+      "$HOME/run_ltspice_snellius.sh"
+  )
+
+  LAUNCHER=""
+  for c in "${CANDIDATES[@]}"; do
+      if [ -n "$c" ] && [ -f "$c" ]; then
+          LAUNCHER="$c"
+          break
+      fi
+  done
+
+  if [ -z "$LAUNCHER" ]; then
+      echo "WARN: no LTspice launcher script found." >&2
+      echo "      Checked:" >&2
+      for c in "${CANDIDATES[@]}"; do [ -n "$c" ] && echo "        $c" >&2; done
+      echo "      Build the container first:  bash containers/ltspice/build.sh" >&2
+      echo "      Then export LTSPICE_LAUNCHER to one of containers/ltspice/run_ltspice*.sh" >&2
+      return 1
   fi
+
+  # Sanity-check the .sif exists too (whichever launcher we picked will need one)
+  SIF="${LTSPICE_SIF:-$HOME/container_custom.sif}"
+  if [ ! -f "$SIF" ]; then
+      echo "WARN: container image not found at $SIF" >&2
+      echo "      Pull/build it:  bash containers/ltspice/build.sh" >&2
+      return 1
+  fi
+
+  # And the bind-mount source dir
+  FILES_DIR="${LTSPICE_FILES_DIR:-$HOME/ltspice-files}"
+  if [ ! -d "$FILES_DIR" ]; then
+      echo "  → mkdir -p $FILES_DIR"
+      mkdir -p "$FILES_DIR"
+  fi
+
+  echo "  [container] launcher = $LAUNCHER"
+  echo "  [container] sif      = $SIF"
+  echo "  [container] files    = $FILES_DIR"
+
+  # Re-export so Python runner sees the resolved paths
+  export LTSPICE_LAUNCHER="$LAUNCHER"
+  export LTSPICE_SIF="$SIF"
+  export LTSPICE_FILES_DIR="$FILES_DIR"
+
   python scripts/grpo_full.py
 }
 
