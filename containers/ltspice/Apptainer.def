@@ -1,0 +1,99 @@
+Bootstrap: docker
+From: debian:bookworm
+
+%post
+    export DEBIAN_FRONTEND=noninteractive
+    export WINEPREFIX=/home/wineuser/.wine
+    export WINEDLLOVERRIDES="mscoree,mshtml=,winegstreamer="
+    export WINEDEBUG=-all
+    export DISPLAY=:99
+    export WINE_BRANCH=stable
+    export WINE_VERSION=11.0.0.0~bookworm-1
+    export XDG_RUNTIME_DIR=/tmp/runtime-wineuser-xdg
+    
+    mkdir -p /home/wineuser/.wine
+    mkdir -p $XDG_RUNTIME_DIR
+
+    # Install Wine and dependencies
+    apt-get update
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
+        wget \
+        gnupg \
+        locales \
+        xvfb \
+        cabextract \
+        winbind \
+        gosu \
+        p7zip-full \
+        unzip \
+        libvulkan1
+
+    # Enable 32-bit architecture (CRUCIAL for Wine)
+    dpkg --add-architecture i386
+
+    mkdir -p /etc/apt/keyrings
+    wget -qO /etc/apt/keyrings/winehq.key https://dl.winehq.org/wine-builds/winehq.key
+    echo "deb [signed-by=/etc/apt/keyrings/winehq.key] https://dl.winehq.org/wine-builds/debian/ bookworm main" > /etc/apt/sources.list.d/winehq.list
+
+    apt-get update
+    apt-get install -y --no-install-recommends \
+        winehq-${WINE_BRANCH}=${WINE_VERSION} \
+        wine-${WINE_BRANCH}=${WINE_VERSION} \
+        wine-${WINE_BRANCH}-amd64=${WINE_VERSION} \
+        wine-${WINE_BRANCH}-i386=${WINE_VERSION}
+
+    wget -q -O /tmp/winetricks https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks
+    wget -q -O /tmp/winetricks.bash-completion https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks.bash-completion
+    chmod +x /tmp/winetricks
+    mv /tmp/winetricks /usr/bin
+    mv /tmp/winetricks.bash-completion /usr/share/bash-completion/completions/winetricks
+
+    # Clean up
+    apt-get clean
+    rm -rf /var/lib/apt/lists/*
+
+    sed -i '/en_US.UTF-8/s/^# //' /etc/locale.gen
+    locale-gen
+
+    Xvfb :99 -screen 0 1024x768x24 &
+    XVFB_PID=$!
+    
+    sleep 2
+
+    LD_PRELOAD= winetricks riched20 riched30
+    LD_PRELOAD= wineboot --init
+    LD_PRELOAD= wineserver --wait
+
+    wget -q -O /tmp/LTspice64.msi https://ltspice.analog.com/software/LTspice64.msi
+    
+    LD_PRELOAD= WINEDEBUG=+err,+warn,+process wine msiexec /i /tmp/LTspice64.msi /quiet /norestart
+    LD_PRELOAD= wineserver --wait
+
+    rm /tmp/LTspice64.msi
+    rm -rf /tmp/.wine-* /tmp/wine-*
+    kill $XVFB_PID || true
+    
+    mv "/home/wineuser/.wine/drive_c/Program Files/ADI/LTspice" /opt/ltspice
+    ln -s /opt/ltspice "/home/wineuser/.wine/drive_c/Program Files/ADI/LTspice"
+    mv /home/wineuser/.wine /opt/wineprefix-template
+
+    find /opt/ltspice -type d -exec chmod 755 {} +
+    find /opt/ltspice -type f -exec chmod 644 {} +
+    find /opt/wineprefix-template -type d -exec chmod 755 {} +
+    find /opt/wineprefix-template -type f -exec chmod 644 {} +
+
+    rm -rf /tmp/.wine-* /tmp/wine-*
+
+%environment
+    export LANG=en_US.UTF-8
+    export LANGUAGE=en_US:en
+    export LC_ALL=en_US.UTF-8
+    export HOME=/home/wineuser
+    export WINEPREFIX=${WINEPREFIX:-/tmp/wine-prefix}
+    export WINEDEBUG=-all
+    export WINEDLLOVERRIDES="winegstreamer=d;*d3d9,*d3d10,*d3d10_1,*d3d10core,*d3d11,*dxgi=b"
+
+%runscript
+    exec "$@"
+

@@ -1,6 +1,7 @@
 from PyLTSpice import SpiceEditor, RawRead
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import os
 import subprocess
 import shutil
 import re
@@ -43,15 +44,39 @@ def _to_float(s):
 
 
 class LTSpiceSimulator():
+    """
+    Calls a containerized Wine + LTspice via a launcher script.
+
+    Default container layout (matches Atakan's original setup on Snellius):
+        $HOME/run_ltspice_snellius.sh   launcher
+        $HOME/ltspice-files/             bind-mount → /sim in container
+
+    Self-built container layout (containers/ltspice/, see README there):
+        $LTSPICE_LAUNCHER    -> repo's containers/ltspice/run_ltspice.sh
+        $LTSPICE_FILES_DIR   -> a writable dir of your choice
+        $LTSPICE_SIF         -> the .sif image
+        (the latter is consumed by run_ltspice.sh, not by this Python file)
+
+    All three are overridable via environment variables:
+        LTSPICE_LAUNCHER     path to the .sh that runs `apptainer run ...`
+        LTSPICE_FILES_DIR    dir where .net files are staged before running
+        LTSPICE_PARALLEL     how many sims to run concurrently (default 4)
+    """
+
     def __init__(self):
         self.BASE_DIR   = Path(__file__).parent
         self.DATA_DIR   = self.BASE_DIR.parent / "data"
 
-        # Container paths — adjust if your setup differs
-        self.HOME_DIR        = Path.home()
-        self.LTSPICE_FILES   = self.HOME_DIR / "ltspice-files"   # bind-mounted to /sim in container
-        self.RUN_SCRIPT      = self.HOME_DIR / "run_ltspice_snellius.sh"
-        self.PARALLEL_SIMS   = 4
+        # Container hooks — env-var overridable, Atakan-style defaults
+        self.LTSPICE_FILES = Path(os.environ.get(
+            "LTSPICE_FILES_DIR",
+            Path.home() / "ltspice-files",
+        ))
+        self.RUN_SCRIPT = Path(os.environ.get(
+            "LTSPICE_LAUNCHER",
+            Path.home() / "run_ltspice_snellius.sh",
+        ))
+        self.PARALLEL_SIMS = int(os.environ.get("LTSPICE_PARALLEL", "4"))
 
     def _onSimulationComplete(self, net_stem):
         print(f"SIMULATION COMPLETE: {net_stem}")

@@ -153,29 +153,52 @@ If `Verdict: ✅ PASS`, the SFT → GRPO hand-off works.  Move on.
 ## Stage 5 — GRPO full loop (needs LTspice container)
 
 This stage **actually trains the model on simulated rewards**, the main
-event of the SFT → GRPO recipe.  Requires Atakan's container:
+event of the SFT → GRPO recipe.  All container assets are in this repo
+under `containers/ltspice/` — **no team-private files needed**.
 
-```
-~/run_ltspice_snellius.sh             # apptainer launcher script
-~/ltspice-files/                      # bind-mounted to /sim in container
-<some>.sif                             # apptainer image with Wine + LTspice XVIIx64.exe
-```
-
-### 5.1 Verify container is in place
+### 5.1 Provision the container (~3 min via pull, or ~15 min via build)
 
 ```bash
-ls -lh $HOME/run_ltspice_snellius.sh                # should exist + be executable
-ls -lh $HOME/ltspice-files                          # directory should exist
-# test the container directly with one of our SFT samples
-cp pipeline/data/batch_sft_expanded_idx0/llm_output/top1.net $HOME/ltspice-files/
-bash $HOME/run_ltspice_snellius.sh /sim/top1.net
-ls -lh $HOME/ltspice-files/top1.raw                 # should now exist
+module load 2023
+module spider Apptainer       # find the version your HPC has
+module load Apptainer/1.2.5-GCCcore-12.3.0    # adjust to whatever spider shows
+
+# Option A (recommended): pull pre-built image from Docker Hub
+bash containers/ltspice/build.sh
+# → produces ~/container_custom.sif
+
+# Option B: build from Apptainer.def (Debian + Wine 11 + LTspice 64 MSI)
+##MODE=build bash containers/ltspice/build.sh
 ```
 
-If any of those steps fails, **stop and ping Atakan (scur2530)** for
-the missing script / image.
+Either way you end up with `$HOME/container_custom.sif` (~1.2-1.5 GB).
+See `containers/ltspice/README.md` for full details on both modes and
+the container's internals.
 
-### 5.2 Run the GRPO full loop
+### 5.2 Wire the container to the Python pipeline
+
+```bash
+mkdir -p $HOME/ltspice-files
+export LTSPICE_SIF=$HOME/container_custom.sif
+export LTSPICE_LAUNCHER=$PWD/containers/ltspice/run_ltspice_snellius.sh
+export LTSPICE_FILES_DIR=$HOME/ltspice-files
+
+# Standalone container smoke test (without our Python runner)
+cp pipeline/data/batch_sft_expanded_idx0/llm_output/top1.net $LTSPICE_FILES_DIR/
+bash $LTSPICE_LAUNCHER /sim/top1.net
+ls -lh $LTSPICE_FILES_DIR/top1.raw    # should appear after ~10-30 s
+```
+
+If the .raw doesn't appear, fall back to:
+```bash
+# Run the container interactively to see what's happening
+apptainer shell --writable-tmpfs --bind $LTSPICE_FILES_DIR:/sim $LTSPICE_SIF
+# inside container:
+ls /opt/wineprefix-template/drive_c/Program\ Files/ADI/LTspice/
+```
+See `containers/ltspice/README.md` "Troubleshooting" for full table.
+
+### 5.3 Run the GRPO full loop
 
 ```bash
 # default: 5 GRPO iterations, n=4 candidates each, constraint idx 0 (12V → 5V)
