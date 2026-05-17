@@ -92,10 +92,18 @@ class LTSpiceSimulator():
         results <DataFrame> : Refined scalar metrics dataframe, one row per simulation run
         """
         batch_dir        = self.DATA_DIR / batchID
-        llm_output_dir   = batch_dir / "LLM_output"
+        # Try uppercase first (canonical), fall back to lowercase legacy
+        llm_output_dir = None
+        for case in ("LLM_output", "llm_output"):
+            cand = batch_dir / case
+            if cand.exists():
+                llm_output_dir = cand
+                break
         val_results_path = batch_dir / "validation_results.json"
 
-        assert llm_output_dir.exists(),   f"llm_output folder not found: {llm_output_dir.resolve()}"
+        assert llm_output_dir is not None, \
+            f"netlist folder not found: {batch_dir / 'LLM_output'} " \
+            f"(also tried {batch_dir / 'llm_output'})"
         assert val_results_path.exists(), f"validation_results.json not found: {val_results_path.resolve()}"
         assert self.RUN_SCRIPT.exists(),  f"Run script not found: {self.RUN_SCRIPT}"
 

@@ -98,8 +98,18 @@ class validator():
         """
         import json
 
-        batch_dir = self.DATA_DIR / batchID / "LLM_output"
-        assert batch_dir.exists(), f"Batch folder not found: {batch_dir.resolve()}"
+        # Project convention is uppercase LLM_output, but LLM_Syh legacy
+        # batches were lowercase llm_output.  Try both before giving up.
+        batch_root = self.DATA_DIR / batchID
+        batch_dir = None
+        for case in ("LLM_output", "llm_output"):
+            cand = batch_root / case
+            if cand.exists():
+                batch_dir = cand
+                break
+        assert batch_dir is not None, \
+            f"Batch folder not found: {batch_root / 'LLM_output'} " \
+            f"(also tried {batch_root / 'llm_output'})"
 
         net_files = list(batch_dir.glob("*.net"))
         assert net_files, f"No .net files found in: {batch_dir}"

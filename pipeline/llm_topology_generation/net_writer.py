@@ -28,10 +28,21 @@ _PIPELINE_ROOT = Path(__file__).parent.parent
 def get_llm_output_dir(batchID: str) -> Path:
     """Return the canonical output path for a batch.
 
-    Layout: ``pipeline/data/<batchID>/llm_output/`` (folder name is
-    intentionally lowercase, matching the validator and simulator).
+    Layout: ``pipeline/data/<batchID>/LLM_output/``.
+
+    Project-wide convention is **uppercase** ``LLM_output``
+    (validator.py and ltspice_runner_snellius.py both read uppercase
+    on origin/main and origin/containerfix).  If a batch directory
+    with the legacy lowercase ``llm_output`` already exists on disk
+    we return that one instead, so we don't accidentally create a
+    sibling folder with a different case (Linux ext4 treats those as
+    two separate directories and the validator can't find anything).
     """
-    return _PIPELINE_ROOT / "data" / batchID / "llm_output"
+    batch_dir = _PIPELINE_ROOT / "data" / batchID
+    legacy = batch_dir / "llm_output"
+    if legacy.exists():
+        return legacy
+    return batch_dir / "LLM_output"
 
 
 def write_single_netlist(path: str | Path, netlist: str) -> Path:
