@@ -51,7 +51,7 @@ class LTSpiceSimulator():
         self.HOME_DIR        = Path.home()
         self.LTSPICE_FILES   = self.HOME_DIR / "ltspice-files"   # bind-mounted to /sim in container
         self.RUN_SCRIPT      = self.HOME_DIR / "run_ltspice_snellius.sh"
-        self.PARALLEL_SIMS   = 4
+        self.PARALLEL_SIMS   = 2
 
     def _onSimulationComplete(self, net_stem):
         print(f"SIMULATION COMPLETE: {net_stem}")
@@ -126,10 +126,10 @@ class LTSpiceSimulator():
 
         def _run_one(filename):
             """Run a single netlist through the container and move .raw output to output_path."""
-            container_path = f"/sim/{filename}"
+            container_path = f"Z:\\\\sim\\\\{filename}"
             result = subprocess.run(
                 [str(self.RUN_SCRIPT), container_path],
-                capture_output=True, text=True
+                text=True
             )
             if result.returncode != 0:
                 print(f"ERROR [{filename}]: {result.stderr.strip()}")

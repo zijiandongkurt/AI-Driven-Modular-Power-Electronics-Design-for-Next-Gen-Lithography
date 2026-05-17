@@ -48,7 +48,7 @@ FIXED RULES — do not deviate:
   - Gate drive     : Vgate gate 0 PULSE(0 12 0 1n 1n [t_on] [period])
                      — exactly 7 parameters, choose t_on and period to meet switching frequency
   - Floating nodes : any node connected only to reactive elements needs Rbleed <node> 0 1Meg
-  - Simulation     : .tran 1n 5m
+  - Simulation     : .tran 10n 1m
   CRITICAL SYNTAX RULE: DO NOT output placeholders like <vin>, [value], or formulas like <vin/20000>. You MUST output concrete floating point numbers or SPICE notation (e.g., 10u, 220).
 
 REQUIRED NODES:
