@@ -1,5 +1,5 @@
 """
-grpo_trainer.py  —  HPC-tuned drop-in replacement.
+grpo_trainer.py  —  HPC-tuned drop-in replacement (v2: prompt-aligned).
 
 Differences from the original pipeline/reinforcement_algorithm/grpo_trainer.py:
 
@@ -14,6 +14,16 @@ Differences from the original pipeline/reinforcement_algorithm/grpo_trainer.py:
   3. Loud, structured logging at each pipeline stage (we lose interactive
      stdout on SLURM, so we print explicit START/END markers).
 
+  4. **v2 prompt fix**: `_load_prompt()` now uses
+     `make_prompt(constraint)` from `pipeline.llm_topology_generation.
+     prompt_input` — the SAME function the generator uses at sampling
+     time.  Previously this method built a different prompt (
+     system_prompt.txt + JSON constraint), so the GRPO log-prob
+     calculation was conditioned on text the model had never seen
+     during generation.  The gradient direction was therefore
+     mis-aligned with the actual generation distribution, which we
+     believe is part of the 20-step "no learning" signal.
+
 Algorithm itself is unchanged.
 """
 
@@ -26,6 +36,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 from pipeline.reinforcement_algorithm.new_rl_updater import RLUpdater, RLConfig
+from pipeline.llm_topology_generation.prompt_input import make_prompt
 
 
 # Repo root — used to resolve paths regardless of cwd.
@@ -115,22 +126,21 @@ class GRPOTrainer:
 
     def _load_prompt(self) -> str:
         """
-        Build the prompt used for RL log-prob calculation:
-            system_prompt.txt + current constraint
-        """
-        if self.system_prompt_path.exists():
-            system_prompt = self.system_prompt_path.read_text(encoding="utf-8")
-        else:
-            print(f"WARNING: {self.system_prompt_path} not found. Using constraint only.",
-                  file=sys.stderr)
-            system_prompt = ""
+        Build the prompt used for RL log-prob calculation.
 
-        return (
-            system_prompt.strip()
-            + "\n\n### Constraint:\n"
-            + json.dumps(self.constraint_dict, indent=2)
-            + "\n\n### SPICE Netlist:\n"
-        )
+        **CRITICAL**: this must match the prompt used at GENERATION time
+        (in `pipeline.llm_topology_generation.llm_engine_minimal.LLMEngine
+        ._build_prompt`), otherwise log P(completion | prompt) is computed
+        against a distribution the model never sampled from — gradients
+        are then mis-aligned with what the policy actually proposed, and
+        GRPO won't learn.
+
+        We delegate to `make_prompt()` — the SAME function the generator
+        uses (it includes NAMING_RULES + Constraint + the "### SPICE
+        Netlist:" header).  This eliminates the silent train/eval skew
+        we had in v1 (which used system_prompt.txt + raw JSON).
+        """
+        return make_prompt(self.constraint_dict)
 
     def _load_netlist(self, batch_id: str, topology_id: str) -> str:
         netlist_path = self._llm_output_dir(batch_id) / f"{topology_id}.net"

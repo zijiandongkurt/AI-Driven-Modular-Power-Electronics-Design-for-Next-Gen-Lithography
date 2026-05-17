@@ -211,20 +211,20 @@ See `containers/ltspice/README.md` "Troubleshooting" for full table.
 ### 5.3 Run the GRPO full loop
 
 ```bash
-# default: 5 GRPO iterations, n=4 candidates each, constraint idx 0 (12V → 5V)
+# default: 50 GRPO iterations, n=4 candidates each, constraint idx 0 (12V → 5V)
 bash scripts/run_pipeline.sh full
 ```
 
 To customise:
 ```bash
-GRPO_N_STEPS=10 GRPO_N_PER_STEP=4 GRPO_CONSTRAINT_IDX=2 \
+GRPO_N_STEPS=100 GRPO_N_PER_STEP=4 GRPO_CONSTRAINT_IDX=2 \
   bash scripts/run_pipeline.sh full
 ```
 
 **Expected per-step output**:
 ```
 ################################################################################
-# Step 1/5  batch=batch_grpo_run_step1
+# Step 1/50  batch=batch_grpo_run_step1
 ################################################################################
 === [GRPO/full] batch_grpo_run_step1 (n=4) ===
 [stage] 1/5  generate
@@ -238,17 +238,17 @@ GRPO_N_STEPS=10 GRPO_N_PER_STEP=4 GRPO_CONSTRAINT_IDX=2 \
   RL samples: 4
   Rewards: [-12.3, -18.7, -8.4, -25.1]
 === GRPO Training Done ===
-  policy_loss: 0.XX, mean_reward: -16.1, ...
+  policy_loss: 0.XX, kl_loss: 0.0Y, mean_reward: -16.1, ...
 ```
 
 **Expected total wall time on H100 + container**:
 - Per step: ~60–120 s (gen 30 s + sim 30 s + RL 10 s + housekeeping)
-- 5 steps ≈ **5–10 min**
-- 20 steps ≈ **20–40 min**
+- 50 steps ≈ **50 min – 1.5 h**
 
 Results land in:
 ```
 checkpoints/grpo-lora/final/            # final RL-tuned LoRA
+checkpoints/grpo-lora/step-{5,10,15,...}/   # intermediate checkpoints
 checkpoints/grpo-lora/history.json      # per-step metrics
 pipeline/data/batch_grpo_run_step{1..N}/
     ├── llm_output/top{1..4}.net
@@ -257,6 +257,94 @@ pipeline/data/batch_grpo_run_step{1..N}/
     ├── reward_results.json
     └── grpo_metrics.json
 ```
+
+---
+
+## Stage 6 — Tuning GRPO when it isn't learning
+
+This section is the distilled lesson from the 20-step diagnostic run
+that produced a flat mean_reward, periodic all-zero reward batches, and
+policy_loss swinging in [-6.8, +8.7].  v2 of the updater
+(`hpc_configs/overrides/new_rl_updater.py`) ships with defaults that
+address all three root causes, but the knobs are exposed so you can
+push further if you still don't see learning.
+
+### 6.1 What v2 changed
+
+| Knob              | v1 default | **v2 default** | Why                                                                                            |
+|-------------------|------------|----------------|------------------------------------------------------------------------------------------------|
+| Policy loss       | sum-of-log-probs | **per-token mean** | TRL/PPO standard. Length-invariant. Compatible scale with KL so kl_beta is meaningful.   |
+| `GRPO_LR`         | 2e-5       | **1e-5**       | v1 was unstable (loss ∈ [-6.8, +8.7]). v2's per-token loss is naturally smaller, so 1e-5 here ≈ what a 5e-6 would be on v1 sum-loss. Bump to 3e-5 if reward is flat. |
+| `GRPO_KL_BETA`    | 0 (no-op)  | **0.05**       | Was hardcoded to 0 AND not implemented. Now anchors π to π_base via PEFT `disable_adapter()`. |
+| `GRPO_ENTROPY_BETA`| n/a       | **0.0**        | Available; bump to 0.01 if you still see mode collapse (3+ identical candidates).             |
+| `GRPO_N_STEPS`    | 5          | **50**         | 5-step runs are too short to see learning; 20 was borderline; 50 is the realistic floor.       |
+| `GRPO_TEMPERATURE`| 0.5        | **0.7**        | Diversity at sample time fights group-collapse before the gradient even runs.                  |
+| Prompt @ log-prob | system_prompt.txt + JSON | **`make_prompt()`** | v1 used a different prompt at log-prob time than at generation time — gradient mis-aligned. |
+
+### 6.2 Diagnose with `grpo_metrics.json`
+
+After each run, `checkpoints/grpo-lora/history.json` has the per-step
+metrics.  Read it with:
+```bash
+python - <<'PY'
+import json, statistics
+hist = json.load(open("checkpoints/grpo-lora/history.json"))
+print(f"steps={len(hist)}")
+for h in hist:
+    m = h["metrics"]
+    flag = "ALL-SAME-REWARD" if m.get("all_same_reward") else ""
+    print(f"  step {m['step']:3d}  reward={m['mean_reward']:+.3f}  "
+          f"policy={m['policy_loss']:+.3f}  kl={m['kl_loss']:+.4f}  "
+          f"|g|={m.get('grad_norm','?')}  {flag}")
+rewards = [h["metrics"]["mean_reward"] for h in hist
+           if h["metrics"].get("mean_reward") is not None]
+if len(rewards) >= 10:
+    early = statistics.mean(rewards[:5])
+    late  = statistics.mean(rewards[-5:])
+    print(f"early-5 mean: {early:+.3f}   late-5 mean: {late:+.3f}   delta: {late-early:+.3f}")
+PY
+```
+
+What to look for:
+- **`mean_reward` trending up** = learning. If flat after 30 steps,
+  bump `GRPO_LR` to 1e-5 OR drop `GRPO_KL_BETA` to 0.02.
+- **`kl_loss` exploding (>1.0)** = policy diverging from base.  Raise
+  `GRPO_KL_BETA` to 0.1 OR lower `GRPO_LR`.
+- **`ALL-SAME-REWARD` flagged on >25% of steps** = mode collapse.
+  Raise `GRPO_TEMPERATURE` to 0.9 AND `GRPO_ENTROPY_BETA` to 0.01.
+- **`|g|` (grad_norm) clipping every step** = LR way too high; drop it.
+- **`num_valid_samples=0` (skipped)** = simulator failed all 4; this
+  is now non-fatal (v2 skip-gracefully) but if it happens often,
+  re-check the LTspice container.
+
+### 6.3 Recommended escalation ladder
+
+If 50-step run shows no learning at v2 defaults:
+
+```bash
+# Step 1: more steps + slightly higher LR
+GRPO_N_STEPS=100 GRPO_LR=1e-5 \
+  bash scripts/run_pipeline.sh full
+
+# Step 2: also fight mode collapse
+GRPO_N_STEPS=100 GRPO_LR=1e-5 GRPO_TEMPERATURE=0.9 GRPO_ENTROPY_BETA=0.01 \
+  bash scripts/run_pipeline.sh full
+
+# Step 3: relax the KL anchor (let the policy explore further from base)
+GRPO_N_STEPS=100 GRPO_LR=1e-5 GRPO_KL_BETA=0.02 GRPO_TEMPERATURE=0.9 \
+  bash scripts/run_pipeline.sh full
+```
+
+If at this point `mean_reward` is still not climbing, the bottleneck is
+upstream — likely the reward signal itself.  Spot-check by running:
+```bash
+ls pipeline/data/batch_grpo_run_step*/reward_results.json | tail -5 \
+  | xargs -I{} python -c "import json,sys; d=json.load(open(sys.argv[1]));
+    print(sys.argv[1], {k: v.get('grpo_reward') for k,v in d['circuits'].items()})" {}
+```
+If rewards are bunched (all within 0.01 of each other), reward signal
+has no contrast → GRPO advantage = 0 → no gradient.  Tune the reward
+weights in `grpo_trainer.py::train()` (the `weights={...}` dict).
 
 ---
 

@@ -94,13 +94,20 @@ git checkout pipeline/reinforcement_algorithm/new_rl_updater.py \
 
 ## 4. What the overrides actually change
 
-### `new_rl_updater.py` — `RLConfig` defaults
+### `new_rl_updater.py` — `RLConfig` defaults (v2)
 
-| Field                   | Original | Override |
-|-------------------------|----------|----------|
-| `max_length`            | 512      | **1024** |
-| `max_prompt_length`     | 256      | **768**  |
-| `max_completion_length` | 256      | **512**  |
+| Field                   | Original | **v2 Override** |
+|-------------------------|----------|-----------------|
+| `lora_r`                | 8        | **16**          |
+| `lora_alpha`            | 16       | **32**          |
+| `max_length`            | 512      | **2048**        |
+| `max_prompt_length`     | 256      | **1536**        |
+| `max_completion_length` | 256      | **1024**        |
+| `learning_rate`         | 1e-5     | **1e-5** (re-anchored after loss formulation change) |
+| `kl_beta`               | 0 (no-op) | **0.05** (NEW: implemented via PEFT `disable_adapter()`) |
+| `entropy_beta`          | n/a      | **0.0** (NEW: bump to 0.01 if you see mode collapse)    |
+| Policy loss formulation | sum log-probs | **per-token mean** (TRL/PPO standard) |
+| `save_every`            | 10       | **5**           |
 
 **Why**: The original 256-token prompt cap was silently truncating ~60% of
 our `system_prompt.txt + constraint` (which runs ~600–650 tokens). The
@@ -109,7 +116,24 @@ so the policy gradient was being computed against a different prompt
 than the one used at inference. Aligning them costs ~12 GB of activation
 memory, which both scenarios can absorb.
 
-Algorithm is unchanged — same forward / log-prob / policy-loss math.
+**v2 algorithmic changes** (added after the 20-step diagnostic showed
+mean_reward flat and policy_loss swinging in [-6.8, +8.7]):
+
+  - **KL penalty implemented**. The reference is the base model
+    (obtained via `PeftModel.disable_adapter()` — zero extra GPU
+    memory). Pulls the policy back toward base when it tries to
+    reward-hack itself into gibberish.
+  - **Per-token mean policy loss**. Length-invariant; puts the loss on
+    the same scale as KL so `kl_beta` is meaningful.
+  - **Entropy bonus** available (default off). Knob to fight collapse
+    when 3+ candidates in a group emit identical text.
+  - **n<2 graceful skip**. A single batch where the simulator failed
+    3/4 candidates no longer takes down a 50-step run.
+  - **Metrics expose `kl_loss`, `entropy`, `grad_norm`,
+    `all_same_reward`** for post-mortem diagnosis.
+
+See `hpc_configs/PIPELINE_GUIDE.md` Stage 6 for the diagnostic recipe
+and the escalation ladder when you still don't see learning.
 
 ### `grpo_trainer.py` — three fixes
 
@@ -122,8 +146,13 @@ Algorithm is unchanged — same forward / log-prob / policy-loss math.
    hands it.
 3. **Loud per-stage logging** (`[stage] N/5  generate`, etc.). Useful
    because SLURM stdout is only readable post-mortem in `logs/`.
+4. **v2: `_load_prompt()` now uses `make_prompt(constraint)`** — the
+   SAME function the generator uses at sampling time. Previously it
+   built a different prompt (system_prompt.txt + raw JSON), which
+   silently mis-aligned the GRPO gradient with the actual generation
+   distribution.
 
-No changes to the algorithm itself.
+No changes to the algorithm itself; just the input the log-prob is conditioned on.
 
 ---
 
@@ -222,6 +251,13 @@ you can tune without editing python:
 | `GRPO_N_SAMPLES`     | _unset_          | Cap samples after `_build_training_batch` (OOM escape)   |
 | `GRPO_MAX_LENGTH`    | _unset_          | Override `RLConfig.max_length` (and shrink prompt+comp)  |
 | `GRPO_FULL_TRAIN`    | `"0"`            | `"1"` → run `train()` (full loop) instead of existing-batch |
+| `GRPO_LR`            | `1e-5`           | Learning rate. Bump to 3e-5 if reward flat; drop to 5e-6 if unstable. |
+| `GRPO_KL_BETA`       | `0.05`           | KL(π‖π_base) weight. Set 0 to disable KL anchor.         |
+| `GRPO_ENTROPY_BETA`  | `0.0`            | Entropy bonus weight. Set 0.01 to fight mode collapse.   |
+| `GRPO_MAX_GRAD_NORM` | `1.0`            | Gradient clipping threshold.                             |
+| `GRPO_SAVE_EVERY`    | `5`              | How often to checkpoint (steps).                         |
+| `GRPO_LORA_R`        | `16`             | LoRA rank.                                               |
+| `GRPO_LORA_ALPHA`    | `32`             | LoRA alpha (scaling).                                    |
 
 Example (Scenario C with extra-tight memory):
 ```bash

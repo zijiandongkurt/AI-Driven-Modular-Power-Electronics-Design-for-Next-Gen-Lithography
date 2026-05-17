@@ -28,9 +28,13 @@ Knobs (set in the SLURM script via `export GRPO_*`):
     GRPO_LORA_R           unset → 16                                  ← 16
     GRPO_LORA_ALPHA       unset → 32                                  ← 32 (= 2 × r)
 
-    Training  (defaults from new_rl_updater.py RLConfig)              ← H100 default
+    Training  (defaults from new_rl_updater.py RLConfig v2)           ← H100 default
     ─────────────────────────────────────────────────────────────────
-    GRPO_LR               unset → 2e-5                                ← 2e-5
+    GRPO_LR               unset → 1e-5                                ← 1e-5 (v2)
+    GRPO_KL_BETA          unset → 0.05                                ← 0.05 (v2)
+    GRPO_ENTROPY_BETA     unset → 0.0   (bump to 0.01 vs mode collapse)
+    GRPO_MAX_GRAD_NORM    unset → 1.0
+    GRPO_SAVE_EVERY       unset → 5
 """
 
 import os
@@ -105,6 +109,26 @@ def _build_rl_config() -> RLConfig:
     if "GRPO_LR" in os.environ:
         cfg.learning_rate = float(os.environ["GRPO_LR"])
         print(f"[rl_demo] GRPO_LR override → learning_rate={cfg.learning_rate}")
+
+    # KL regularization (v2)
+    if "GRPO_KL_BETA" in os.environ:
+        cfg.kl_beta = float(os.environ["GRPO_KL_BETA"])
+        print(f"[rl_demo] GRPO_KL_BETA override → kl_beta={cfg.kl_beta}")
+
+    # Entropy bonus (v2)
+    if "GRPO_ENTROPY_BETA" in os.environ:
+        cfg.entropy_beta = float(os.environ["GRPO_ENTROPY_BETA"])
+        print(f"[rl_demo] GRPO_ENTROPY_BETA override → entropy_beta={cfg.entropy_beta}")
+
+    # Gradient clipping (v2)
+    if "GRPO_MAX_GRAD_NORM" in os.environ:
+        cfg.max_grad_norm = float(os.environ["GRPO_MAX_GRAD_NORM"])
+        print(f"[rl_demo] GRPO_MAX_GRAD_NORM override → max_grad_norm={cfg.max_grad_norm}")
+
+    # Checkpoint cadence (v2)
+    if "GRPO_SAVE_EVERY" in os.environ:
+        cfg.save_every = int(os.environ["GRPO_SAVE_EVERY"])
+        print(f"[rl_demo] GRPO_SAVE_EVERY override → save_every={cfg.save_every}")
 
     # Sequence-length (env-var override)
     if MAX_LENGTH:

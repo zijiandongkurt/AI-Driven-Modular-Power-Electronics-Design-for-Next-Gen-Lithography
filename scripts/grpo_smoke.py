@@ -45,6 +45,20 @@ if _cache:
 from pipeline.llm_topology_generation.llm_api import TopologyLLM
 from pipeline.llm_topology_generation.prompt_input import load_constraint
 from pipeline.reinforcement_algorithm.grpo_trainer import GRPOTrainer
+from pipeline.reinforcement_algorithm.new_rl_updater import RLConfig
+
+
+def _build_rl_config() -> RLConfig:
+    """Same env-var override surface as grpo_full.py — keep them in sync."""
+    cfg = RLConfig()
+    if "GRPO_LR" in os.environ:           cfg.learning_rate   = float(os.environ["GRPO_LR"])
+    if "GRPO_KL_BETA" in os.environ:      cfg.kl_beta         = float(os.environ["GRPO_KL_BETA"])
+    if "GRPO_ENTROPY_BETA" in os.environ: cfg.entropy_beta    = float(os.environ["GRPO_ENTROPY_BETA"])
+    if "GRPO_MAX_GRAD_NORM" in os.environ: cfg.max_grad_norm  = float(os.environ["GRPO_MAX_GRAD_NORM"])
+    if "GRPO_SAVE_EVERY" in os.environ:   cfg.save_every      = int(os.environ["GRPO_SAVE_EVERY"])
+    if "GRPO_LORA_R" in os.environ:       cfg.lora_r          = int(os.environ["GRPO_LORA_R"])
+    if "GRPO_LORA_ALPHA" in os.environ:   cfg.lora_alpha      = int(os.environ["GRPO_LORA_ALPHA"])
+    return cfg
 
 
 def main():
@@ -99,6 +113,7 @@ def main():
         llm=llm,
         validator=None, simulator=None, reward_fn=None,
         constraint=constraint,
+        rl_config=_build_rl_config(),
     )
 
     # 5. Run one RL step

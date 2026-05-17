@@ -17,12 +17,21 @@ a long full-loop run.
 Knobs (env vars):
     SFT_ADAPTER_PATH    default: ./checkpoints/sft-lora/epoch-3
     GRPO_BATCH_PREFIX   default: batch_grpo_run
-    GRPO_N_STEPS        default: 5     (how many GRPO iterations to do)
+    GRPO_N_STEPS        default: 50    (was 5; bumped after 20-step diag
+                                        showed learning needs more steps)
     GRPO_N_PER_STEP     default: 4     (group size for GRPO)
     GRPO_CONSTRAINT_IDX default: 0     (which constraint to optimize for)
     GRPO_MODEL_ID       default: Qwen/Qwen3-14B
-    GRPO_TEMPERATURE    default: 0.5
+    GRPO_TEMPERATURE    default: 0.7   (was 0.5; raised to fight mode
+                                        collapse — diag run showed 3/4
+                                        identical candidates by step 11)
     GRPO_TOP_P          default: 0.9
+
+    GRPO_LR             default: 1e-5  (v2 — per-token mean loss scale)
+    GRPO_KL_BETA        default: 0.05  (v2 NEW — KL(π || π_base) anchor)
+    GRPO_ENTROPY_BETA   default: 0.0   (v2 NEW — bump to 0.01 if still collapsing)
+    GRPO_MAX_GRAD_NORM  default: 1.0
+    GRPO_SAVE_EVERY     default: 5
 
 Run:
     python scripts/grpo_full.py
@@ -53,6 +62,7 @@ if _cache:
 
 from pipeline.llm_topology_generation.llm_api import TopologyLLM
 from pipeline.llm_topology_generation.prompt_input import load_constraint
+from pipeline.reinforcement_algorithm.new_rl_updater import RLConfig
 
 
 def _import_downstream():
@@ -65,18 +75,49 @@ def _import_downstream():
     return validator, LTSpiceSimulator, RewardFunctionNorm, GRPOTrainer
 
 
+def _build_rl_config() -> RLConfig:
+    """Start from the H100 defaults baked into RLConfig and apply env-var
+    overrides on top.  Keeps grpo_full.py one consistent surface for
+    every dial we exposed in new_rl_updater.py v2."""
+    cfg = RLConfig()        # ← H100 defaults (lr=1e-5, kl_beta=0.05, ...)
+
+    if "GRPO_LR" in os.environ:
+        cfg.learning_rate = float(os.environ["GRPO_LR"])
+    if "GRPO_KL_BETA" in os.environ:
+        cfg.kl_beta = float(os.environ["GRPO_KL_BETA"])
+    if "GRPO_ENTROPY_BETA" in os.environ:
+        cfg.entropy_beta = float(os.environ["GRPO_ENTROPY_BETA"])
+    if "GRPO_MAX_GRAD_NORM" in os.environ:
+        cfg.max_grad_norm = float(os.environ["GRPO_MAX_GRAD_NORM"])
+    if "GRPO_SAVE_EVERY" in os.environ:
+        cfg.save_every = int(os.environ["GRPO_SAVE_EVERY"])
+    if "GRPO_LORA_R" in os.environ:
+        cfg.lora_r = int(os.environ["GRPO_LORA_R"])
+    if "GRPO_LORA_ALPHA" in os.environ:
+        cfg.lora_alpha = int(os.environ["GRPO_LORA_ALPHA"])
+    if "GRPO_MAX_LENGTH" in os.environ:
+        L = int(os.environ["GRPO_MAX_LENGTH"])
+        cfg.max_length = L
+        cfg.max_prompt_length = min(cfg.max_prompt_length, max(L - 256, 128))
+        cfg.max_completion_length = min(cfg.max_completion_length, L)
+
+    return cfg
+
+
 def main():
     sft_adapter   = os.environ.get("SFT_ADAPTER_PATH", "./checkpoints/sft-lora/epoch-3")
     batch_prefix  = os.environ.get("GRPO_BATCH_PREFIX", "batch_grpo_run")
-    n_steps       = int(os.environ.get("GRPO_N_STEPS",         "5"))
+    n_steps       = int(os.environ.get("GRPO_N_STEPS",         "50"))
     n_per_step    = int(os.environ.get("GRPO_N_PER_STEP",      "4"))
     constraint_idx = int(os.environ.get("GRPO_CONSTRAINT_IDX", "0"))
     model_id      = os.environ.get("GRPO_MODEL_ID",   "Qwen/Qwen3-14B")
-    temperature   = float(os.environ.get("GRPO_TEMPERATURE",   "0.5"))
+    temperature   = float(os.environ.get("GRPO_TEMPERATURE",   "0.7"))
     top_p         = float(os.environ.get("GRPO_TOP_P",         "0.9"))
 
+    rl_config = _build_rl_config()
+
     print("=" * 72)
-    print(" GRPO full-loop training")
+    print(" GRPO full-loop training  (v2: KL + low-LR anchored)")
     print("=" * 72)
     print(f"  model_id        : {model_id}")
     print(f"  SFT adapter     : {sft_adapter}")
@@ -85,6 +126,12 @@ def main():
     print(f"  n per step      : {n_per_step}")
     print(f"  batch prefix    : {batch_prefix}")
     print(f"  temp / top_p    : {temperature} / {top_p}")
+    print(f"  learning_rate   : {rl_config.learning_rate}")
+    print(f"  kl_beta         : {rl_config.kl_beta}")
+    print(f"  entropy_beta    : {rl_config.entropy_beta}")
+    print(f"  max_grad_norm   : {rl_config.max_grad_norm}")
+    print(f"  save_every      : {rl_config.save_every}")
+    print(f"  max_length      : {rl_config.max_length}")
     print()
 
     # 1. Load TopologyLLM + SFT adapter (trainable)
@@ -107,6 +154,7 @@ def main():
         llm=llm,
         validator=val, simulator=sim, reward_fn=rew,
         constraint=constraint,
+        rl_config=rl_config,
     )
 
     # 3. Iterate
