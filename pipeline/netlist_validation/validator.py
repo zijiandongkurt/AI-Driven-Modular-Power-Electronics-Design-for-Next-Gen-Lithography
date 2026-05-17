@@ -122,8 +122,8 @@ class validator():
                     raw_text = f"* {net_path.stem}\n" + raw_text
                 # Inject .save to ensure all currents and voltages are in .raw output
                 if ".save" not in raw_text.lower():
-                    #raw_text = raw_text.replace(".end", ".save V(*) I(*)\n.end") #LTSPICE
-                    raw_text = raw_text.replace(".end", ".probe V(*) I(*)\n.end") #NGSPICE
+                    raw_text = raw_text.replace(".end", ".save V(*) I(*)\n.end") #LTSPICE
+                    #raw_text = raw_text.replace(".end", ".probe V(*) I(*)\n.end") #NGSPICE
                 net_path.write_text(raw_text)
 
             results[net_path.name]     = (passed, checklist)

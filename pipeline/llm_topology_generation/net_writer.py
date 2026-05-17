@@ -85,23 +85,7 @@ def write_netlists(
     batchID: str | None = None,
     out_dir: str | Path | None = None,
 ) -> list[Path]:
-    """Write each candidate to its own .net file inside data/<batchID>/llm_output/.
-
-    Either `batchID` or `out_dir` must be provided. If both are given,
-    `batchID` takes precedence.
-
-    File naming:  <label>_cand1.net, <label>_cand2.net, ...
-
-    Args:
-        netlists:   list of cleaned netlist strings (one per candidate).
-        constraint: Constraint dict (passed through to the header).
-        label:      Filename prefix (typically prompt_input.slug() output).
-        batchID:    Batch identifier — resolves to data/<batchID>/llm_output/.
-        out_dir:    Explicit output directory override (used if batchID is None).
-
-    Returns:
-        List of absolute paths to the written files (in order).
-    """
+    """Write each candidate to its own .net file inside data/<batchID>/llm_output/."""
     if batchID is not None:
         out = get_llm_output_dir(batchID)
     elif out_dir is not None:
@@ -111,10 +95,21 @@ def write_netlists(
 
     out.mkdir(parents=True, exist_ok=True)
 
+    # --- Extract batch number for suffix (e.g., 'batch_2' -> '_b2') ---
+    batch_suffix = ""
+    if batchID is not None:
+        import re
+        match = re.search(r'batch_(\d+)', str(batchID))
+        if match:
+            batch_suffix = f"_b{match.group(1)}"
+    # ------------------------------------------------------------------
+
     n = len(netlists)
     written: list[Path] = []
     for i, nl in enumerate(netlists, start=1):
-        file_path = out / f"{label}_cand{i}.net"
+        # Inject the batch suffix right after cand{i}
+        file_path = out / f"{label}_cand{i}{batch_suffix}.net"
+        
         write_single_netlist(
             file_path, nl, constraint,
             candidate_idx=i, total_candidates=n,

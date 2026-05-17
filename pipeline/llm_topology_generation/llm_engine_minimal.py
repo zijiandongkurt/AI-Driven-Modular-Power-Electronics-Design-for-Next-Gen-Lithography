@@ -18,7 +18,6 @@ import re
 import logging
 from dataclasses import dataclass, field, asdict
 from typing import Optional
-from transformers import TextStreamer
 
 import torch
 
@@ -271,16 +270,24 @@ class LLMEngine:
 
         - Trim whitespace
         - Remove Markdown code fences
-        - Stop at .end if present (SPICE convention)
+        - Stop at .end or . end if present (ignoring trailing text)
         """
         lines = []
         for line in raw.strip().split("\n"):
             line = line.strip()
+            
+            # Skip markdown fences
             if line.startswith("```"):
                 continue
+                
+            lower_line = line.lower()
+            # Check if line starts with .end or . end
+            if lower_line.startswith(".end") or lower_line.startswith(". end"):
+                lines.append(".end") # Force a clean .end tag
+                break                # Halt reading entirely
+                
             lines.append(line)
-            if line.lower() == ".end":
-                break
+            
         return "\n".join(lines)
 
     @staticmethod
