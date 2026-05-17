@@ -155,14 +155,29 @@ class LLMEngine:
 
     # ── Adapter management ───────────────────────────────────────────
 
-    def load_adapter(self, name: str, path: str) -> None:
-        """Load a LoRA adapter from disk. First call wraps model with PEFT."""
+    def load_adapter(self, name: str, path: str, trainable: bool = False) -> None:
+        """Load a LoRA adapter from disk. First call wraps model with PEFT.
+
+        Args:
+            name:     Internal adapter name (used for set_adapter / switch_adapter).
+            path:     Folder containing adapter_config.json + adapter_model.safetensors.
+            trainable: If True, the LoRA parameters are loaded with
+                       requires_grad=True (needed for continued training,
+                       e.g. SFT → GRPO).  Default False (inference-only).
+        """
         from peft import PeftModel
         if not self._is_peft:
-            self._model = PeftModel.from_pretrained(self._model, path, adapter_name=name)
+            self._model = PeftModel.from_pretrained(
+                self._model, path,
+                adapter_name=name,
+                is_trainable=trainable,
+            )
             self._is_peft = True
         else:
-            self._model.load_adapter(path, adapter_name=name)
+            self._model.load_adapter(
+                path, adapter_name=name,
+                is_trainable=trainable,
+            )
         self._adapters[name] = path
         self._active = name
         self._model.set_adapter(name)
