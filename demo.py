@@ -36,7 +36,7 @@ def get_next_run_folder(data_dir: Path) -> str:
 
 def main():
     # --- Configuration ---
-    N_batch = 5  # Number of batches to run sequentially
+    N_batch = 3  # Number of batches to run sequentially
     n_generations_per_batch = 2 # Number of circuits per batch
     
     UPDATE_PLOTS_PER_BATCH = True # <-- TOGGLE: Set to False to only plot at the very end
@@ -60,7 +60,7 @@ def main():
     val        = validator()
     simulator  = LTSpiceSimulator()
     reward_fn  = RewardFunctionNorm()
-    constraint = load_constraint("pipeline/data/datasets/constraints.json", idx=0)
+    constraint = load_constraint("pipeline/data/datasets/constraints.json", idx=2)
 
     # --- Setup Directories ---
     data_dir = Path("pipeline/data")

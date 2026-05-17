@@ -28,7 +28,13 @@ def _to_float(s):
     for suffix, mult in SUFFIXES:
         if s.endswith(suffix):
             return float(s[:-len(suffix)]) * mult
-    return float(s)
+    try:
+        return float(s)
+    except ValueError:
+        # Instead of crashing the whole pipeline, log it and return a dummy value 
+        # or raise a specific error that the simulator loop catches.
+        print(f"[!] Warning: Could not convert '{s}' to float. Defaulting to 0.0")
+        return 0.0
 
 
 COMPONENT_WEIGHTS = {
