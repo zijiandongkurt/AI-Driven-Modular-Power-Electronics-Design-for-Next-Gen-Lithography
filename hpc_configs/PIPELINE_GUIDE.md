@@ -177,10 +177,20 @@ the container's internals.
 
 ### 5.2 Wire the container to the Python pipeline
 
+⚠️ **Use the launcher that matches the build mode:**
+- `MODE=pull`  (default) → **`run_ltspice_docker.sh`**
+- `MODE=build`           → `run_ltspice_snellius.sh`
+
 ```bash
 mkdir -p $HOME/ltspice-files
 export LTSPICE_SIF=$HOME/container_custom.sif
-export LTSPICE_LAUNCHER=$PWD/containers/ltspice/run_ltspice_snellius.sh
+
+# Default (pull from Docker Hub):
+export LTSPICE_LAUNCHER=$PWD/containers/ltspice/run_ltspice_docker.sh
+
+# If you used MODE=build instead:
+##export LTSPICE_LAUNCHER=$PWD/containers/ltspice/run_ltspice_snellius.sh
+
 export LTSPICE_FILES_DIR=$HOME/ltspice-files
 
 # Standalone container smoke test (without our Python runner)

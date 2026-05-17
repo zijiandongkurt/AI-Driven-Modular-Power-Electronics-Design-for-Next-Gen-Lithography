@@ -6,11 +6,33 @@ Headless LTspice via Apptainer/Singularity (or Podman/Docker).
 ```
 containers/ltspice/
 ├── Apptainer.def              ← team-tested Debian + Wine 11 + LTspice 64
-├── build.sh                   ← one-shot builder (calls apptainer build)
-├── run_ltspice.sh             ← per-simulation launcher (workstation)
-├── run_ltspice_snellius.sh    ← same, with --no-mount hostfs for Snellius
-├── podman_commands.txt        ← Docker Hub pre-built image alternative
+├── build.sh                   ← one-shot builder (pulls OR builds)
+├── run_ltspice.sh             ← launcher for OUR def-built .sif (workstation)
+├── run_ltspice_snellius.sh    ← same, with --no-mount hostfs (Snellius)
+├── run_ltspice_docker.sh      ← launcher for the pulled Docker Hub .sif ⭐
+├── podman_commands.txt        ← Docker Hub one-liner (reference)
 └── README.md                  ← this file
+```
+
+### ⚠️ Pair the correct launcher with the correct .sif
+
+|  | If you built via `MODE=build` | If you built via `MODE=pull` (default) |
+|---|---|---|
+| .sif source | our `Apptainer.def` | `docker://aanas0sayed/docker-ltspice` |
+| What's inside | `/opt/wineprefix-template` precomputed | image's own entrypoint primes Wine + Xvfb |
+| **Launcher to use** | `run_ltspice.sh` or `run_ltspice_snellius.sh` | **`run_ltspice_docker.sh`** |
+
+If you use the wrong launcher you'll see one of:
+- `cp: /opt/wineprefix-template: no such file` (def launcher on pulled image)
+- `INFO: Terminating fuse-overlayfs after timeout` (apptainer kills hung container)
+
+Set `LTSPICE_LAUNCHER` to the matching one:
+```bash
+# pulled image (most common today):
+export LTSPICE_LAUNCHER=$PWD/containers/ltspice/run_ltspice_docker.sh
+
+# def-built image:
+##export LTSPICE_LAUNCHER=$PWD/containers/ltspice/run_ltspice_snellius.sh
 ```
 
 ---
