@@ -281,7 +281,31 @@ class RLUpdater:
             raise ValueError("prompts, completions, and rewards must have same length.")
 
         if len(rewards) < 2:
-            raise ValueError("GRPO update requires at least 2 samples for reward normalization.")
+            # Skip the update gracefully instead of crashing the whole
+            # training loop.  GRPO's group-relative advantage = (r-mean)/std
+            # is meaningless with n=1 (std=0), but losing a single batch
+            # to bad luck (e.g. simulator failed 3/4 candidates) shouldn't
+            # take down a 5-step run.  Caller sees skipped=True and can
+            # decide whether to retry, double n, etc.
+            self.step_id += 1
+            print(f"WARN: GRPO step {self.step_id} skipped — only "
+                  f"{len(rewards)} valid sample(s), need >= 2.")
+            return {
+                "step": self.step_id,
+                "num_input_samples": len(rewards),
+                "num_valid_samples": 0,
+                "skipped": True,
+                "skip_reason": f"only {len(rewards)} valid sample(s)",
+                "raw_rewards": list(map(float, rewards)),
+                "mean_reward": float(sum(rewards) / max(len(rewards), 1)),
+                "policy_loss": None,
+                "advantages": [],
+                "total_loss": None,
+                "kl_div": 0.0,
+                "max_length": self.cfg.max_length,
+                "max_prompt_length": self.cfg.max_prompt_length,
+                "max_completion_length": self.cfg.max_completion_length,
+            }
 
         self.engine.model.train()
 

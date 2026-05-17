@@ -76,7 +76,13 @@ class LTSpiceSimulator():
             "LTSPICE_LAUNCHER",
             Path.home() / "run_ltspice_snellius.sh",
         ))
-        self.PARALLEL_SIMS = int(os.environ.get("LTSPICE_PARALLEL", "4"))
+        # Default = 1 (serial).  Setting >1 spawns concurrent apptainer
+        # processes that compete for fakeroot sessions, Xvfb, and Wine
+        # state — empirically this triggers
+        #   "wine: failed to load start.exe: c000007b"
+        # on a fraction of the batch.  Override with LTSPICE_PARALLEL=4
+        # if you've verified your container can handle concurrency.
+        self.PARALLEL_SIMS = int(os.environ.get("LTSPICE_PARALLEL", "1"))
 
     def _onSimulationComplete(self, net_stem):
         print(f"SIMULATION COMPLETE: {net_stem}")
