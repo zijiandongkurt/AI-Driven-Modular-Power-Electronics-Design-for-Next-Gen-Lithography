@@ -160,10 +160,17 @@ class LTSpiceSimulator():
         def _run_one(filename):
             """Run a single netlist through the container and move .raw output to output_path."""
             container_path = f"/sim/{filename}"
-            result = subprocess.run(
-                [str(self.RUN_SCRIPT), container_path],
-                capture_output=True, text=True
-            )
+            # Try direct exec first; if the .sh lacks +x (git-on-Windows
+            # frequently loses the bit), fall back to `bash <script> ...`.
+            cmd = [str(self.RUN_SCRIPT), container_path]
+            try:
+                result = subprocess.run(cmd, capture_output=True, text=True)
+            except PermissionError:
+                print(f"WARN [{filename}]: {self.RUN_SCRIPT} not executable, "
+                      f"falling back to `bash {self.RUN_SCRIPT}`. "
+                      f"Run `chmod +x {self.RUN_SCRIPT}` to fix permanently.")
+                cmd = ["bash", str(self.RUN_SCRIPT), container_path]
+                result = subprocess.run(cmd, capture_output=True, text=True)
             if result.returncode != 0:
                 print(f"ERROR [{filename}]: {result.stderr.strip()}")
                 return False
