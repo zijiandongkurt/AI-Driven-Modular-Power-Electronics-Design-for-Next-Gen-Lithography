@@ -51,7 +51,7 @@ class LTSpiceSimulator():
         self.HOME_DIR        = Path.home()
         self.LTSPICE_FILES   = self.HOME_DIR / "ltspice-files"   # bind-mounted to /sim in container
         self.RUN_SCRIPT      = self.HOME_DIR / "run_ltspice_snellius.sh"
-        self.PARALLEL_SIMS   = 2
+        self.PARALLEL_SIMS   = 1
 
     def _onSimulationComplete(self, net_stem):
         print(f"SIMULATION COMPLETE: {net_stem}")
