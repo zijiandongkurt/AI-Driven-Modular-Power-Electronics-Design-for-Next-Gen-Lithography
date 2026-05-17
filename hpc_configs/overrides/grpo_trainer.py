@@ -81,8 +81,20 @@ class GRPOTrainer:
         return _REPO_ROOT / "pipeline" / "data" / batch_id
 
     def _llm_output_dir(self, batch_id: str) -> Path:
-        # Project convention: uppercase LLM_output.
-        return self._batch_dir(batch_id) / "LLM_output"
+        """Return the netlist output dir for a batch.
+
+        Project convention is uppercase `LLM_output` (Atakan's branch
+        + main + the validator and simulator all use it), but LLM_Syh
+        sometimes has lowercase `llm_output` left over from earlier
+        commits.  Pick whichever exists; if neither, prefer the canonical
+        uppercase so error messages point at the right place.
+        """
+        base = self._batch_dir(batch_id)
+        for case in ("LLM_output", "llm_output"):
+            cand = base / case
+            if cand.exists():
+                return cand
+        return base / "LLM_output"   # canonical fallback for error message
 
     def _reward_path(self, batch_id: str) -> Path:
         return self._batch_dir(batch_id) / "reward_results.json"
