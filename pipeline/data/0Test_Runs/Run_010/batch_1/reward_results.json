@@ -1,0 +1,63 @@
+{
+    "active_constraints": {
+        "_comment": "Step-Down 2: Commercial Mains to 12V",
+        "vin_min": 220,
+        "vin_max": 380,
+        "vout_target": 12,
+        "efficiency_target": 0.92,
+        "power_in": 300
+    },
+    "circuits": {
+        "00_Step_Down_2_Commercial_Mains_to_12V_cand1": {
+            "fitness_score": 0.5451985072642347,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 708.1532496996384,
+                "efficiency_loss": 17.616898520560508,
+                "volume_loss": 20000.0,
+                "component_cost_loss": 4.0
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 3.5848158089104296,
+                "efficiency": 0.0391550739719746,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": -0.7378743290901184
+        },
+        "00_Step_Down_2_Commercial_Mains_to_12V_cand2": {
+            "fitness_score": 0.811663998019708,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 110731.21370853198,
+                "efficiency_loss": 0.030176130699273163,
+                "volume_loss": 20000.0,
+                "component_cost_loss": 4.0
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 117.22889988426752,
+                "efficiency": 0.9184911934650364,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": 1.0
+        },
+        "00_Step_Down_2_Commercial_Mains_to_12V_cand3": {
+            "fitness_score": 0.552875212386587,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 1006.0254218670979,
+                "efficiency_loss": 17.86840578251358,
+                "volume_loss": 62.09150999858421,
+                "component_cost_loss": 4.0
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 1.9699181365898224,
+                "efficiency": 0.0265797108743211,
+                "total_volume_cm3": 31.045754999292104,
+                "total_components": 4
+            },
+            "grpo_reward": -0.6758869290351868
+        }
+    }
+}

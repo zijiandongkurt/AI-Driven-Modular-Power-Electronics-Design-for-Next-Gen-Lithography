@@ -1,0 +1,22 @@
+* Generated: 2026-05-17T13:13:00
+* Constraint: Step-Down 2: Commercial Mains to 12V
+*   vin_min = 220
+*   vin_max = 380
+*   vout_target = 12
+*   efficiency_target = 0.92
+*   power_in = 300
+* Candidate: 1 of 3
+*
+* 300W Non-Isolated Step-Down DC/DC Converter
+Vin in 0 220
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 100u
+Rload out 0 2.4
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1n 5m
+.save V(*) I(*)
+.end
