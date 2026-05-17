@@ -1,0 +1,15 @@
+* 290V to 12V sync buck (M2 replaces D1), 300W
+* D=41.4m, Rload=480m; dead time ~5% each end
+Vin in 0 290
+M1 in gate sw 0 NMOS W=1 L=1
+M2 sw gate2 0 0 NMOS W=1 L=1
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 480m
+Rbleed sw 0 1Meg
+Vgate  gate  0 PULSE(0 12 0 1n 1n 414n 10u)
+Vgate2 gate2 0 PULSE(0 12 914n 1n 1n 8.89u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.tran 1n 5m
+.probe V(*) I(*)
+.end

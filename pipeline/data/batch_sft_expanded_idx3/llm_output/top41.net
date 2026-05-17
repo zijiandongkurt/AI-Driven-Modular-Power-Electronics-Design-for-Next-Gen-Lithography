@@ -1,0 +1,15 @@
+* 230V to 5V sync buck (M2 replaces D1), 150W
+* D=21.7m, Rload=167m; dead time ~5% each end
+Vin in 0 230
+M1 in gate sw 0 NMOS W=1 L=1
+M2 sw gate2 0 0 NMOS W=1 L=1
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 167m
+Rbleed sw 0 1Meg
+Vgate  gate  0 PULSE(0 12 0 1n 1n 217n 10u)
+Vgate2 gate2 0 PULSE(0 12 717n 1n 1n 9.08u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.tran 1n 5m
+.probe V(*) I(*)
+.end

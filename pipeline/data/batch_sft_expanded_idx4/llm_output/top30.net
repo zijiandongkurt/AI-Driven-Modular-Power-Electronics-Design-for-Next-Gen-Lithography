@@ -1,0 +1,14 @@
+* 277V to 3.3V async buck, 100W
+* D=11.9m, t_on=238n, Rload=109m
+Vin in 0 277
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 470u
+Rload out 0 109m
+Vgate gate 0 PULSE(0 12 0 1n 1n 238n 20u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1n 5m
+.probe V(*) I(*)
+.end

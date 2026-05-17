@@ -1,0 +1,14 @@
+* 230V to 5V async buck, 150W
+* D=21.7m, t_on=435n, Rload=167m
+Vin in 0 230
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 167m
+Vgate gate 0 PULSE(0 12 0 1n 1n 435n 20u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1n 5m
+.probe V(*) I(*)
+.end

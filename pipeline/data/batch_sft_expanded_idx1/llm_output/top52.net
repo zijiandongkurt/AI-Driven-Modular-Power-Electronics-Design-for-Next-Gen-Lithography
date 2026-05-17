@@ -1,0 +1,15 @@
+* 320V to 24V sync buck (M2 replaces D1), 500W
+* D=75m, Rload=1.15; dead time ~5% each end
+Vin in 0 320
+M1 in gate sw 0 NMOS W=1 L=1
+M2 sw gate2 0 0 NMOS W=1 L=1
+L1 sw out 220u
+C1 out 0 470u
+Rload out 0 1.15
+Rbleed sw 0 1Meg
+Vgate  gate  0 PULSE(0 12 0 1n 1n 750n 10u)
+Vgate2 gate2 0 PULSE(0 12 1.25u 1n 1n 8.55u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.tran 1n 5m
+.probe V(*) I(*)
+.end

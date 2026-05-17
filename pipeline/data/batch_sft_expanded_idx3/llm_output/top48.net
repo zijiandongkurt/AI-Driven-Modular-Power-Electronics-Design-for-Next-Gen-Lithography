@@ -1,0 +1,18 @@
+* 310V to 5V interleaved 2-phase buck, 150W
+* D=16.1m, t_on=161n, 180-deg phase shift
+Vin in 0 310
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 220u
+L2 sw2 out 220u
+C1 out 0 470u
+Rload out 0 167m
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 161n 10u)
+Vgate2 gate2 0 PULSE(0 12 5u 1n 1n 161n 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1n 5m
+.probe V(*) I(*)
+.end

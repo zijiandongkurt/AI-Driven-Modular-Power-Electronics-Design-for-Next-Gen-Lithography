@@ -1,0 +1,16 @@
+* 21V to 380V boost, 400W
+* D=1-21/380=945m, t_on=9.45u, Rload=361
+* L1 on input side, M1 is low-side switch
+Vin in 0 21
+L1 in sw 220u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 361
+Rbleed sw 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 9.45u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1n 5m
+.probe V(*) I(*)
+.end

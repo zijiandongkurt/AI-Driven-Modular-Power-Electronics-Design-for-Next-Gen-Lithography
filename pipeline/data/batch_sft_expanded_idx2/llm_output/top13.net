@@ -1,0 +1,14 @@
+* 250V to 12V async buck, 300W
+* D=48m, t_on=960n, Rload=480m
+Vin in 0 250
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 480m
+Vgate gate 0 PULSE(0 12 0 1n 1n 960n 20u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1n 5m
+.probe V(*) I(*)
+.end

@@ -1,0 +1,19 @@
+* 12V to 24V SEPIC, 200W
+* D=Vout/(Vin+Vout)=667m, t_on=13.3u
+* L1 input, M1 grounds sw1, C1 coupling sw1<->sw2, L2 sw2->0, D1 sw2->out
+Vin in 0 12
+L1 in sw1 100u
+M1 sw1 gate 0 0 NMOS W=1 L=1
+C1 sw1 sw2 47u
+L2 sw2 0 100u
+D1 sw2 out DIODE
+C2 out 0 470u
+Rload out 0 2.88
+Rbleed sw1 0 1Meg
+Rbleed1 sw2 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 13.3u 20u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1n 5m
+.probe V(*) I(*)
+.end
