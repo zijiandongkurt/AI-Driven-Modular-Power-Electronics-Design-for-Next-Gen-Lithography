@@ -20,15 +20,12 @@ This module does NOT:
 from __future__ import annotations
 
 import json
-import logging
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional, List, Dict
-
 import torch
 import torch.nn.functional as F
 
-logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -60,7 +57,7 @@ class RLConfig:
 
     # Sequence control
     max_length: int = 512
-    max_prompt_length: int = 256
+    max_prompt_length: int = 128
     max_completion_length: int = 256
 
     # Runtime
@@ -254,8 +251,7 @@ class RLUpdater:
             index=shift_labels.unsqueeze(-1),
         ).squeeze(-1)
 
-        return token_log_probs.sum()
-
+        return token_log_probs.mean()
     def update(
         self,
         prompts: List[str],
@@ -278,7 +274,7 @@ class RLUpdater:
         policy_losses = []
         valid_rewards = []
         valid_advantages = []
-
+        valid_log_probs = []
         for i, (prompt, completion) in enumerate(zip(prompts, completions)):
             seq_log_prob = self._completion_log_prob(prompt, completion)
 
@@ -292,6 +288,7 @@ class RLUpdater:
             # high advantage -> increase probability
             # low advantage  -> decrease probability
             policy_loss = -advantage * seq_log_prob
+            valid_log_probs.append(float(seq_log_prob.detach().cpu()))
 
             policy_losses.append(policy_loss)
             valid_rewards.append(float(rewards[i]))
@@ -305,7 +302,7 @@ class RLUpdater:
 
         loss = torch.stack(policy_losses).mean()
 
-        self.optimizer.zero_grad()
+        self.optimizer.zero_grad(set_to_none=True)
         loss.backward()
 
         trainable_params = [
@@ -319,6 +316,10 @@ class RLUpdater:
         )
 
         self.optimizer.step()
+
+        self.optimizer.zero_grad(set_to_none=True)  #release VRAM space
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
         self.engine.model.eval()
         self.step_id += 1
@@ -334,6 +335,7 @@ class RLUpdater:
             "advantages": valid_advantages,
             "policy_loss": round(float(loss.detach().cpu()), 6),
             "kl_div": 0.0,
+            "completion_log_probs": valid_log_probs,
             "total_loss": round(float(loss.detach().cpu()), 6),
             "max_length": self.cfg.max_length,
             "max_prompt_length": self.cfg.max_prompt_length,

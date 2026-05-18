@@ -1,57 +1,127 @@
+import re
+from pathlib import Path
+
 from pipeline.llm_topology_generation.llm_api import TopologyLLM
 from pipeline.netlist_validation.validator import validator
-from pipeline.simulation.ltspice_runner import LTSpiceSimulator
-from pipeline.simulation.ngspice_runner import NGSpiceSimulator
-from pipeline.reward_evaluation.reward_function import RewardFunction
+from pipeline.simulation.ltspice_runner_snellius import LTSpiceSimulator
 from pipeline.reward_evaluation.reward_function_norm import RewardFunctionNorm
 from pipeline.llm_topology_generation.prompt_input import load_constraint
 from pipeline.reinforcement_algorithm.grpo_trainer import GRPOTrainer
-from pipeline.reinforcement_algorithm.new_rl_updater import RLUpdater, RLConfig
+from pipeline.reinforcement_algorithm.new_rl_updater import RLConfig
+
+
+def get_next_run_folder(data_dir: Path) -> str:
+    """Scans the data directory and returns the next Run_XXX folder name."""
+    if not data_dir.exists():
+        data_dir.mkdir(parents=True, exist_ok=True)
+
+    # Find all folders matching the pattern Run_XXX
+    run_folders = [d.name for d in data_dir.iterdir() if d.is_dir() and re.match(r"Run_\d+", d.name)]
+
+    if not run_folders:
+        return "Run_001"
+
+    # Extract the numbers, find the max, and add 1
+    run_numbers = [int(f.split("_")[1]) for f in run_folders]
+    next_run_number = max(run_numbers) + 1
+
+    return f"Run_{next_run_number:03d}"
 
 def main():
-    llm        = TopologyLLM(model_id="Qwen/Qwen3-14B")
-    val        = validator()
-    simulator  = NGSpiceSimulator()
-    reward_fn  = RewardFunctionNorm()
-    constraint = load_constraint("pipeline/data/datasets/constraints.json", idx=0)
-    batch_id   = "batch_1"
+    # --- Configuration ---
+    N_batch = 3  # Number of batches to run sequentially
+    n_generations_per_batch = 2 # Number of circuits per batch
 
-# to run GRPOTrainer:
-    # the GRPOTrainer includes the steps 1-4.
-    """
+    # NEW: Context window hyperparameter
+    MAX_TOKENS = 512  # Increase this if your netlists are getting cut off
+
+    # Define weight distribution for the reward function
+    weights = {
+        "v_out": 10.0, "efficiency": 20.0,
+        "volume": 2.0, "component_cost": 1.0,
+        "components": {"mosfet": 1.0, "diode": 1.0,
+                       "inductor": 1.0, "capacitor": 1.0}
+    }
+
+    # --- Setup Pipeline Components ---
+    llm = TopologyLLM(
+        #model_id="Qwen/Qwen2.5-3B-Instruct",
+        max_new_tokens=MAX_TOKENS
+    )
+    val        = validator()
+    simulator  = LTSpiceSimulator()
+    reward_fn  = RewardFunctionNorm()
+    constraint = load_constraint("pipeline/data/datasets/constraints.json", idx=2)
     grpo = GRPOTrainer(
         llm=llm,
         validator=val,
         simulator=simulator,
         reward_fn=reward_fn,
         constraint=constraint,
+        rl_config=RLConfig(
+            max_length=512,
+            max_prompt_length=128,
+            max_completion_length=256,
+            learning_rate=1e-5,
+            save_every=1,
+            lora_r=4,
+            lora_alpha=8,
+        ),
     )
-    grpo.train_from_existing_batch(batch_id="batch_1")
-    """ 
-#
-    # # 1. Generate — writes .net files to data/batch_7/llm_output/
-    # written = llm.generate_for_batch(constraint, batchID=batch_id, n=4)
-    # print(f"Generated {len(written)} netlists")
 
-    # 2. Validate — reads llm_output/, writes validation_results.json
-    val.validate(batch_id)
+    # --- Setup Directories ---
+    data_dir = Path("pipeline/data")
+    run_folder_name = get_next_run_folder(data_dir)
+    run_folder_path = data_dir / run_folder_name
+    run_folder_path.mkdir(parents=True, exist_ok=True)
 
-    # 3. Simulate — reads validation_results.json, writes simulation_results.csv
-    simulation_results = simulator.simulate(batch_id)
-    print("Simulation Results:\n", simulation_results)
+    print(f"=== Starting Sequential Run: {run_folder_name} for {N_batch} batches ===")
 
-    # 4. Evaluate rewards — reads simulation_results.csv, writes reward_results.json
-    reward_fn.process_batch(batch_id, constraint, weights={
-        "v_out": 10.0, "efficiency": 20.0,
-        "volume": 2.0, "component_cost": 1.0,
-        "components": {"mosfet": 1.0, "diode": 1.0,
-                    "inductor": 1.0, "capacitor": 1.0}
-    })
+    # Keep track of the previous batch so the LLM can use its data
+    previous_batch_id = None
 
-    
+    # --- Sequential Batch Loop ---
+    for i in range(1, N_batch + 1):
+        # The underlying classes will resolve this relative to pipeline/data/
+        current_batch_id = f"{run_folder_name}/batch_{i}"
 
-    
+        print(f"\n--- Processing {current_batch_id} ---")
 
+        # 1. Generate
+        written = llm.generate_for_batch(
+            constraint,
+            batchID=current_batch_id,
+            n=n_generations_per_batch,
+            DEMO=True,
+            previous_batch_id=previous_batch_id
+        )
+        print(f"Generated {len(written) if written else 0} netlists.")
+
+        # 2. Validate
+        print("Validating netlists...")
+        val.validate(current_batch_id)
+
+        # 3. Simulate
+        print("Running simulations...")
+        simulation_results = simulator.simulate(current_batch_id)
+
+        # 4. Evaluate rewards
+        print("Evaluating fitness and formatting JSON...")
+        reward_fn.process_batch(current_batch_id, constraint, weights=weights)
+
+        # 4.5 RL update
+        print("Running GRPO RL update...")
+        grpo.update_from_batch(batch_id=current_batch_id, max_samples=2)
+
+
+        print(f"--- Finished {current_batch_id} ---")
+
+        # Update the previous_batch_id so the next iteration can feed it into the LLM
+        previous_batch_id = current_batch_id
+
+
+
+    print(f"\n=== Sequential Run {run_folder_name} Complete ===")
 
 if __name__ == "__main__":
     main()

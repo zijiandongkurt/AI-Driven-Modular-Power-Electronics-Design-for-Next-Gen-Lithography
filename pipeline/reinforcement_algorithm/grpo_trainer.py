@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 from typing import Dict, List, Optional
-
+import re
 from pipeline.reinforcement_algorithm.new_rl_updater import RLUpdater, RLConfig
 
 class GRPOTrainer:
@@ -110,6 +110,29 @@ class GRPOTrainer:
 
         return fail_path.read_text(encoding="utf-8")
 
+    def _load_prompt_for_topology(self, batch_id: str, topology_id: str) -> str:
+        """
+        Load the actual prompt used to generate this candidate.
+
+        Expected topology_id examples:
+            00_Step_Down_2_Commercial_Mains_to_12V_cand1_b1
+            00_Step_Down_2_Commercial_Mains_to_12V_cand2_b3
+
+        Falls back to reconstructed prompt if the saved prompt file is missing.
+        """
+        match = re.search(r"_cand(\d+)_b\d+", topology_id)
+
+        if match:
+            cand_idx = match.group(1)
+            prompt_path = self._batch_dir(batch_id) / f"prompt_cand{cand_idx}.txt"
+
+            if prompt_path.exists():
+                return prompt_path.read_text(encoding="utf-8")
+
+            print(f"Warning: prompt file not found: {prompt_path}. Using reconstructed prompt.")
+
+        return self._load_prompt()
+
     def _build_training_batch(self, batch_id: str):
         """
         Build prompt/completion/reward lists for RLUpdater.
@@ -138,7 +161,6 @@ class GRPOTrainer:
         if not circuits:
             raise RuntimeError(f"No circuits found in reward_results.json for {batch_id}")
 
-        prompt_text = self._load_prompt()
 
         prompts: List[str] = []
         completions: List[str] = []
@@ -162,6 +184,7 @@ class GRPOTrainer:
                 print(f"Skipping {topology_id}: no grpo_reward or fitness_score found.")
                 continue
 
+            prompt_text = self._load_prompt_for_topology(batch_id, topology_id)
             prompts.append(prompt_text)
             completions.append(completion_text)
             rewards.append(reward)
@@ -182,19 +205,41 @@ class GRPOTrainer:
 
         print(f"Saved metrics to {save_path}")
 
-#Tesr RL loop with this method, incase the LTspice not working on HPC:
-    def train_from_existing_batch(self, batch_id: str = "batch_1"):
+    def update_from_batch(self, batch_id: str, max_samples: int = 2) -> Dict:
         """
-        Run RL update using existing LLM_output and reward_results.json.
-        This does not run generation, validation, simulation, or reward evaluation.
-        """
-        prompts, completions, rewards = self._build_training_batch(batch_id)
-        #Added these bcs of Out of Memory:
-        prompts = prompts[:2]
-        completions = completions[:2]
-        rewards = rewards[:2]
-        ####
+        Run one GRPO-style RL update from a batch already produced by demo.py.
 
+        This method assumes demo.py has already completed:
+            generate -> validate -> simulate -> reward
+
+        It reads:
+            pipeline/data/<batch_id>/LLM_output/*.net
+            pipeline/data/<batch_id>/reward_results.json
+            pipeline/data/<batch_id>/prompt_cand*.txt
+
+        Then it performs:
+            prompt + completion + reward
+            -> advantage normalization
+            -> LoRA policy update
+            -> save grpo_metrics.json
+            -> save LoRA adapter
+        """
+
+        prompts, completions, rewards = self._build_training_batch(batch_id)
+
+        # Keep small for A100 40GB stability.
+        if max_samples is not None:
+            prompts = prompts[:max_samples]
+            completions = completions[:max_samples]
+            rewards = rewards[:max_samples]
+
+        if len(rewards) < 2:
+            raise RuntimeError(
+                f"GRPO update requires at least 2 samples, but got {len(rewards)}. "
+                "Increase n_generations_per_batch or check reward_results.json."
+            )
+
+        print(f"Running GRPO update from batch: {batch_id}")
         print(f"RL samples: {len(rewards)}")
         print(f"Rewards: {rewards}")
 
@@ -203,20 +248,24 @@ class GRPOTrainer:
             completions=completions,
             rewards=rewards,
         )
-        self._save_metrics(batch_id, metrics)   
+
+        self._save_metrics(batch_id, metrics)
         self.rl_updater.save(self.output_dir)
 
-        print("=== GRPO Training From Existing Batch Done ===")
+        print("=== GRPO Update From Batch Done ===")
         print(json.dumps(metrics, indent=2))
 
         return metrics
-# The real train method, once the LTspice works in HPC:
-    def train(self, batch_id: str = "batch_1", n: int = 4):
-        """
-        Run one GRPO training iteration.
 
-        This function still runs the full pipeline:
-            generate -> validate -> simulate -> reward -> RL update
+    def train(self, batch_id: str = "batch_1", n: int = 4, max_samples: int = 2):
+        """
+        Legacy full-pipeline GRPO iteration.
+
+        This method runs:
+            generate -> validate -> simulate -> reward -> update_from_batch
+
+        In the current project setup, demo.py is the main orchestrator.
+        Prefer calling update_from_batch() from demo.py after reward evaluation.
         """
 
         # 1. Generate netlists.
@@ -253,30 +302,8 @@ class GRPOTrainer:
             },
         )
 
-        # 5. Build RL training data from saved files.
-        prompts, completions, rewards = self._build_training_batch(batch_id)
-
-        print(f"RL samples: {len(rewards)}")    # for debugging
-        print(f"Rewards: {rewards}")            # for debugging
-
-        # print failure logs if available, for debugging
-        for topology_id in self._load_rewards(batch_id).get("circuits", {}).keys():
-            fail_log = self._load_failure_log(batch_id, topology_id)
-            if fail_log:
-                print(f"\nFailure log for {topology_id}:")
-                print(fail_log[:1000])
-
-        # 6. Update LoRA policy.
-        metrics = self.rl_updater.update(
-            prompts=prompts,
-            completions=completions,
-            rewards=rewards,
+        # 5. Reuse the same RL update logic used by demo.py.
+        return self.update_from_batch(
+            batch_id=batch_id,
+            max_samples=max_samples,
         )
-
-        # 7. Save adapter.
-        self.rl_updater.save(self.output_dir)
-
-        print("=== GRPO Training Done ===")
-        print(json.dumps(metrics, indent=2))
-
-        return metrics
