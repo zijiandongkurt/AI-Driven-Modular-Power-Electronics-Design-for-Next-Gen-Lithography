@@ -61,8 +61,49 @@ OUTPUT FORMAT:
   Output raw SPICE netlist text only.
   No markdown fences, no explanation, no prose.
   Start with an optional single-line title comment (* <title>).
-  End with .end"""
+  End the file with exactly: .end
+  DO NOT write any words on the same line as .end
+  DO NOT output a single character after .end
+  NO EXPLANATIONS, NO PROSE, NO CHAT.
+  NEVER EXPLAIN YOURSELF. JUST RAW SPICE NETLIST TEXT.
+  
+  CRITICAL: Do not include design notes or explanations in SPICE comments.
+  CRITICAL RULE: DO NOT copy component values or topologies directly from the examples below. You MUST calculate new component values (Vin, Rload, inductor/capacitor sizing, and Vgate pulse timing) and select the correct topology to satisfy the exact constraints given to you.
 
+=== EXAMPLES OF PERFECT RESPONSES ===
+
+--- START EXAMPLE 1 (Step-Down / Buck) ---
+### SPICE Netlist:
+* 12V to 5V Buck Converter
+Vin in 0 12
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.278
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+--- END EXAMPLE 1 ---
+
+--- START EXAMPLE 2 (Step-Up / Boost) ---
+### SPICE Netlist:
+* 5V to 12V Boost Converter
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+--- END EXAMPLE 2 ---
+"""
 
 # Kept for backward compatibility with llm_engine_minimal.py Constraint.to_prompt()
 NAMING_RULES = SYSTEM_PROMPT
