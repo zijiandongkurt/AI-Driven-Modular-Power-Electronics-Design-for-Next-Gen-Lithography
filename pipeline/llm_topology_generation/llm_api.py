@@ -43,6 +43,16 @@ def _save_prompt(prompt: str, batchID: str, candidate_idx: int = None) -> None:
     
     (batch_dir / filename).write_text(prompt, encoding="utf-8")
 
+def _save_prompt(prompt: str, batchID: str, identifier: str = None) -> None:
+    """Save the prompt used for generation."""
+    batch_dir = get_llm_output_dir(batchID).parent
+    batch_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Name the file based on the identifier (e.g., prompt_parent_00_Step_Down_cand1.txt)
+    filename = f"prompt_{identifier}.txt" if identifier else "prompt.txt"
+    
+    (batch_dir / filename).write_text(prompt, encoding="utf-8")
+
 def _save_raw_output(raw_outputs: list[str], batchID: str) -> None:
     """Save the raw LLM completions to data/<batchID>/raw_output.txt."""
     batch_dir = get_llm_output_dir(batchID).parent
@@ -230,6 +240,107 @@ class TopologyLLM:
         )
     
 
+    def generate_from_states(
+        self,
+        constraint: dict,
+        batchID: str,
+        seed_states: list[dict],
+        candidates_per_state: int = 4
+    ) -> dict[str, str]:
+        """
+        Generate multiple candidate branches from a set of explicit seed states.
+        
+        Args:
+            constraint: The active constraint set dictionary.
+            batchID: The identifier for the current batch.
+            seed_states: List of dicts from NetlistDatabase containing 'id', 'netlist_text', 'fitness', and 'feedback'.
+            candidates_per_state: Number of branches to spawn per seed state.
+            
+        Returns:
+            dict: Mapping of {new_candidate_id: parent_id} to track lineage depth.
+        """
+        label = slug(constraint, 0)
+        all_results = []       # Holds dicts of {"raw": ..., "cleaned": ...}
+        parent_tracking = []   # Tracks the parent_id for each generated candidate
+        
+        cand_counter = 1
+        
+        for state in seed_states:
+            parent_id = state["id"]
+            prev_clean = normalize_netlist(state["netlist_text"])
+            
+            # Construct the exact feedback block expected by the LLM
+            feedback_block = "\n\n=== FEEDBACK FROM PREVIOUS ITERATION ===\n"
+            feedback_block += "Review your previous attempt below. Identify the failures and generate a new, corrected netlist. Higher fitness scores are better.\n\n"
+            feedback_block += f"Topology '{parent_id}'\n"
+            feedback_block += f"  - Fitness Score: {state['fitness']:.4f}\n"
+            
+            feedback_block += "  - Submitted Netlist:\n"
+            for line in state["netlist_text"].strip().split('\n'):
+                feedback_block += f"      {line}\n"
+                
+            feedback_block += "\n  - Performance / Errors:\n"
+            for line in state["feedback"].strip().split('\n'):
+                if line.strip():  # Avoid printing empty bullet points
+                    feedback_block += f"      * {line}\n"
+                
+            feedback_block += "  - CRITICAL RULE: You MUST NOT output the exact same netlist. You must adjust your topology, timing parameters (PULSE), or component values to improve the score.\n"
+            
+            # Create the full prompt
+            prompt = make_prompt_demo(constraint, feedback_block)
+            
+            print(f"\nBranching {candidates_per_state} candidates from parent state: {parent_id} (Fitness: {state['fitness']:.4f})")
+            
+            _save_prompt(prompt, batchID, identifier=f"parent_{parent_id}")
+
+            for _ in range(candidates_per_state):
+                
+                # --- THE RETRY BOUNCER ---
+                max_retries = 3
+                attempts = 0
+                current_temp = self.engine._temperature
+                current_prompt = prompt
+                
+                while attempts <= max_retries:
+                    res = self._generate(current_prompt, 1, temp_override=current_temp)[0]
+                    new_clean = normalize_netlist(res["cleaned"])
+                    
+                    if prev_clean and new_clean == prev_clean:
+                        attempts += 1
+                        if attempts <= max_retries:
+                            print(f"\n[!] Duplicate netlist detected (parent: {parent_id}). Rejecting and retrying (Attempt {attempts}/{max_retries})...")
+                            current_temp += 0.15  # Bump temperature to force creativity
+                            current_prompt += "\n\n[SYSTEM WARNING]: FATAL ERROR. You outputted the EXACT SAME circuit as the parent netlist. You MUST change the component values, duty cycle, or topology to proceed."
+                        else:
+                            print(f"\n[!] Max retries reached for branch of {parent_id}. Accepting duplicate.")
+                            all_results.append(res)
+                            parent_tracking.append(parent_id)
+                            break
+                    else:
+                        all_results.append(res)
+                        parent_tracking.append(parent_id)
+                        break
+                
+                cand_counter += 1
+
+        # Save all raw outputs for the batch in one go
+        _save_raw_output([r["raw"] for r in all_results], batchID)
+
+        # Write clean netlists to disk (returns list of pathlib.Path objects)
+        written_paths = write_netlists(
+            netlists=[r["cleaned"] for r in all_results],
+            constraint=constraint,
+            label=label,
+            batchID=batchID,
+        )
+        
+        # Zip the returned filenames together with their parent IDs
+        parent_map = {}
+        for path, p_id in zip(written_paths, parent_tracking):
+            parent_map[path.stem] = p_id
+            
+        return parent_map
+
     def _aggregate_previous_batch_data(self, previous_batch_id: str, label: str, candidate_idx: int) -> str:
         """
         Reads feedback from the previous batch specifically targeting a single candidate lineage.
@@ -283,7 +394,7 @@ class TopologyLLM:
 
             # Load the actual generated netlist
             netlist_content = "[Netlist file not found]"
-            netlist_path = batch_path / "llm_output" / f"{target_circuit_name}.net"
+            netlist_path = batch_path / "LLM_output" / f"{target_circuit_name}.net"
             if netlist_path.exists():
                 netlist_content = netlist_path.read_text(encoding="utf-8").strip()
             
