@@ -265,12 +265,16 @@ class LTSpiceSimulator():
                 # Compute P_in = V(in) * sum(Id(Mx)) — MOSFET drain currents are always
                 # saved and represent the switched input current reliably
                 if "v(in)" in df_ss.columns:
-                    v_in_vals  = df_ss["v(in)"].values
-                    id_cols    = [c for c in df_ss.columns if c.startswith("id(m")]
-                    if id_cols:
-                        i_sw_total = sum(df_ss[c].values for c in id_cols)
-                        p_in_inst  = v_in_vals * np.abs(i_sw_total)
-                        p_in       = np.trapezoid(p_in_inst, t) / t_span
+                    v_in_vals = df_ss["v(in)"].values
+                    # Look for the current of the Vin source (LTSpice names it i(vin))
+                    i_in_cols = [c for c in df_ss.columns if c.startswith("i(v") and "in" in c]
+                    
+                    if i_in_cols:
+                        # LTSpice convention: current flowing OUT of a source is negative, so take abs()
+                        i_in_vals = np.abs(df_ss[i_in_cols[0]].values)
+                        p_in_inst = v_in_vals * i_in_vals
+                        p_in = np.trapezoid(p_in_inst, t) / t_span
+                        
                         if p_in > 0:
                             row["power_in_W"] = p_in
                             if "power_out_W" in row:

@@ -33,16 +33,6 @@ from .prompt_input import load_constraints, make_prompt, make_prompt_demo, slug
 from .net_writer import write_netlists, get_llm_output_dir
 from transformers import TextStreamer, StoppingCriteria, StoppingCriteriaList
 
-def _save_prompt(prompt: str, batchID: str, candidate_idx: int = None) -> None:
-    """Save the prompt used for generation to data/<batchID>/prompt[_candX].txt."""
-    batch_dir = get_llm_output_dir(batchID).parent  # data/<batchID>/
-    batch_dir.mkdir(parents=True, exist_ok=True)
-    
-    # Dynamically name the file if an index is provided
-    filename = f"prompt_cand{candidate_idx}.txt" if candidate_idx else "prompt.txt"
-    
-    (batch_dir / filename).write_text(prompt, encoding="utf-8")
-
 def _save_prompt(prompt: str, batchID: str, identifier: str = None) -> None:
     """Save the prompt used for generation."""
     batch_dir = get_llm_output_dir(batchID).parent
@@ -182,9 +172,11 @@ class TopologyLLM:
         batchID: str,
         n: int = 4,
         DEMO: bool = False,
-        previous_batch_id: str = None
+        previous_batch_id: str = None,
+        label: str = None
     ) -> list[Path]:
-        label = slug(constraint, 0)
+        if label is None:
+            label = slug(constraint, 0)
         results = []
         
         for i in range(1, n + 1):
@@ -203,7 +195,7 @@ class TopologyLLM:
                 prompt = make_prompt(constraint)
                 prev_clean = ""
 
-            _save_prompt(prompt, batchID, candidate_idx=i)
+            _save_prompt(prompt, batchID, identifier=f"cand{i}")
 
             # --- THE RETRY BOUNCER ---
             max_retries = 3
@@ -245,7 +237,8 @@ class TopologyLLM:
         constraint: dict,
         batchID: str,
         seed_states: list[dict],
-        candidates_per_state: int = 4
+        candidates_per_state: int = 4,
+        label: str = None
     ) -> dict[str, str]:
         """
         Generate multiple candidate branches from a set of explicit seed states.
@@ -259,7 +252,8 @@ class TopologyLLM:
         Returns:
             dict: Mapping of {new_candidate_id: parent_id} to track lineage depth.
         """
-        label = slug(constraint, 0)
+        if label is None:
+            label = slug(constraint, 0)
         all_results = []       # Holds dicts of {"raw": ..., "cleaned": ...}
         parent_tracking = []   # Tracks the parent_id for each generated candidate
         
