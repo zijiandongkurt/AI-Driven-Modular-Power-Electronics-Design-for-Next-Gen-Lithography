@@ -108,7 +108,7 @@ def write_netlists(
     written: list[Path] = []
     for i, nl in enumerate(netlists, start=1):
         # Inject the batch suffix right after cand{i}
-        file_path = out / f"{label}_cand{i}{batch_suffix}.net"
+        file_path = out / f"{label}{batch_suffix}_cand{i}.net"
         
         write_single_netlist(
             file_path, nl, constraint,

@@ -354,7 +354,7 @@ class TopologyLLM:
             prev_b_suffix = f"_b{match.group(1)}"
 
         # Look for e.g., "00_Step_Down_cand1_b1"
-        target_circuit_name = f"{label}_cand{candidate_idx}{prev_b_suffix}"
+        target_circuit_name = f"{label}{prev_b_suffix}_cand{candidate_idx}"
 
         if not reward_file.exists():
             return f"\n[System Note: Previous batch data '{previous_batch_id}' not found.]\n"
