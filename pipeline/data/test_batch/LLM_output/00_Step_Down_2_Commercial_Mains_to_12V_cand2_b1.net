@@ -1,0 +1,22 @@
+* Generated: 2026-05-17T21:17:00
+* Constraint: Step-Down 2: Commercial Mains to 12V
+*   vin_min = 220
+*   vin_max = 380
+*   vout_target = 12
+*   efficiency_target = 0.92
+*   power_in = 300
+* Candidate: 2 of 2
+*
+* 220V to 12V Isolated DC/DC (Flyback)
+Vin in 0 220
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.4
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

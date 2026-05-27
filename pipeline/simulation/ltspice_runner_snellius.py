@@ -51,14 +51,62 @@ class LTSpiceSimulator():
         self.HOME_DIR        = Path.home()
         self.LTSPICE_FILES   = self.HOME_DIR / "ltspice-files"   # bind-mounted to /sim in container
         self.RUN_SCRIPT      = self.HOME_DIR / "run_ltspice_snellius.sh"
-        self.PARALLEL_SIMS   = 1
+        self.OVERLAY_DIR     = self.HOME_DIR / "overlays"        # one overlay image per parallel slot
+        self.OVERLAY_SIZE_MB = 2048                              # 2 GB per overlay — fits Wine prefix copy
+        self.PARALLEL_SIMS   = 4                                 # re-enabled: each slot gets its own overlay
+
+    # -------------------------------------------------------------------------
+    # Overlay management (Bram's fix)
+    # -------------------------------------------------------------------------
+
+    def _init_overlays(self):
+        """Create one reusable overlay image per parallel slot if not already present.
+
+        Uses --no-mount hostfs,tmp so /tmp inside the container is fully isolated
+        from the host and from other parallel containers. Each slot gets its own
+        overlay so Wine prefix copies never collide.
+
+        RETURNS:
+        overlays <list[Path]> : Paths to overlay images, indexed by slot number.
+        """
+        self.OVERLAY_DIR.mkdir(exist_ok=True)
+        overlays = []
+        for i in range(self.PARALLEL_SIMS):
+            img = self.OVERLAY_DIR / f"overlay_slot{i}.img"
+            if not img.exists():
+                print(f"Creating overlay slot {i}: {img}")
+                subprocess.run(
+                    ["apptainer", "overlay", "create", "--size", str(self.OVERLAY_SIZE_MB), str(img)],
+                    check=True,
+                )
+            overlays.append(img)
+        return overlays
+
+    def _cleanup_overlays(self, overlays):
+        """Remove overlay images after a batch completes to reclaim disk space.
+
+        This prevents accumulated overlays from exhausting scratch disk across
+        multiple batches. Overlays are recreated cheaply at the next batch start.
+        """
+        for img in overlays:
+            try:
+                img.unlink()
+                print(f"Removed overlay: {img.name}")
+            except FileNotFoundError:
+                pass
+
+    # -------------------------------------------------------------------------
+    # Simulation lifecycle
+    # -------------------------------------------------------------------------
 
     def _onSimulationComplete(self, net_stem):
         print(f"SIMULATION COMPLETE: {net_stem}")
 
     def simulate(self, batchID):
         """Simulates all netlists in data/<batchID>/llm_output/ that passed validation.
-        Launches each simulation via the Apptainer container (run_ltspice_snellius.sh).
+        Launches each simulation via the Apptainer container (run_ltspice_snellius.sh),
+        now with per-slot overlay isolation so parallel runs no longer collide on
+        the shared Wine prefix.
 
         PARAMS:
         batchID <string> : The ID of a Batch
@@ -124,12 +172,30 @@ class LTSpiceSimulator():
             shutil.copy2(netpath, dest)
             net_files_to_run.append(netpath.name)
 
+        # Initialise one overlay image per parallel slot (Bram's fix)
+        overlays = self._init_overlays()
+
+        # Assign slot indices to filenames so each thread gets a dedicated overlay
+        # and a unique Xvfb display number (:90, :91, ...) to avoid display collisions
+        slot_assignments = {
+            filename: idx % self.PARALLEL_SIMS
+            for idx, filename in enumerate(net_files_to_run)
+        }
+
         def _run_one(filename):
-            """Run a single netlist through the container and move .raw output to output_path."""
+            """Run a single netlist through the container and move .raw output to output_path.
+
+            Passes the per-slot overlay and a unique display number to the shell script
+            so that concurrent containers are fully isolated from each other.
+            """
+            slot           = slot_assignments[filename]
+            overlay        = overlays[slot]
+            xvfb_display   = f":{90 + slot}"          # :90, :91, :92, :93
             container_path = f"Z:\\\\sim\\\\{filename}"
+
             result = subprocess.run(
-                [str(self.RUN_SCRIPT), container_path],
-                text=True
+                [str(self.RUN_SCRIPT), container_path, str(overlay), xvfb_display],
+                text=True,
             )
             if result.returncode != 0:
                 print(f"ERROR [{filename}]: {result.stderr.strip()}")
@@ -145,13 +211,17 @@ class LTSpiceSimulator():
                 print(f"WARNING: No .raw output found for {filename}")
                 return False
 
-        # Run simulations in parallel
+        # Run simulations in parallel — one thread per slot, each isolated via its overlay
         ok, total = 0, len(net_files_to_run)
-        with ThreadPoolExecutor(max_workers=self.PARALLEL_SIMS) as executor:
-            futures = {executor.submit(_run_one, f): f for f in net_files_to_run}
-            for future in as_completed(futures):
-                if future.result():
-                    ok += 1
+        try:
+            with ThreadPoolExecutor(max_workers=self.PARALLEL_SIMS) as executor:
+                futures = {executor.submit(_run_one, f): f for f in net_files_to_run}
+                for future in as_completed(futures):
+                    if future.result():
+                        ok += 1
+        finally:
+            # Always clean up overlays, even if simulations failed
+            self._cleanup_overlays(overlays)
 
         print(f"Batch '{batchID}' done — {ok}/{total} successful")
         if ok < total:
@@ -160,9 +230,7 @@ class LTSpiceSimulator():
         return self.__getResultsOf(batchID=batchID, netlist_map=netlist_map)
 
     def __getResultsOf(self, batchID, netlist_map):
-        """Extracts scalar performance metrics from .raw simulation outputs.
-        Unchanged from original implementation.
-        """
+        """Extracts scalar performance metrics from .raw simulation outputs."""
         output_dir = self.BASE_DIR / "output" / batchID
         assert output_dir.exists(), f"No results found for batch: {batchID}"
 
