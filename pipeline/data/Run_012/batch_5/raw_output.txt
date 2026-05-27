@@ -1,0 +1,142 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 10V to 5V Buck Converter Meeting Efficiency Target
+Vin in 0 10
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.33
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.5u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 10V to 5V Buck Converter Meeting Efficiency Target
+Vin in 0 10
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 50u
+C1 out 0 100u
+Rload out 0 0.33
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+* 10V to 5V Buck Converter Meeting Efficiency Target
+Vin in 0 10
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 56u
+C1 out 0 100u
+Rload out 0 0.33
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.25u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 10V to 5V Buck Converter Meeting Efficiency Target
+Vin in 0 10
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.33
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.5u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+* 12V to 5V Buck Converter
+Vin in 0 14
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 33u
+C1 out 0 220u
+Rload out 0 0.33
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.2u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+---
+
+BEGIN SOLUTION
+
+--- START SOLUTION 1 (Corrected Buck Topology) ---
+### SPICE Netlist:
+* 12V to 5V Buck Converter
+Vin in 0 12
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 33u
+C1 out 0 220u
+Rload out 0 0.33
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.2u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+* 12V to 5V Buck Converter
+Vin in 0 12
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 33u
+C1 out 0 220u
+Rload out 0 0.33
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 12V to 5V Buck Converter (Revised)
+Vin in 0 14
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 33u
+C1 out 0 220u
+Rload out 0 0.33
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.2u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
