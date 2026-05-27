@@ -4,6 +4,8 @@ import json
 import argparse
 from pathlib import Path
 import time
+import random
+import numpy as np
 
 from pipeline.llm_topology_generation.llm_api import TopologyLLM
 from pipeline.netlist_validation.validator import validator
@@ -58,6 +60,11 @@ def run_inference(config: dict) -> str:
     mcts_settings = config.get("mcts_settings", {})
     constraint_settings = config.get("constraint_settings", {})
     weights = config.get("weights", {})
+
+    # ---> ADD THE SEED EXTRACTION AND LOCKING HERE <---
+    SEED = run_settings.get("seed", 42)
+    random.seed(SEED)
+    np.random.seed(SEED)
 
     # Run Variables
     N_BATCHES = run_settings.get("n_batches", 20)
@@ -207,8 +214,26 @@ def run_inference(config: dict) -> str:
     print(f"✅ Inference Loop Complete in {run_duration:.2f} seconds")
     print(f"{'='*50}")
     
+    #Export the metrics of the best netlist
+    if db.records:
+        best_cand_id = max(db.records, key=lambda k: db.records[k]["fitness"])
+        champ_metrics = db.records[best_cand_id].get("metrics", {}).get("raw_metrics", {})
+        
+        export_data = {
+            "id": best_cand_id,
+            "target_voltage": constraint.get("vout_target", 0),
+            "target_power": constraint.get("power_in", 10), # <--- NEW: Grab power from constraint
+            "raw_voltage": champ_metrics.get("simulation_output_voltage", 0.0),
+            "raw_efficiency": champ_metrics.get("efficiency", 0.0),
+            "raw_volume": champ_metrics.get("total_volume_cm3", 0.0),
+            "raw_components": champ_metrics.get("total_components", 0)
+        }
+        
+        champ_file = run_folder_path / "champion_metrics.json"
+        with open(champ_file, "w", encoding="utf-8") as f:
+            json.dump(export_data, f, indent=4)
+            
     return str(run_folder_path)
-
 
 if __name__ == "__main__":
     # If called from CLI, load JSON and pass it as a dict.

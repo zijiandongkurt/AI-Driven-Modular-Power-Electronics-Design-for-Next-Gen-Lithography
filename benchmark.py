@@ -7,37 +7,240 @@ from demo_inference import run_inference
 import matplotlib
 matplotlib.use('Agg') # Thread-safe backend for headless execution
 import matplotlib.pyplot as plt
+import json
 
 
 def extract_metrics(run_folder: str) -> dict:
-    """Parses the run_summary.txt to extract Fitness, normalized AUC (Convergence), Validity Rate, and Learning Curve."""
+    """Parses the run summary and champion JSON to extract fitness and physical metrics."""
     summary_path = Path(run_folder) / "run_summary.txt"
-    if not summary_path.exists():
-        return {"fitness": 0.0, "auc": 0.0, "validity": 0.0, "learning_curve": []}
+    champ_path = Path(run_folder) / "champion_metrics.json"
     
-    content = summary_path.read_text(encoding="utf-8")
+    # 1. Added "volume" and "components" to the default dictionary
+    metrics = {
+        "fitness": 0.0, "auc": 0.0, "validity": 0.0, "learning_curve": [], 
+        "v_error_pct": None, "efficiency": None, 
+        "volume": None, "components": None, "target_power": None
+    }
     
-    fit_match = re.search(r"Overall Best Fitness:\s*([0-9.]+)", content)
-    fitness = float(fit_match.group(1)) if fit_match else 0.0
-    
-    val_match = re.search(r"Validity Rate:\s*([0-9.]+)%", content)
-    validity = float(val_match.group(1)) if val_match else 0.0
-    
-    # Grab all raw scores at every batch step
-    raw_scores = [float(x) for x in re.findall(r"Batch \d+ Best DB Score:\s*([-0-9.]+)", content)]
-    
-    normalized_scores = []
-    for score in raw_scores:
-        if score < 0.5:
-            normalized_scores.append(0.0)
-        else:
-            normalized_scores.append((score - 0.5) * 2.0)
-            
-    auc = np.trapz(normalized_scores) if len(normalized_scores) > 1 else 0.0
-    
-    # --- ADD "learning_curve" TO THE RETURN DICTIONARY ---
-    return {"fitness": fitness, "auc": auc, "validity": validity, "learning_curve": raw_scores}
+    # 2. Extract Learning & Fitness Data
+    if summary_path.exists():
+        content = summary_path.read_text(encoding="utf-8")
+        fit_match = re.search(r"Overall Best Fitness:\s*([0-9.]+)", content)
+        metrics["fitness"] = float(fit_match.group(1)) if fit_match else 0.0
+        
+        val_match = re.search(r"Validity Rate:\s*([0-9.]+)%", content)
+        metrics["validity"] = float(val_match.group(1)) if val_match else 0.0
+        
+        raw_scores = [float(x) for x in re.findall(r"Batch \d+ Best DB Score:\s*([-0-9.]+)", content)]
+        metrics["learning_curve"] = raw_scores
+        
+        norm_scores = [0.0 if s < 0.5 else (s - 0.5) * 2.0 for s in raw_scores]
+        metrics["auc"] = np.trapz(norm_scores) if len(norm_scores) > 1 else 0.0
 
+    # 3. Extract Physical Trade-off Data
+    if champ_path.exists():
+        with open(champ_path, "r", encoding="utf-8") as f:
+            champ = json.load(f)
+            target_v = champ.get("target_voltage", 1.0) 
+            raw_v = champ.get("raw_voltage", 0.0)
+            
+            error_pct = abs(raw_v - target_v) / target_v * 100.0
+            
+            metrics["v_error_pct"] = error_pct
+            metrics["efficiency"] = champ.get("raw_efficiency", 0.0) * 100.0 
+            
+            # ---> GRAB THE NEW HARDWARE METRICS <---
+            metrics["volume"] = champ.get("raw_volume", 0.0)
+            metrics["components"] = champ.get("raw_components", 0)
+            metrics["target_power"] = champ.get("target_power", 10.0)
+            
+    return metrics
+
+import math # Make sure this is imported at the top!
+
+def plot_radar_chart(master_results: dict, output_dir: str = "experiments"):
+    """
+    Plots a 4-axis Radar Chart (Spider Plot) to visualize the physical
+    trade-offs (The "Shape" of the Engineer) for each model.
+    """
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
+    
+    labels = ['Voltage Accuracy', 'Power Efficiency', 'Size Compactness', 'Simplicity (Low Parts)']
+    num_vars = len(labels)
+    
+    # Compute angles for each axis in the polar plot
+    angles = np.linspace(0, 2 * np.pi, num_vars, endpoint=False).tolist()
+    angles += angles[:1] # Close the loop
+    
+    fig, ax = plt.subplots(figsize=(8, 8), subplot_kw=dict(polar=True))
+    colors = {'Base': '#5dade2', 'SFT': '#f5b041', 'RL': '#58d68d'}
+    
+    for model_name, tasks in master_results.items():
+        model_scores = {'v_acc': [], 'eff': [], 'size': [], 'simp': []}
+        
+        # 1. Aggregate and Normalize Data per Model
+        for task_label, trials in tasks.items():
+
+            # ---> NEW: Dynamic Simplicity Scaling by Phase <---
+            if task_label.startswith("P1"):
+                max_comp = 10.0  # Easy circuits should be very lean
+            elif task_label.startswith("P2"):
+                max_comp = 15.0  # Medium circuits get some breathing room
+            elif task_label.startswith("P3"):
+                max_comp = 25.0  # Industrial grid circuits need many parts
+            else:
+                max_comp = 15.0  # Fallback
+
+            for trial in trials:
+                if trial and trial.get("v_error_pct") is not None:
+                    
+                    # Voltage Accuracy: 0% error = 100 score. 50%+ error = 0 score.
+                    v_acc = max(0.0, 100.0 - (trial["v_error_pct"] * 2)) 
+                    
+                    # Power Efficiency: Already 0-100
+                    eff = trial.get("efficiency", 0.0)
+                    
+                    # Size Compactness: Scored on Power Density (W/cm^3)
+                    vol = trial.get("volume", 1.0) # default 1.0 to avoid zero division
+                    power = trial.get("target_power", 10.0)
+                    
+                    if vol <= 0.01: # Impossible physics / Perfect score
+                        size = 100.0
+                    else:
+                        power_density = power / vol
+                        
+                        # Assume 2.0 W/cm^3 is a perfect 100 score. 
+                        # Anything above that caps at 100. Anything below scales down to 0.
+                        size = min(100.0, max(0.0, (power_density / 2.0) * 100.0))
+                    
+                    # Simplicity: Assume 10 components is bad (0), 0 is perfect (100)
+                    comp = trial.get("components", 10)
+                    simp = max(0.0, 100.0 - (comp * 10.0))
+                    
+                    model_scores['v_acc'].append(v_acc)
+                    model_scores['eff'].append(eff)
+                    model_scores['size'].append(size)
+                    model_scores['simp'].append(simp)
+                    
+        # 2. Average the scores and map them to the polygon
+        if model_scores['v_acc']:
+            avg_values = [
+                np.mean(model_scores['v_acc']),
+                np.mean(model_scores['eff']),
+                np.mean(model_scores['size']),
+                np.mean(model_scores['simp'])
+            ]
+            avg_values += avg_values[:1] # Close the loop
+            
+            # 3. Plot the boundary line and fill the area
+            ax.plot(angles, avg_values, color=colors.get(model_name, 'gray'), linewidth=2.5, label=model_name)
+            ax.fill(angles, avg_values, color=colors.get(model_name, 'gray'), alpha=0.15)
+
+    # 4. Formatting the Spider Web
+    ax.set_theta_offset(np.pi / 2) # Put the first axis at the very top
+    ax.set_theta_direction(-1)     # Draw clockwise
+    
+    # Set the labels at the edges
+    ax.set_thetagrids(np.degrees(angles[:-1]), labels, fontsize=12, fontweight='bold')
+    
+    # Format the concentric circles (0 to 100 scale)
+    ax.set_ylim(0, 100)
+    ax.set_yticks([20, 40, 60, 80, 100])
+    ax.set_yticklabels(['20', '40', '60', '80', '100'], color="grey", size=10)
+    
+    plt.title('Global Physical Trade-Off Profile\n(100 = Perfect Score)', size=15, fontweight='bold', y=1.1)
+    plt.legend(loc='upper right', bbox_to_anchor=(1.3, 1.1), fontsize=11)
+    
+    # 5. Save to disk
+    filepath = Path(output_dir) / "combined_radar_profile.png"
+    plt.savefig(filepath, dpi=300, bbox_inches='tight')
+    plt.close()
+    
+    print(f"🕸️ Radar (Spider) plot successfully saved to: {filepath}")
+
+
+def plot_pareto_scatter(master_results: dict, output_dir: str = "experiments"):
+    """
+    Plots a Trade-Off Scatter plot (Voltage Error vs Efficiency) for all champion circuits.
+    Reveals the physical Pareto frontier of each model's generation logic, 
+    and exposes catastrophic failures in the bottom-left "graveyard".
+    """
+    Path(output_dir).mkdir(parents=True, exist_ok=True)
+    plt.figure(figsize=(10, 8))
+    
+    colors = {'Base': '#5dade2', 'SFT': '#f5b041', 'RL': '#58d68d'}
+    markers = {'Base': 'o', 'SFT': 's', 'RL': '^'}
+    
+    # To avoid duplicate legend labels
+    plotted_labels = set()
+    failed_labels = set()
+    
+    for model_name, tasks in master_results.items():
+        for task_label, trials in tasks.items():
+            for trial in trials:
+                # 1. SUCCESSFUL RUNS
+                if trial and trial.get("v_error_pct") is not None and trial.get("efficiency") is not None:
+                    
+                    v_err = trial["v_error_pct"]
+                    eff = trial["efficiency"]
+                    
+                    # Cap extreme voltage errors at 50% just to keep the plot readable
+                    v_err_clipped = min(v_err, 50.0)
+                    
+                    label = model_name if model_name not in plotted_labels else ""
+                    plotted_labels.add(model_name)
+                    
+                    plt.scatter(
+                        v_err_clipped, 
+                        eff, 
+                        color=colors.get(model_name, 'gray'), 
+                        marker=markers.get(model_name, 'o'),
+                        s=100, 
+                        alpha=0.7, 
+                        edgecolor='black',
+                        label=label
+                    )
+                # 2. CATASTROPHIC FAILURES (The Graveyard)
+                else:
+                    label = f"{model_name} (Failed)" if model_name not in failed_labels else ""
+                    failed_labels.add(model_name)
+                    
+                    plt.scatter(
+                        50.0, # Worst voltage error boundary
+                        0.0,  # Zero efficiency
+                        color=colors.get(model_name, 'gray'), 
+                        marker='X', # Big cross to indicate failure
+                        s=180,      # Make it slightly larger so it stands out
+                        alpha=0.8, 
+                        edgecolor='black',
+                        label=label
+                    )
+
+    # Formatting: Invert X-axis so "better" (0% error) is on the right side!
+    plt.gca().invert_xaxis()
+    
+    plt.title('Physical Trade-Off Profile (Pareto Frontier)\nAll Champion Circuits Across All Constraints', fontsize=14, fontweight='bold')
+    plt.xlabel('Absolute Voltage Error (%) ⟵ WORSE | BETTER ⟶', fontsize=12, fontweight='bold')
+    plt.ylabel('Power Efficiency (%)', fontsize=12, fontweight='bold')
+    
+    # Add a crosshair at the "Perfect Circuit" zone (0% error, 100% efficiency)
+    plt.axvline(x=0, color='red', linestyle='--', alpha=0.5)
+    plt.axhline(y=100, color='red', linestyle='--', alpha=0.5)
+    plt.text(1, 98, 'The "Perfect" Zone', color='red', fontsize=10, fontweight='bold')
+    
+    # Add a label for the Graveyard
+    plt.text(49, 3, 'Failure Graveyard', color='black', fontsize=10, fontweight='bold', style='italic')
+    
+    plt.grid(True, linestyle='--', alpha=0.4)
+    
+    # Organize legend nicely
+    plt.legend(title="LLM Model", fontsize=11, title_fontsize=12, loc='lower left')
+    
+    filepath = Path(output_dir) / "combined_pareto_tradeoffs.png"
+    plt.savefig(filepath, dpi=300, bbox_inches='tight')
+    plt.close()
+    
+    print(f"🎯 Pareto trade-off scatter plot successfully saved to: {filepath}")
 
 def plot_learning_curves(master_results: dict, output_dir: str = "experiments", n_batches: int = 15):
     """
@@ -222,6 +425,7 @@ def main():
                 run_config = copy.deepcopy(base_config)
                 run_config["run_settings"]["model_id"] = model_path
                 run_config["run_settings"]["run_prefix"] = f"Bench_{model_name}_{task['label']}_T{trial}"
+                run_config["run_settings"]["seed"] = 42000 + trial
                 run_config["constraint_settings"]["dataset_path"] = task["file"]
                 run_config["constraint_settings"]["index"] = task["idx"]
                 run_config["constraint_settings"]["phase"] = task["phase"]
@@ -261,6 +465,8 @@ def main():
 
     plot_combined_fitness(master_results, output_dir="experiments")
     plot_learning_curves(master_results, output_dir="experiments", n_batches=base_config["run_settings"]["n_batches"])
+    plot_pareto_scatter(master_results, output_dir="experiments")
+    plot_radar_chart(master_results, output_dir="experiments")
 
 if __name__ == "__main__":
     main()
