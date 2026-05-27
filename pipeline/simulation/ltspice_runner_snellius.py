@@ -53,7 +53,7 @@ class LTSpiceSimulator():
         self.RUN_SCRIPT      = self.HOME_DIR / "run_ltspice_snellius.sh"
         self.OVERLAY_DIR     = self.HOME_DIR / "overlays"        # one overlay image per parallel slot
         self.OVERLAY_SIZE_MB = 2048                              # 2 GB per overlay — fits Wine prefix copy
-        self.PARALLEL_SIMS   = 4                                 # re-enabled: each slot gets its own overlay
+        self.PARALLEL_SIMS   = 1                               # re-enabled: each slot gets its own overlay
 
     # -------------------------------------------------------------------------
     # Overlay management (Bram's fix)
@@ -76,7 +76,7 @@ class LTSpiceSimulator():
             if not img.exists():
                 print(f"Creating overlay slot {i}: {img}")
                 subprocess.run(
-                    ["apptainer", "overlay", "create", "--size", str(self.OVERLAY_SIZE_MB), str(img)],
+                    ["apptainer", "overlay", "create", "--fakeroot", "--size", str(self.OVERLAY_SIZE_MB), str(img)],
                     check=True,
                 )
             overlays.append(img)
@@ -196,6 +196,8 @@ class LTSpiceSimulator():
             result = subprocess.run(
                 [str(self.RUN_SCRIPT), container_path, str(overlay), xvfb_display],
                 text=True,
+                stderr=subprocess.PIPE,
+                stdout=None,
             )
             if result.returncode != 0:
                 print(f"ERROR [{filename}]: {result.stderr.strip()}")

@@ -1,6 +1,6 @@
-from ltspice_runner import TopologySimulator
+from ltspice_runner_snellius import LTSpiceSimulator
 
-sim = TopologySimulator()
+sim = LTSpiceSimulator()
 df = sim.simulate("test_batch")
 print(df)
 
