@@ -239,7 +239,7 @@ class TopologyLLM:
         seed_states: list[dict],
         candidates_per_state: int = 4,
         label: str = None
-    ) -> dict[str, str]:
+    ) -> list[Path]:
         """
         Generate multiple candidate branches from a set of explicit seed states.
         
@@ -250,12 +250,11 @@ class TopologyLLM:
             candidates_per_state: Number of branches to spawn per seed state.
             
         Returns:
-            dict: Mapping of {new_candidate_id: parent_id} to track lineage depth.
+            List of paths to the netlists
         """
         if label is None:
             label = slug(constraint, 0)
         all_results = []       # Holds dicts of {"raw": ..., "cleaned": ...}
-        parent_tracking = []   # Tracks the parent_id for each generated candidate
         
         cand_counter = 1
         
@@ -308,11 +307,9 @@ class TopologyLLM:
                         else:
                             print(f"\n[!] Max retries reached for branch of {parent_id}. Accepting duplicate.")
                             all_results.append(res)
-                            parent_tracking.append(parent_id)
                             break
                     else:
                         all_results.append(res)
-                        parent_tracking.append(parent_id)
                         break
                 
                 cand_counter += 1
@@ -320,20 +317,12 @@ class TopologyLLM:
         # Save all raw outputs for the batch in one go
         _save_raw_output([r["raw"] for r in all_results], batchID)
 
-        # Write clean netlists to disk (returns list of pathlib.Path objects)
-        written_paths = write_netlists(
+        return write_netlists(
             netlists=[r["cleaned"] for r in all_results],
             constraint=constraint,
             label=label,
             batchID=batchID,
         )
-        
-        # Zip the returned filenames together with their parent IDs
-        parent_map = {}
-        for path, p_id in zip(written_paths, parent_tracking):
-            parent_map[path.stem] = p_id
-            
-        return parent_map
 
     def _aggregate_previous_batch_data(self, previous_batch_id: str, label: str, candidate_idx: int) -> str:
         """
