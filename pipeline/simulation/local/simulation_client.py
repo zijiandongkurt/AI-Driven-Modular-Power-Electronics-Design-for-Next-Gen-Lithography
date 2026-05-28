@@ -3,12 +3,13 @@ simulation_client.py
 ────────────────────
 Runs on your PC. Polls Snellius for pending simulation jobs, runs LTspice
 natively via LTSpiceSimulator, extracts metrics via RawExtractor, and sends
-simulation_results.json back to Snellius.
+simulation_results.csv back to Snellius.
 
 Usage:
     .venv\Scripts\python pipeline\simulation\local\simulation_client.py
 
 Keep this running in the background during training on Snellius.
+All paths are derived relative to the repo root via config.json.
 """
 
 import json
@@ -20,17 +21,18 @@ from pathlib import Path
 from ltspice_runner import LTSpiceSimulator
 from raw_extractor import RawExtractor
 
-# ── Configuration ─────────────────────────────────────────────────────────────
-SNELLIUS_HOST   = "snellius.surf.nl"
-SNELLIUS_USER   = "akumas"
-SSH_KEY_PATH    = r"C:\Users\Pc\.ssh\snellius_key"
+# ── Load config ───────────────────────────────────────────────────────────────
+# simulation/local/ → simulation/ → pipeline/ → repo root
+REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
+CONFIG    = json.loads((REPO_ROOT / "simulation_config.json").read_text())
 
-SNELLIUS_REPO   = "/home/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography"
+SNELLIUS_HOST   = CONFIG["snellius_host"]
+SNELLIUS_USER   = CONFIG["snellius_user"]
+SSH_KEY_PATH    = Path(CONFIG["ssh_key_path"]).expanduser()
+SNELLIUS_REPO   = f"/home/{SNELLIUS_USER}/{CONFIG['snellius_repo']}"
 SNELLIUS_JOBS   = f"{SNELLIUS_REPO}/pipeline/simulation/snellius/jobs"
-
-LOCAL_WORK_DIR  = Path(__file__).parent.parent / "output"
-POLL_INTERVAL_S = 3
-JOB_TIMEOUT_S   = 3600
+LOCAL_WORK_DIR  = REPO_ROOT / "pipeline" / "simulation" / "output"
+POLL_INTERVAL_S = CONFIG.get("poll_interval_s", 3)
 
 # ── SSH/SFTP helpers ──────────────────────────────────────────────────────────
 
@@ -38,7 +40,7 @@ def _connect():
     """Open SSH + SFTP connection to Snellius."""
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(SNELLIUS_HOST, username=SNELLIUS_USER, key_filename=SSH_KEY_PATH)
+    ssh.connect(SNELLIUS_HOST, username=SNELLIUS_USER, key_filename=str(SSH_KEY_PATH))
     return ssh, ssh.open_sftp()
 
 
@@ -92,8 +94,9 @@ def _cleanup_local(local_dir: Path):
 
 def run():
     print(f"Simulation client started. Polling every {POLL_INTERVAL_S}s...")
-    print(f"  Host : {SNELLIUS_HOST}")
-    print(f"  Jobs : {SNELLIUS_JOBS}\n")
+    print(f"  Repo:    {REPO_ROOT}")
+    print(f"  Host:    {SNELLIUS_HOST}")
+    print(f"  Jobs:    {SNELLIUS_JOBS}\n")
 
     while True:
         try:
@@ -120,12 +123,12 @@ def run():
                 simulator   = LTSpiceSimulator(output_dir=local_raw_dir)
                 netlist_map = simulator.simulate(net_paths)
 
-                # 3. Extract metrics → simulation_results.json
+                # 3. Extract metrics → simulation_results.csv
                 print(f"[{batch_id}] Extracting metrics...")
                 extractor = RawExtractor(local_raw_dir)
                 extractor.extract(netlist_map, local_results)
 
-                # 4. Upload simulation_results.json to Snellius
+                # 4. Upload simulation_results.csv to Snellius
                 print(f"[{batch_id}] Uploading results...")
                 _upload_results(sftp, local_results, job["results_dir"])
 

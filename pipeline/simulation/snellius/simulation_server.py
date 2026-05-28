@@ -31,9 +31,9 @@ class SimulationServer:
     """
 
     def __init__(self):
-        self.BASE_DIR   = Path(__file__).parent
-        self.REPO_DIR   = self.BASE_DIR.parent.parent.parent   # repo root
-        self.DATA_DIR   = self.REPO_DIR / "data"
+        self.BASE_DIR   = Path(__file__).resolve().parent
+        self.REPO_DIR   = self.BASE_DIR.parent.parent.parent   # snellius/ → simulation/ → pipeline/ → repo root
+        self.DATA_DIR   = self.REPO_DIR / "pipeline" / "data"
         self.JOBS_DIR   = self.BASE_DIR / "jobs"
         self.JOBS_DIR.mkdir(exist_ok=True)
 
