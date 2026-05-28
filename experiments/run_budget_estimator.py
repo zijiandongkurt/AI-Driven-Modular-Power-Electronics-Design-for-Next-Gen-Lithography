@@ -42,7 +42,7 @@ def main():
         }
     }
 
-    # 2. Run the inference loop (this uses your newly profiled demo_inference)
+    # 2. Run the inference loop
     run_folder = run_inference(test_config)
     
     # 3. Load the generated timing profile
@@ -55,7 +55,7 @@ def main():
     with open(profile_path, "r", encoding="utf-8") as f:
         profiling = json.load(f)
 
-    # Calculate time spent specifically on processing netlists (exclude logging/plotting overhead)
+    # Calculate time spent specifically on processing netlists
     core_time = (
         profiling.get("llm_generation", 0.0) + 
         profiling.get("validation", 0.0) + 
@@ -70,15 +70,6 @@ def main():
 
     time_per_netlist = core_time / total_netlists if total_netlists > 0 else 0
 
-    print("\n" + "="*60)
-    print("📊 PROFILING RESULTS & COST PROJECTIONS")
-    print("="*60)
-    print(f"Test Run Folder:       {run_folder}")
-    print(f"Netlists Evaluated:    {total_netlists}")
-    print(f"Total Core Time:       {core_time:.2f} seconds")
-    print(f"Average Time/Netlist:  {time_per_netlist:.2f} seconds")
-    print("-" * 60)
-
     # 4. Project Full Benchmark Costs
     static_total_netlists = 9720
     dynamic_total_netlists = 17280
@@ -86,29 +77,61 @@ def main():
     static_hours = (static_total_netlists * time_per_netlist) / 3600
     dynamic_hours = (dynamic_total_netlists * time_per_netlist) / 3600
 
-    print("🚀 Projection 1: STATIC Search Horizon (15 Batches for all phases)")
-    print(f"   Total Netlists: {static_total_netlists:,}")
-    print(f"   Estimated Time: {static_hours:.2f} hours")
-    print()
-    print("🚀 Projection 2: DYNAMIC Search Horizon (15/25/40 Batches)")
-    print(f"   Total Netlists: {dynamic_total_netlists:,}")
-    print(f"   Estimated Time: {dynamic_hours:.2f} hours")
-    print("-" * 60)
+    # Build the report string
+    report_text = f"""
+============================================================
+📊 PROFILING RESULTS & COST PROJECTIONS
+============================================================
+Test Run Folder:       {run_folder}
+Netlists Evaluated:    {total_netlists}
+Total Core Time:       {core_time:.2f} seconds
+Average Time/Netlist:  {time_per_netlist:.2f} seconds
+------------------------------------------------------------
+🚀 Projection 1: STATIC Search Horizon (15 Batches for all phases)
+   Total Netlists: {static_total_netlists:,}
+   Estimated Time: {static_hours:.2f} hours
+
+🚀 Projection 2: DYNAMIC Search Horizon (15/25/40 Batches)
+   Total Netlists: {dynamic_total_netlists:,}
+   Estimated Time: {dynamic_hours:.2f} hours
+------------------------------------------------------------
+"""
+    print(report_text)
     
     # 5. SBU Cost Estimator
     print("💰 SBU Compute Budget Estimator")
     sbu_rate_str = input("Enter your cluster's SBU rate per hour (e.g., 2.5 for an A100 node): ")
     
+    cost_text = ""
     try:
         sbu_rate = float(sbu_rate_str)
-        print(f"   Static Setup Cost:  {static_hours * sbu_rate:.2f} SBUs")
-        print(f"   Dynamic Setup Cost: {dynamic_hours * sbu_rate:.2f} SBUs")
+        cost_text = f"""💰 SBU Compute Budget Estimator
+   SBU Rate Applied:   {sbu_rate}
+   Static Setup Cost:  {static_hours * sbu_rate:.2f} SBUs
+   Dynamic Setup Cost: {dynamic_hours * sbu_rate:.2f} SBUs
+"""
+        print(cost_text)
     except ValueError:
-        print("   Invalid SBU rate entered. Skipping cost calculation.")
+        cost_text = "   Invalid SBU rate entered. Cost calculation skipped.\n"
+        print(cost_text)
 
-    print("="*60)
-    print("Note: Phase 3 (Hard) simulations may take slightly longer per netlist due to complex")
-    print("transient states. Add a ~10% buffer to these estimates to be safe!")
+    footer = """============================================================
+Note: Phase 3 (Hard) simulations may take slightly longer per netlist due to complex
+transient states. Add a ~10% buffer to these estimates to be safe!
+"""
+    print(footer)
+
+    # 6. Save everything to budget_estimation.txt
+    full_report = report_text + cost_text + footer
+    output_file = PROJECT_ROOT / "experiments" / "budget_estimation.txt"
+    
+    # Ensure experiments directory exists just in case
+    output_file.parent.mkdir(parents=True, exist_ok=True)
+    
+    with open(output_file, "w", encoding="utf-8") as f:
+        f.write(full_report)
+        
+    print(f"✅ Budget estimation successfully saved to: {output_file}")
 
 if __name__ == "__main__":
     main()

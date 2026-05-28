@@ -138,17 +138,17 @@ def main():
                     master_results[model_name][task['label']].append({"fitness": 0.0, "auc": 0.0, "validity": 0.0})
 
     # --- FINAL MULTI-METRIC REPORT ---
-    print(f"\n\n{'='*100}")
-    print(f"🏆 COMPREHENSIVE BENCHMARK RESULTS (Mean ± StdDev) 🏆")
-    print(f"{'='*100}")
+    report_text = f"\n\n{'='*100}\n"
+    report_text += f"🏆 COMPREHENSIVE BENCHMARK RESULTS (Mean ± StdDev) 🏆\n"
+    report_text += f"{'='*100}\n"
     
     header = f"{'Task (Constraint)':<22} | {'Metric':<14} | " + " | ".join([f"{m:<18}" for m in models.keys()])
-    print(header)
-    print("-" * 100)
+    report_text += header + "\n"
+    report_text += "-" * 100 + "\n"
 
     for task in tasks:
         task_lbl = task['label']
-        print(f"{task_lbl:<22} | ")
+        report_text += f"{task_lbl:<22} | \n"
         
         for metric_name, key in [("Max Fitness", "fitness"), ("AUC (Speed)", "auc"), ("Validity %", "validity")]:
             row = f"{'':<22} | {metric_name:<14} | "
@@ -160,16 +160,29 @@ def main():
                     row += f"{np.mean(vals):.2f} ± {np.std(vals):.2f}    | "
                 else:
                     row += f"{'ERR':<18} | "
-            print(row)
-        print("-" * 100)
+            report_text += row + "\n"
+        report_text += "-" * 100 + "\n"
+
+    # 1. Print to console
+    print(report_text)
+
+    # 2. Save to .txt file
+    out_path = "experiments/benchmark_results"
+    Path(out_path).mkdir(parents=True, exist_ok=True)
+    
+    report_file = Path(out_path) / "benchmark_report.txt"
+    with open(report_file, "w", encoding="utf-8") as f:
+        f.write(report_text)
+    
+    print(f"📝 Benchmark table successfully saved to: {report_file}\n")
 
     # Triggering Extracted Plotting Modules
     try:
-        plot_combined_fitness(master_results, output_dir="experiments")
-        plot_learning_curves(master_results, output_dir="experiments", n_batches=base_config["run_settings"]["n_batches"])
-        plot_pareto_scatter(master_results, output_dir="experiments")
-        plot_radar_chart(master_results, output_dir="experiments")
-        plot_validity_bar_chart(master_results, output_dir="experiments")
+        plot_combined_fitness(master_results, output_dir=out_path)
+        plot_learning_curves(master_results, output_dir=out_path, n_batches=base_config["run_settings"]["n_batches"])
+        plot_pareto_scatter(master_results, output_dir=out_path)
+        plot_radar_chart(master_results, output_dir=out_path)
+        plot_validity_bar_chart(master_results, output_dir=out_path)
     except NameError:
         print("Plots skipped because the visualization modules could not be loaded.")
 
