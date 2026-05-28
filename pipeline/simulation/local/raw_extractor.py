@@ -1,7 +1,6 @@
 from PyLTSpice import RawRead
 from pathlib import Path
 import re
-import json
 import numpy as np
 
 # Thermal constants
@@ -202,10 +201,10 @@ class RawExtractor:
 
                 all_rows.append(row)
 
-        # Write results JSON
+        # Write results CSV
+        import pandas as pd
         results_path.parent.mkdir(parents=True, exist_ok=True)
-        with open(results_path, "w") as f:
-            json.dump(all_rows, f, indent=2, default=str)
+        pd.DataFrame(all_rows).to_csv(results_path, index=False)
         print(f"Saved {len(all_rows)} result(s) -> {results_path}")
 
         # Clean up .raw files

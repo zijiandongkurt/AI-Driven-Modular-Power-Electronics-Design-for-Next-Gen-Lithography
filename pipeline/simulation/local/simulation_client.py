@@ -67,10 +67,10 @@ def _download_nets(sftp, job: dict, local_dir: Path) -> list:
     return local_paths
 
 
-def _upload_results(sftp, local_json: Path, remote_results_dir: str):
-    """Upload simulation_results.json to Snellius data/<batchID>/."""
-    remote_path = f"{remote_results_dir}/simulation_results.json"
-    sftp.put(str(local_json), remote_path)
+def _upload_results(sftp, local_csv: Path, remote_results_dir: str):
+    """Upload simulation_results.csv to Snellius data/<batchID>/."""
+    remote_path = f"{remote_results_dir}/simulation_results.csv"
+    sftp.put(str(local_csv), remote_path)
     print(f"  Uploaded results -> {remote_path}")
 
 
@@ -109,7 +109,7 @@ def run():
 
                 local_net_dir = LOCAL_WORK_DIR / batch_id / "nets"
                 local_raw_dir = LOCAL_WORK_DIR / batch_id / "raw"
-                local_results = LOCAL_WORK_DIR / batch_id / "simulation_results.json"
+                local_results = LOCAL_WORK_DIR / batch_id / "simulation_results.csv"
 
                 # 1. Download .net files from Snellius
                 print(f"[{batch_id}] Downloading netlists...")

@@ -49,7 +49,7 @@ class SimulationServer:
         batch_dir        = self.DATA_DIR / batchID
         llm_output_dir   = batch_dir / "LLM_output"
         val_results_path = batch_dir / "validation_results.json"
-        results_path     = batch_dir / "simulation_results.json"
+        results_path     = batch_dir / "simulation_results.csv"
 
         assert llm_output_dir.exists(),   f"LLM_output not found: {llm_output_dir}"
         assert val_results_path.exists(), f"validation_results.json not found: {val_results_path}"
@@ -112,8 +112,7 @@ class SimulationServer:
         return self._load_results(results_path)
 
     def _load_results(self, results_path: Path) -> pd.DataFrame:
-        """Load simulation_results.json into a DataFrame."""
-        rows = json.loads(results_path.read_text())
-        df   = pd.DataFrame(rows)
+        """Load simulation_results.csv into a DataFrame."""
+        df = pd.read_csv(results_path)
         print(f"Loaded {len(df)} result(s) from {results_path}")
         return df
