@@ -9,7 +9,7 @@ import numpy as np
 
 from pipeline.llm_topology_generation.llm_api import TopologyLLM
 from pipeline.netlist_validation.validator import validator
-from pipeline.simulation.ltspice_runner import LTSpiceSimulator
+from pipeline.simulation.local.ltspice_runner import LTSpiceSimulator
 from pipeline.reward_evaluation.reward_function_norm import RewardFunctionNorm
 from pipeline.llm_topology_generation.prompt_input import load_constraint
 

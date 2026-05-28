@@ -9,7 +9,7 @@ import pandas as pd
 # Tell Python to look one directory up
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from pipeline.simulation.ltspice_runner import LTSpiceSimulator
+from pipeline.simulation.local.ltspice_runner import LTSpiceSimulator
 from pipeline.reward_evaluation.reward_function_norm import RewardFunctionNorm 
  
 
