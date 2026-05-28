@@ -177,18 +177,33 @@ class RewardFunctionNorm:
         return total_loss, details
 
     def calculate_reward(self, row, constraints, weights):
-        """Convert loss into a reward in [0.5, 1.0].
-
-        Simulation rewards are always in [0.5, 1.0] so they strictly rank above
-        invalid topology rewards which are in [-1.0, -0.5]. This creates a 
-        large numerical gap (0.5 to -0.5) penalizing invalid structure.
-        """
+        """Convert loss into a reward in [0.5, 1.0]."""
         loss, details = self.calculate_loss(row, constraints, weights)
         
-        # loss is in [0, 1], where 0 is perfect and 1 is worst.
-        # Map loss=0 to reward=1.0, and loss=1 to reward=0.5
+        # Base reward mapping loss [0, 1] -> reward [1.0, 0.5]
         reward = 1.0 - (0.5 * loss)
         
+        # --- NEW: CONTINUOUS FATAL VOLTAGE PENALTY ---
+        v_out = details["raw_metrics"]["simulation_output_voltage"]
+        target = constraints.get('vout_target', 5.0)
+        
+        v_error = abs(v_out - target)
+        safe_margin = target * 0.50  # Start penalizing after 50% error (e.g., outside 4V-6V)
+        
+        if v_error > safe_margin:
+            # Calculate how far past the safe margin we are
+            excess_error = v_error - safe_margin
+            
+            # Exponential decay: The worse the voltage, the closer this gets to 0.0
+            # A factor of 0.15 means the reward drops sharply, but maintains a smooth curve.
+            decay_factor = np.exp(-0.15 * excess_error)
+            
+            # Squeeze the available reward space down toward the 0.50 floor
+            reward = 0.50 + ((reward - 0.50) * decay_factor)
+            
+            details["fatal_penalty_applied"] = True
+            details["voltage_decay_factor"] = float(decay_factor)
+
         return float(reward), details
 
     # ── Batch normalization for GRPO ─────────────────────────────────────

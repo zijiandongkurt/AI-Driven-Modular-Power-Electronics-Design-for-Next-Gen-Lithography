@@ -1,0 +1,136 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 10V to 5V Step-Down Converter meeting Efficiency Target
+Vin in 0 10
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.33
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* Design a non-isolated buck converter meeting the specified constraints
+Vin in 0 <vin>
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 33u
+C1 out 0 100u
+Rload out 0 <Rload_value>
+Vgate gate 0 PULSE(0 12 0 1n 1n <t_on> <period>)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+* 10-14V to 5V Boost Converter meeting efficiency and power constraints
+Vin in 0 12
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 1.93
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 10-14V to 5V Step-Down Converter
+Vin in 0 12
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 33u
+C1 out 0 220u
+Rload out 0 0.33
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.2u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+* 10-14V to 5V Boost Converter
+Vin in 0 12.5
+L1 in sw 33u
+M1 sw gate 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.5
+Vgate gate 0 PULSE(0 12.5 0 1n 1n 10u 15u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+* 10-14V to 5V Step-Down Converter
+Vin in 0 14
+M1 in gate sw 0 NMOS W=3 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 100u
+Rload out 0 2.7
+Vgate gate 0 PULSE(0 14 0 1n 1n 6.9u 20u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+* 10-14V to 5V Boost Converter
+Vin in 0 12
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 10-14V to 5V Step-Down Converter
+Vin in 0 12.5
+M1 in gate sw 0 NMOS W=2 L=1
+D1 0 sw DIODE
+L1 sw out 33u
+C1 out 0 100u
+Rload out 0 0.2222
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.95u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
