@@ -100,20 +100,14 @@ Average Time/Netlist:  {time_per_netlist:.2f} seconds
     
     # 5. SBU Cost Estimator
     print("💰 SBU Compute Budget Estimator")
-    sbu_rate_str =196
+    sbu_rate = 196.0
     
-    cost_text = ""
-    try:
-        sbu_rate = float(sbu_rate_str)
-        cost_text = f"""💰 SBU Compute Budget Estimator
-   SBU Rate Applied:   {sbu_rate}
-   Static Setup Cost:  {static_hours * sbu_rate:.2f} SBUs
-   Dynamic Setup Cost: {dynamic_hours * sbu_rate:.2f} SBUs
-"""
-        print(cost_text)
-    except ValueError:
-        cost_text = "   Invalid SBU rate entered. Cost calculation skipped.\n"
-        print(cost_text)
+    cost_text = f"""💰 SBU Compute Budget Estimator
+    SBU Rate Applied:   {sbu_rate} SBU/h
+    Static Setup Cost:  {static_hours * sbu_rate:.2f} SBUs
+    Dynamic Setup Cost: {dynamic_hours * sbu_rate:.2f} SBUs
+    """
+    print(cost_text)
 
     footer = """============================================================
 Note: Phase 3 (Hard) simulations may take slightly longer per netlist due to complex
