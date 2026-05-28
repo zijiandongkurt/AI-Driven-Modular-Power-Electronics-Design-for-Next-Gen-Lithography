@@ -1,7 +1,7 @@
 import re
 import pandas as pd
 from pathlib import Path
-from netlist_database import NetlistDatabase
+from pipeline.utility.netlist_database import NetlistDatabase
 
 class SummaryLogger:
     """

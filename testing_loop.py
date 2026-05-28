@@ -1,5 +1,5 @@
 import copy
-from demo_inference import run_inference
+from run_inference import run_inference
 
 def main():
     # 1. Define the universal config dict
