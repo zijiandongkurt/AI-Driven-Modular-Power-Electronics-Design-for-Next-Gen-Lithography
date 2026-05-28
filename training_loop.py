@@ -3,7 +3,7 @@ from pathlib import Path
 
 from pipeline.llm_topology_generation.llm_api import TopologyLLM
 from pipeline.netlist_validation.validator import validator
-from pipeline.simulation.ltspice_runner_snellius import LTSpiceSimulator
+from pipeline.simulation.snellius.simulation_server import SimulationServer as LTSpiceSimulator
 from pipeline.reward_evaluation.reward_function_norm import RewardFunctionNorm
 from pipeline.llm_topology_generation.prompt_input import load_constraint
 from pipeline.reinforcement_algorithm.grpo_trainer import GRPOTrainer
