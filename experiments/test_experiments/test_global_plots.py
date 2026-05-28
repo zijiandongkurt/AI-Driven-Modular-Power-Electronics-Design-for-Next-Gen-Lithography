@@ -3,7 +3,7 @@ import numpy as np
 from pathlib import Path
 
 # 1. Setup paths so it can find the pipeline folder
-PROJECT_ROOT = Path(__file__).resolve().parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.append(str(PROJECT_ROOT))
 
 # 2. Import the plotting modules we just separated

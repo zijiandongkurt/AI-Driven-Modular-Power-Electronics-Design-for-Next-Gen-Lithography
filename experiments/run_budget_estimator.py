@@ -100,7 +100,7 @@ Average Time/Netlist:  {time_per_netlist:.2f} seconds
     
     # 5. SBU Cost Estimator
     print("💰 SBU Compute Budget Estimator")
-    sbu_rate_str = input("Enter your cluster's SBU rate per hour (e.g., 2.5 for an A100 node): ")
+    sbu_rate_str =196
     
     cost_text = ""
     try:
