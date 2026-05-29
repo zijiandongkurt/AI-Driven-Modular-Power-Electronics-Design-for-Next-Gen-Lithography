@@ -161,24 +161,19 @@ def run_eval_pipeline(
 
 
 def run_single(run_idx: int, zycos_name: str, llm, val, simulator, reward_fn, grpo, data_dir: Path, config: Dict) -> None:
-    """Run the full training loop for a single constraint (run_idx).
+    """Run the full training loop for a single constraint (run_idx)."""
 
-    PARAMS:
-    run_idx    <int>  : Constraint index (0-based), also used as Run_XXX number
-    zycos_name <str>  : Parent zycos folder name, e.g. 'zycos_001'
-    """
-    N_batch            = config["n_batch"]
-    SEED_PROMPTS       = config["seed_prompts"]
-    PARENTS_PER_BATCH  = config["parents_per_batch"]
-    OUTPUTS_PER_PARENT = config["outputs_per_parent"]
-    ALPHA_DEPTH        = config["alpha_depth"]
+    N_batch             = config["n_batch"]
+    SEED_PROMPTS        = config["seed_prompts"]
+    PARENTS_PER_BATCH   = config["parents_per_batch"]
+    OUTPUTS_PER_PARENT  = config["outputs_per_parent"]
+    ALPHA_DEPTH         = config["alpha_depth"]
     SOFTMAX_TEMPERATURE = config["softmax_temperature"]
-    RANDOM_SEED        = config["random_seed"]
-    weights            = config["weights"]
+    RANDOM_SEED         = config["random_seed"]
+    weights             = config["weights"]
 
     constraint = load_constraint(config["constraint_path"], idx=run_idx)
 
-    # Run folder sits inside the zycos folder
     run_folder_name = f"Run_{run_idx + 1:03d}"
     run_folder_path = data_dir / zycos_name / run_folder_name
     run_folder_path.mkdir(parents=True, exist_ok=True)
@@ -191,7 +186,6 @@ def run_single(run_idx: int, zycos_name: str, llm, val, simulator, reward_fn, gr
     selected_parents: List[Dict] = []
 
     for batch_idx in range(1, N_batch + 1):
-        # batch_id includes full path so downstream classes can find it under pipeline/data/
         current_batch_id = f"{zycos_name}/{run_folder_name}/batch_{batch_idx}"
         print(f"\n--- Processing {current_batch_id} ---")
 
@@ -305,7 +299,7 @@ def run_single(run_idx: int, zycos_name: str, llm, val, simulator, reward_fn, gr
 
 
 def main():
-    # --- Load configuration from training_config.json ---
+    # --- Load configuration ---
     config_path = Path("training_config.json")
     assert config_path.exists(), f"training_config.json not found at {config_path.resolve()}"
     with config_path.open("r") as f:
@@ -313,8 +307,18 @@ def main():
 
     N_RUNS = config["n_runs"]
 
+    # --- Create zycos folder first so checkpoint dir can reference it ---
+    data_dir   = Path("pipeline/data")
+    zycos_name = get_next_zycos_folder(data_dir)
+    zycos_path = data_dir / zycos_name
+    zycos_path.mkdir(parents=True, exist_ok=True)
+
     # --- Setup shared pipeline components (loaded once, reused across all runs) ---
-    llm       = TopologyLLM(max_new_tokens=config["max_tokens"])
+    sft_lora_path = config.get("sft_lora_path", None)
+    llm = TopologyLLM(max_new_tokens=config["max_tokens"], lora_path=sft_lora_path)
+    if sft_lora_path:
+        print(f"Loaded SFT LoRA adapter from: {sft_lora_path}")
+
     val       = validator()
     simulator = LTSpiceSimulator()
     reward_fn = RewardFunctionNorm()
@@ -325,7 +329,8 @@ def main():
         validator=val,
         simulator=simulator,
         reward_fn=reward_fn,
-        constraint=None,   # set per run inside run_single()
+        constraint=None,
+        output_dir=f"checkpoints/{zycos_name}/grpo-lora/final",
         rl_config=RLConfig(
             max_length=rl["max_length"],
             max_prompt_length=rl["max_prompt_length"],
@@ -335,15 +340,7 @@ def main():
             lora_r=rl["lora_r"],
             lora_alpha=rl["lora_alpha"],
         ),
-        output_dir=f"checkpoints/{zycos_name}/grpo-lora/final",
     )
-
-    data_dir = Path("pipeline/data")
-
-    # Create one zycos_XXX folder for this entire training experiment
-    zycos_name = get_next_zycos_folder(data_dir)
-    zycos_path = data_dir / zycos_name
-    zycos_path.mkdir(parents=True, exist_ok=True)
 
     print(f"=== Starting {zycos_name} | {N_RUNS} runs (constraint idx 0-{N_RUNS - 1}) ===")
 
