@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 from pipeline.reinforcement_algorithm.new_rl_updater import RLUpdater, RLConfig
+from pipeline.llm_topology_generation.prompt_input import make_prompt
 
 
 class GRPOTrainer:
@@ -69,19 +70,15 @@ class GRPOTrainer:
             return json.load(f)
 
     def _load_prompt(self) -> str:
-        """Fallback prompt if group-specific prompt file is missing."""
-        if self.system_prompt_path.exists():
-            system_prompt = self.system_prompt_path.read_text(encoding="utf-8")
-        else:
-            print(f"Warning: {self.system_prompt_path} not found. Using constraint only.")
-            system_prompt = ""
+        """Fallback prompt when a group-specific prompt file is missing.
 
-        return (
-            system_prompt.strip()
-            + "\n\n### Constraint:\n"
-            + json.dumps(self.constraint_dict, indent=2)
-            + "\n\n### SPICE Netlist:\n"
-        )
+        Uses make_prompt() -- the SAME builder the generator uses at sampling
+        time (SYSTEM_PROMPT + constraint + netlist header, see llm_api.py) --
+        so the fallback log-prob is conditioned on the distribution the policy
+        actually sampled from, rather than the legacy system_prompt.txt + JSON
+        layout that the model never saw during generation.
+        """
+        return make_prompt(self.constraint_dict)
 
     def _load_group_prompt(self, batch_id: str, group_id: str) -> str:
         """

@@ -57,9 +57,16 @@ class RLConfig:
     learning_rate: float = 1e-5
     max_grad_norm: float = 1.0
 
-    # Placeholder for future KL/reference-model support.
-    # Currently this is not used because no reference model is loaded.
-    kl_beta: float = 0.0
+    # KL penalty toward a reference policy. The reference is the frozen base
+    # model, recovered by disabling the LoRA adapter at no extra memory cost,
+    # so no separate reference model is loaded. 0.0 disables the penalty
+    # (legacy behaviour). Anchors the policy and counters reward-hacking
+    # drift / mode collapse.
+    kl_beta: float = 0.05
+
+    # Optional entropy bonus (maximized -> subtracted from the loss) to keep
+    # candidate diversity when a group starts collapsing. 0.0 disables it.
+    entropy_beta: float = 0.0
 
     # Sequence control
     max_length: int = 512
@@ -114,6 +121,11 @@ class RLUpdater:
             trainable_params,
             lr=self.cfg.learning_rate,
         )
+
+        # The KL reference is obtained by disabling the LoRA adapter (which
+        # recovers the frozen base model). Only PeftModel exposes this, which
+        # is always the case here since LoRA is applied above.
+        self._has_disable_adapter = hasattr(self.engine.model, "disable_adapter")
 
     def _device(self):
         return self.engine.model.device
@@ -258,6 +270,88 @@ class RLUpdater:
         # Mean is more stable than sum for variable completion length.
         return token_log_probs.mean()
 
+    def _forward_logits(
+        self,
+        input_ids: torch.Tensor,
+        attention_mask: torch.Tensor,
+        no_grad: bool = False,
+    ) -> torch.Tensor:
+        """One forward pass returning logits (no_grad=True for the ref pass)."""
+        ctx = torch.no_grad() if no_grad else torch.enable_grad()
+        with ctx, torch.amp.autocast(
+            device_type="cuda",
+            dtype=torch.bfloat16,
+            enabled=self.cfg.bf16 and torch.cuda.is_available(),
+        ):
+            outputs = self.engine.model(
+                input_ids=input_ids,
+                attention_mask=attention_mask,
+            )
+        return outputs.logits
+
+    def _completion_stats(
+        self,
+        prompt: str,
+        completion: str,
+    ) -> Optional[Dict[str, Optional[torch.Tensor]]]:
+        """
+        Per-token-mean statistics for one (prompt, completion) pair:
+
+            log_prob_mean      mean log P_theta(completion | prompt)   [grad]
+            ref_log_prob_mean  mean log P_base(...) via disabled LoRA  [detached]
+                               or None when kl_beta == 0
+            entropy_mean       mean per-token entropy of P_theta       [grad]
+                               or None when entropy_beta == 0
+
+        All quantities are per-token means so that the KL and entropy terms
+        share the scale of the (already per-token) policy loss.
+        """
+        encoded = self._encode_prompt_completion(prompt, completion)
+        if encoded is None:
+            return None
+
+        input_ids = encoded["input_ids"]
+        attention_mask = encoded["attention_mask"]
+        prompt_len = int(encoded["prompt_len"].item())
+
+        if prompt_len >= input_ids.shape[1]:
+            return None
+
+        logits = self._forward_logits(input_ids, attention_mask, no_grad=False)
+        shift_logits = logits[:, prompt_len - 1:-1, :]
+        shift_labels = input_ids[:, prompt_len:]
+
+        if shift_logits.shape[1] == 0 or shift_labels.shape[1] == 0:
+            return None
+
+        log_probs = F.log_softmax(shift_logits, dim=-1)
+        token_log_probs = log_probs.gather(
+            dim=2, index=shift_labels.unsqueeze(-1)
+        ).squeeze(-1)
+
+        out: Dict[str, Optional[torch.Tensor]] = {
+            "log_prob_mean": token_log_probs.mean(),
+            "ref_log_prob_mean": None,
+            "entropy_mean": None,
+        }
+
+        if self.cfg.entropy_beta > 0:
+            probs = log_probs.exp()
+            out["entropy_mean"] = (-(probs * log_probs).sum(dim=-1)).mean()
+
+        if self.cfg.kl_beta > 0 and self._has_disable_adapter:
+            with self.engine.model.disable_adapter():
+                ref_logits = self._forward_logits(
+                    input_ids, attention_mask, no_grad=True
+                )
+            ref_shift = ref_logits[:, prompt_len - 1:-1, :]
+            ref_lp = F.log_softmax(ref_shift, dim=-1).gather(
+                dim=2, index=shift_labels.unsqueeze(-1)
+            ).squeeze(-1)
+            out["ref_log_prob_mean"] = ref_lp.mean().detach()
+
+        return out
+
     def update(
         self,
         prompts: List[str],
@@ -280,14 +374,41 @@ class RLUpdater:
         if not rewards:
             raise ValueError("No samples provided to RLUpdater.update().")
 
+        # Mode-collapse signal: a group whose rewards are all equal yields a
+        # zero advantage everywhere and therefore no gradient. Reported in the
+        # metrics so the caller can see why nothing moved; not fatal.
+        all_same_reward = (max(rewards) - min(rewards)) < 1e-9
+
         self.engine.model.train()
 
         # NEW: use grouped advantages from GRPOTrainer when provided.
         if advantages is None:
             if len(rewards) < 2:
-                raise ValueError(
-                    "At least 2 samples are required when advantages are not provided."
-                )
+                # Skip gracefully instead of crashing the loop: a single
+                # surviving candidate (e.g. the simulator failed the rest)
+                # carries no group-relative signal, but it must not take down
+                # a long run. The caller sees skipped=True.
+                self.step_id += 1
+                print(f"WARN: GRPO step {self.step_id} skipped — only "
+                      f"{len(rewards)} sample(s), need >= 2 without advantages.")
+                return {
+                    "step": self.step_id,
+                    "num_input_samples": len(rewards),
+                    "num_valid_samples": 0,
+                    "skipped": True,
+                    "skip_reason": f"only {len(rewards)} sample(s) and no advantages",
+                    "mean_reward": float(sum(rewards) / max(len(rewards), 1)),
+                    "policy_loss": None,
+                    "kl_loss": None,
+                    "entropy": None,
+                    "kl_div": 0.0,
+                    "total_loss": None,
+                    "all_same_reward": all_same_reward,
+                    "advantage_source": "skipped",
+                    "max_length": self.cfg.max_length,
+                    "max_prompt_length": self.cfg.max_prompt_length,
+                    "max_completion_length": self.cfg.max_completion_length,
+                }
 
             advantages_tensor = self._normalize_rewards(rewards).to(self._device())
             advantage_source = "normalized_rewards"
@@ -300,18 +421,21 @@ class RLUpdater:
             advantage_source = "external_grouped_advantages"
 
         policy_losses = []
+        kl_terms = []
+        entropy_terms = []
         valid_rewards = []
         valid_advantages = []
         valid_log_probs = []
         valid_indices = []
 
         for i, (prompt, completion) in enumerate(zip(prompts, completions)):
-            seq_log_prob = self._completion_log_prob(prompt, completion)
+            stats = self._completion_stats(prompt, completion)
 
-            if seq_log_prob is None:
+            if stats is None:
                 print(f"Skipping sample {i}: no valid completion tokens.")
                 continue
 
+            seq_log_prob = stats["log_prob_mean"]
             advantage = advantages_tensor[i]
 
             # NEW: skip unstable numerical values.
@@ -323,8 +447,18 @@ class RLUpdater:
             # positive advantage -> increase probability
             # negative advantage -> decrease probability
             policy_loss = -advantage * seq_log_prob
-
             policy_losses.append(policy_loss)
+
+            # KL(policy || base), per-token mean, only when a reference exists.
+            ref_lp = stats["ref_log_prob_mean"]
+            if ref_lp is not None:
+                kl_terms.append(seq_log_prob - ref_lp)
+
+            # Entropy bonus (maximized -> subtracted from loss), when requested.
+            ent = stats["entropy_mean"]
+            if ent is not None:
+                entropy_terms.append(ent)
+
             valid_rewards.append(float(rewards[i]))
             valid_advantages.append(float(advantage.detach().cpu()))
             valid_log_probs.append(float(seq_log_prob.detach().cpu()))
@@ -336,7 +470,24 @@ class RLUpdater:
                 "Likely prompt/completion truncation removed all completion tokens."
             )
 
-        loss = torch.stack(policy_losses).mean()
+        policy_loss_mean = torch.stack(policy_losses).mean()
+
+        if kl_terms:
+            kl_mean = torch.stack(kl_terms).mean()
+        else:
+            kl_mean = torch.tensor(0.0, device=self._device())
+
+        if entropy_terms:
+            entropy_mean = torch.stack(entropy_terms).mean()
+        else:
+            entropy_mean = torch.tensor(0.0, device=self._device())
+
+        # Total objective: policy gradient + KL anchor - entropy bonus.
+        loss = (
+            policy_loss_mean
+            + self.cfg.kl_beta * kl_mean
+            - self.cfg.entropy_beta * entropy_mean
+        )
 
         self.optimizer.zero_grad(set_to_none=True)
         loss.backward()
@@ -374,9 +525,13 @@ class RLUpdater:
             "raw_rewards": valid_rewards,
             "advantages": valid_advantages,
             "advantage_source": advantage_source,
-            "policy_loss": round(float(loss.detach().cpu()), 6),
-            "kl_div": 0.0,
+            "policy_loss": round(float(policy_loss_mean.detach().cpu()), 6),
+            "kl_loss": round(float(kl_mean.detach().cpu()), 6),
+            "kl_div": round(float(kl_mean.detach().cpu()), 6),
+            "entropy": round(float(entropy_mean.detach().cpu()), 6),
             "kl_beta": self.cfg.kl_beta,
+            "entropy_beta": self.cfg.entropy_beta,
+            "all_same_reward": all_same_reward,
             "completion_log_probs": valid_log_probs,
             "grad_norm": round(float(grad_norm.detach().cpu()), 6),
             "total_loss": round(float(loss.detach().cpu()), 6),
