@@ -82,7 +82,8 @@ class SimulationServer:
             "results_dir": str(batch_dir),
             "status":      "pending",
         }
-        job_file = self.JOBS_DIR / f"{batchID}.json"
+        job_filename = batchID.replace("/", "_") + ".json"
+        job_file = self.JOBS_DIR / job_filename
         job_file.write_text(json.dumps(job, indent=2))
         print(f"[{batchID}] Job written: {job_file}")
 
