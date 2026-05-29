@@ -1,0 +1,13 @@
+{
+    "model_id": "Qwen/Qwen3-14B",
+    "quantization": null,
+    "train_path": "pipeline/data/sft/sft_train.jsonl",
+    "val_path": "pipeline/data/sft/sft_val.jsonl",
+    "output_dir": "checkpoints/sft/sft_001",
+    "epochs": 5,
+    "batch_size": 4,
+    "learning_rate": 2e-4,
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "max_length": 2048
+}
