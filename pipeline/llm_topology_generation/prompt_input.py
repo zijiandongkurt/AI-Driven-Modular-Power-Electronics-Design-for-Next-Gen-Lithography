@@ -45,10 +45,11 @@ FIXED RULES — do not deviate:
   - MOSFET pins    : M<n> drain gate source bulk NMOS
       High-side    : drain=in,  gate=gate,  source=sw,  bulk=0
       Low-side     : drain=sw,  gate=gate2, source=0,   bulk=0
-  - Gate drive     : Vgate gate 0 PULSE(0 12 0 1n 1n <t_on> <period>)
+  - Gate drive     : Vgate gate 0 PULSE(0 12 0 1n 1n [t_on] [period])
                      — exactly 7 parameters, choose t_on and period to meet switching frequency
   - Floating nodes : any node connected only to reactive elements needs Rbleed <node> 0 1Meg
-  - Simulation     : .tran 1n 5m
+  - Simulation     : .tran 10n 1m
+  CRITICAL SYNTAX RULE: DO NOT output placeholders like <vin>, [value], or formulas like <vin/20000>. You MUST output concrete floating point numbers or SPICE notation (e.g., 10u, 220).
 
 REQUIRED NODES:
   in   — positive terminal of Vin
@@ -59,6 +60,7 @@ REQUIRED NODES:
 
 OUTPUT FORMAT:
   Output raw SPICE netlist text only.
+  Output exactly ONE netlist for this candidate. Do NOT provide multiple options, alternate versions, or multiple candidates in a single response.
   No markdown fences, no explanation, no prose.
   Start with an optional single-line title comment (* <title>).
   End the file with exactly: .end
@@ -67,7 +69,6 @@ OUTPUT FORMAT:
   NO EXPLANATIONS, NO PROSE, NO CHAT.
   NEVER EXPLAIN YOURSELF. JUST RAW SPICE NETLIST TEXT.
   
-  CRITICAL: Do not include design notes or explanations in SPICE comments.
   CRITICAL RULE: DO NOT copy component values or topologies directly from the examples below. You MUST calculate new component values (Vin, Rload, inductor/capacitor sizing, and Vgate pulse timing) and select the correct topology to satisfy the exact constraints given to you.
 
 === EXAMPLES OF PERFECT RESPONSES ===
@@ -154,6 +155,20 @@ def make_prompt(constraint: dict) -> str:
     return (
         f"{SYSTEM_PROMPT}\n\n"
         f"### Constraint:\n{json.dumps(payload, indent=2)}\n\n"
+        f"### SPICE Netlist:\n"
+    )
+
+def make_prompt_demo(constraint: dict, previous_feedback: str) -> str:
+    """
+    Build the full prompt for one constraint dict in DEMO mode.
+    This injects the performance feedback of the previous batch so the LLM 
+    can learn and improve its topology generation.
+    """
+    payload = {k: v for k, v in constraint.items() if not k.startswith("_")}
+    return (
+        f"{SYSTEM_PROMPT}\n\n"
+        f"### Constraint:\n{json.dumps(payload, indent=2)}\n\n"
+        f"{previous_feedback}\n"
         f"### SPICE Netlist:\n"
     )
 

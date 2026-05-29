@@ -1,0 +1,21 @@
+* Generated: 2026-05-12T16:31:39
+* Constraint: 12V to 5V step-down
+*   vin_min = 12
+*   vin_max = 100
+*   vout_target = 5
+*   efficiency_target = 0.9
+*   power_in = 100
+* Candidate: 1 of 4
+*
+* Non-Isolated DC/DC Converter Design
+Vin 1 0 DC 12
+Rload 0 2 1k
+M1 2 1 0 0 NMOS
+Vgate1 3 0 PULSE(0 12 0 1n 1n 10us 1ms)
+Rbleed1 2 0 1meg
+Vgate2 4 0 PULSE(0 12 0 1n 1n 10us 1ms)
+Rbleed2 2 0 1meg
+.tran 1n 5m
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+
+Note: This netlist is a simplified example designed to meet the constraints provided. In a real-world scenario, additional components may be necessary to meet efficiency and power handling targets, and the specific gate drive timing might need adjustments based on the target switching frequency and desired efficiency. The gate drive pulses are deliberately short to ensure high-frequency switching for maximum efficiency, but the exact parameters would depend on simulation results and component characteristics. Adjustments may be required for different efficiency targets or power levels. .end

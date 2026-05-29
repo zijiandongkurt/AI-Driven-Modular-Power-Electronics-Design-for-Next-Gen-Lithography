@@ -1,0 +1,34 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 220V - 380V Wide Range Boost Converter
+Vin in 0 380
+M1 in gate sw 0 NMOS W=1 L=1
+D1 sw out DIODE
+L1 sw 0 100u
+C1 out 0 470u
+Rload out 0 12.5
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.5u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* Adjusted Non-Isolated Buck Converter
+Vin in 0 220
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 22u
+C1 out 0 470u
+Rload out 0 0.181
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.56u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1n 5m
+.end

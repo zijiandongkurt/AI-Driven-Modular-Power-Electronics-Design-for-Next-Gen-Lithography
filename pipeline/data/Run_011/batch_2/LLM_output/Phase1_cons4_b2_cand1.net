@@ -1,0 +1,22 @@
+* Generated: 2026-05-23T14:31:41
+* Constraint: Phase 1: Standard 12V to 5V Logic (Buck)
+*   vin_min = 10
+*   vin_max = 14
+*   vout_target = 5
+*   efficiency_target = 0.8
+*   power_in = 15
+* Candidate: 1 of 4
+*
+* 12V to 5V Buck Converter with Improved Efficiency & Power
+Vin in 0 13
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 100u
+Rload out 0 2.45
+Vgate gate 0 PULSE(0 13 0 1n 1n 6.25u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

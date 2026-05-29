@@ -1,0 +1,23 @@
+============================================================
+📊 PROFILING RESULTS & COST PROJECTIONS
+============================================================
+Test Run Folder:       pipeline/data/Timing_Profile_Run
+Netlists Evaluated:    16
+Total Core Time:       45.32 seconds
+Average Time/Netlist:  2.83 seconds
+------------------------------------------------------------
+🚀 Projection 1: STATIC Search Horizon (15 Batches for all phases)
+   Total Netlists: 9,720
+   Estimated Time: 7.65 hours
+
+🚀 Projection 2: DYNAMIC Search Horizon (15/25/40 Batches)
+   Total Netlists: 17,280
+   Estimated Time: 13.60 hours
+------------------------------------------------------------
+💰 SBU Compute Budget Estimator
+   SBU Rate Applied:   196
+   Static Setup Cost:  1498.96 SBUs
+   Dynamic Setup Cost: 2664.82 SBUs
+============================================================
+Note: Phase 3 (Hard) simulations may take slightly longer per netlist due to complex
+transient states. Add a ~10% buffer to these estimates to be safe!

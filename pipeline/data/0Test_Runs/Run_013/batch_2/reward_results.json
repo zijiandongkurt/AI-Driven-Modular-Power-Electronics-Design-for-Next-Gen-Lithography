@@ -1,0 +1,46 @@
+{
+    "active_constraints": {
+        "_comment": "Step-Down 2: Commercial Mains to 12V",
+        "vin_min": 220,
+        "vin_max": 380,
+        "vout_target": 12,
+        "efficiency_target": 0.92,
+        "power_in": 300
+    },
+    "circuits": {
+        "00_Step_Down_2_Commercial_Mains_to_12V_cand1_b2": {
+            "fitness_score": 0.5433052902462698,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 1063.4157694942794,
+                "efficiency_loss": 17.741850843746196,
+                "volume_loss": 3527.6830791633506,
+                "component_cost_loss": 4.0
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 1.68779475817961,
+                "efficiency": 0.0329074578126902,
+                "total_volume_cm3": 1763.8415395816753,
+                "total_components": 4
+            },
+            "grpo_reward": -1.0
+        },
+        "00_Step_Down_2_Commercial_Mains_to_12V_cand2_b2": {
+            "fitness_score": 0.8121212121212121,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 15407.251473256518,
+                "efficiency_loss": 0.0,
+                "volume_loss": 20000.0,
+                "component_cost_loss": 4.0
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 51.25207188576995,
+                "efficiency": 0.9314566053902128,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": 0.9999997615814209
+        }
+    }
+}
