@@ -154,17 +154,20 @@ def run_inference(config: dict) -> str:
                 constraint,
                 batchID=current_batch_id,
                 n=SAMPLED_STATES_PER_BATCH * CANDIDATES_PER_PROMPT,
-                DEMO=True,
-                label=custom_label,
+                DEMO=False,
             )
         else:
             print(f"Sampled {len(sampled_states)} states from database. Branching {CANDIDATES_PER_PROMPT} candidates each.")
-            written = llm.generate_from_states(
-                constraint,
+            parent_entries = [
+                {"netlist_id": s["id"], "batch_id": s["batch_id"]}
+                for s in sampled_states
+            ]
+            written = llm.generate_grouped_for_parent_entries(
+                constraint=constraint,
                 batchID=current_batch_id,
-                seed_states=sampled_states,
-                candidates_per_state=CANDIDATES_PER_PROMPT,
-                label=custom_label,
+                parent_entries=parent_entries,
+                outputs_per_parent=CANDIDATES_PER_PROMPT,
+                DEMO=True,
             )
         t_gen = time.time()
         profiling["llm_generation"] += (t_gen - t_start)

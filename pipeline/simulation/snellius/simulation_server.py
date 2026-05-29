@@ -78,7 +78,12 @@ class SimulationServer:
         t_start = time.time()
 
         while elapsed < JOB_TIMEOUT_S:
-            current_job = json.loads(job_file.read_text())
+            try:
+                current_job = json.loads(job_file.read_text())
+            except (json.JSONDecodeError, FileNotFoundError):
+                time.sleep(POLL_INTERVAL_S)
+                elapsed += POLL_INTERVAL_S
+                continue
             if current_job.get("status") == "done" and results_path.exists():
                 sim_time = time.time() - t_start
                 print(f"[{batchID}] Results received in {sim_time:.1f}s")
