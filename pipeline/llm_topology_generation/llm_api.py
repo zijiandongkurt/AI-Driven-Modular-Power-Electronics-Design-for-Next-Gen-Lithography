@@ -111,6 +111,7 @@ class TopologyLLM:
         temperature: float = 0.7,
         top_p: float = 0.9,
         hf_cache_dir: str = SNELLIUS_HF_CACHE,
+        lora_path: str | None = None,   
     ):
         self.model_id = model_id
         self.max_new_tokens = max_new_tokens
@@ -123,6 +124,10 @@ class TopologyLLM:
             top_p=top_p,
             hf_cache_dir=hf_cache_dir,
         )
+        # Load LoRA adapter if provided
+        if lora_path:
+            print(f"Loading LoRA adapter from: {lora_path}")
+            self.engine.load_adapter("grpo", lora_path)
 
     def _generate(
         self,

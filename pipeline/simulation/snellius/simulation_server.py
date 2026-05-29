@@ -3,7 +3,7 @@ simulation_server.py
 ────────────────────
 Runs on Snellius. Replaces ltspice_runner_snellius.py.
 
-Creates a job file for the PC client, waits for simulation_results.json
+Creates a job file for the PC client, waits for simulation_results.csv
 to be uploaded back, then returns the results to the training loop.
 
 Usage (same interface as original LTSpiceSimulator):
@@ -22,30 +22,17 @@ JOB_TIMEOUT_S   = 3600   # 1 hour max wait per batch
 
 
 class SimulationServer:
-    """Drop-in replacement for LTSpiceSimulator on Snellius.
-
-    Instead of running LTspice locally (Wine), it:
-    1. Creates a job file in snellius/jobs/
-    2. Waits for the PC client to upload simulation_results.json
-    3. Loads and returns the results as a DataFrame
-    """
+    """Drop-in replacement for LTSpiceSimulator on Snellius."""
 
     def __init__(self):
-        self.BASE_DIR   = Path(__file__).resolve().parent
-        self.REPO_DIR   = self.BASE_DIR.parent.parent.parent   # snellius/ → simulation/ → pipeline/ → repo root
-        self.DATA_DIR   = self.REPO_DIR / "pipeline" / "data"
-        self.JOBS_DIR   = self.BASE_DIR / "jobs"
+        self.BASE_DIR = Path(__file__).resolve().parent
+        self.REPO_DIR = self.BASE_DIR.parent.parent.parent
+        self.DATA_DIR = self.REPO_DIR / "pipeline" / "data"
+        self.JOBS_DIR = self.BASE_DIR / "jobs"
         self.JOBS_DIR.mkdir(exist_ok=True)
 
     def simulate(self, batchID: str) -> pd.DataFrame:
-        """Submit a batch to the PC client and wait for results.
-
-        PARAMS:
-        batchID <string> : The ID of a Batch
-
-        RETURNS:
-        results <DataFrame> : Scalar metrics, one row per simulation run
-        """
+        """Submit a batch to the PC client and wait for results."""
         batch_dir        = self.DATA_DIR / batchID
         llm_output_dir   = batch_dir / "LLM_output"
         val_results_path = batch_dir / "validation_results.json"
@@ -54,7 +41,6 @@ class SimulationServer:
         assert llm_output_dir.exists(),   f"LLM_output not found: {llm_output_dir}"
         assert val_results_path.exists(), f"validation_results.json not found: {val_results_path}"
 
-        # Load valid netlists
         val_results = json.loads(val_results_path.read_text())
         valid_stems = {stem for stem, data in val_results.items() if data.get("passed", False)}
 
@@ -74,7 +60,6 @@ class SimulationServer:
 
         print(f"[{batchID}] Submitting {len(net_files)} netlists to simulation client...")
 
-        # Write job file
         job = {
             "batch_id":    batchID,
             "net_files":   net_files,
@@ -83,18 +68,20 @@ class SimulationServer:
             "status":      "pending",
         }
         job_filename = batchID.replace("/", "_") + ".json"
-        job_file = self.JOBS_DIR / job_filename
+        job_file     = self.JOBS_DIR / job_filename
         job_file.write_text(json.dumps(job, indent=2))
         print(f"[{batchID}] Job written: {job_file}")
 
-        # Wait for results
-        print(f"[{batchID}] Waiting for simulation_results.json...")
+        # Wait for results — track wall-clock time
+        print(f"[{batchID}] Waiting for simulation_results.csv...")
         elapsed = 0
+        t_start = time.time()
+
         while elapsed < JOB_TIMEOUT_S:
-            # Check job status
             current_job = json.loads(job_file.read_text())
             if current_job.get("status") == "done" and results_path.exists():
-                print(f"[{batchID}] Results received.")
+                sim_time = time.time() - t_start
+                print(f"[{batchID}] Results received in {sim_time:.1f}s")
                 break
 
             time.sleep(POLL_INTERVAL_S)
@@ -105,11 +92,9 @@ class SimulationServer:
         else:
             raise TimeoutError(f"Batch '{batchID}' timed out after {JOB_TIMEOUT_S}s")
 
-        # Clean up job file
         job_file.unlink()
         print(f"[{batchID}] Job file removed.")
 
-        # Load and return results
         return self._load_results(results_path)
 
     def _load_results(self, results_path: Path) -> pd.DataFrame:

@@ -335,6 +335,7 @@ def main():
             lora_r=rl["lora_r"],
             lora_alpha=rl["lora_alpha"],
         ),
+        output_dir=f"checkpoints/{zycos_name}/grpo-lora/final",
     )
 
     data_dir = Path("pipeline/data")
