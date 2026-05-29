@@ -9,16 +9,16 @@ import numpy as np
 
 from pipeline.llm_topology_generation.llm_api import TopologyLLM
 from pipeline.netlist_validation.validator import validator
-from pipeline.simulation.local.ltspice_runner import LTSpiceSimulator
+from pipeline.simulation.snellius.simulation_server import SimulationServer as LTSpiceSimulator
 from pipeline.reward_evaluation.reward_function_norm import RewardFunctionNorm
 from pipeline.llm_topology_generation.prompt_input import load_constraint
 
 # Import the newly separated classes
-from netlist_database import NetlistDatabase
-from summary_logger import SummaryLogger
+from pipeline.utility.netlist_database import NetlistDatabase
+from pipeline.utility.summary_logger import SummaryLogger
 
 try:
-    from pipeline.graphs_and_visualizations.visualize_demo_results import plot_run_results
+    from pipeline.graphs_and_visualizations.Visualize_demo_results import plot_run_results
     from pipeline.graphs_and_visualizations.plot_probabilities import plot_softmax_probabilities
     from pipeline.graphs_and_visualizations.plot_cumulative_probabilities import plot_cumulative_probabilities
 except ImportError as e:

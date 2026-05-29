@@ -7,28 +7,28 @@ from typing import Dict, List, Optional
 
 from pipeline.llm_topology_generation.llm_api import TopologyLLM
 from pipeline.netlist_validation.validator import validator
-from pipeline.simulation.snellius.simulation_server import SimulationServer as LTSpiceSimulator  # CHANGED: use current main simulator
+from pipeline.simulation.snellius.simulation_server import SimulationServer as LTSpiceSimulator
 from pipeline.reward_evaluation.reward_function_norm import RewardFunctionNorm
 from pipeline.llm_topology_generation.prompt_input import load_constraint
 from pipeline.reinforcement_algorithm.grpo_trainer import GRPOTrainer
 from pipeline.reinforcement_algorithm.new_rl_updater import RLConfig
 
 
-def get_next_run_folder(data_dir: Path) -> str:
-    """Find next Run_XXX folder."""
+def get_next_zycos_folder(data_dir: Path) -> str:
+    """Find next zycos_XXX folder."""
     if not data_dir.exists():
         data_dir.mkdir(parents=True, exist_ok=True)
 
-    run_folders = [
+    folders = [
         d.name for d in data_dir.iterdir()
-        if d.is_dir() and re.match(r"Run_\d+", d.name)
+        if d.is_dir() and re.match(r"zycos_\d+", d.name)
     ]
 
-    if not run_folders:
-        return "Run_001"
+    if not folders:
+        return "zycos_001"
 
-    run_numbers = [int(f.split("_")[1]) for f in run_folders]
-    return f"Run_{max(run_numbers) + 1:03d}"
+    numbers = [int(f.split("_")[1]) for f in folders]
+    return f"zycos_{max(numbers) + 1:03d}"
 
 
 def load_reward_data(batch_id: str) -> Dict:
@@ -160,68 +160,39 @@ def run_eval_pipeline(
     reward_fn.process_batch(batch_id, constraint, weights=weights)
 
 
-def main():
-    # --- Tree-search GRPO configuration ---
-    N_batch = 2
-    SEED_PROMPTS = 2
-    PARENTS_PER_BATCH = 2
-    OUTPUTS_PER_PARENT = 4
-    MAX_TOKENS = 1024
+def run_single(run_idx: int, zycos_name: str, llm, val, simulator, reward_fn, grpo, data_dir: Path, config: Dict) -> None:
+    """Run the full training loop for a single constraint (run_idx).
 
-    # Selection hyperparameters.
-    ALPHA_DEPTH = 0.05
-    SOFTMAX_TEMPERATURE = 0.2
-    RANDOM_SEED = 42
+    PARAMS:
+    run_idx    <int>  : Constraint index (0-based), also used as Run_XXX number
+    zycos_name <str>  : Parent zycos folder name, e.g. 'zycos_001'
+    """
+    N_batch            = config["n_batch"]
+    SEED_PROMPTS       = config["seed_prompts"]
+    PARENTS_PER_BATCH  = config["parents_per_batch"]
+    OUTPUTS_PER_PARENT = config["outputs_per_parent"]
+    ALPHA_DEPTH        = config["alpha_depth"]
+    SOFTMAX_TEMPERATURE = config["softmax_temperature"]
+    RANDOM_SEED        = config["random_seed"]
+    weights            = config["weights"]
 
-    weights = {
-        "v_out": 10.0,
-        "efficiency": 20.0,
-        "volume": 2.0,
-        "component_cost": 1.0,
-        "components": {
-            "mosfet": 1.0,
-            "diode": 1.0,
-            "inductor": 1.0,
-            "capacitor": 1.0,
-        },
-    }
+    constraint = load_constraint(config["constraint_path"], idx=run_idx)
 
-    llm = TopologyLLM(max_new_tokens=MAX_TOKENS)
-
-    val = validator()
-    simulator = LTSpiceSimulator()
-    reward_fn = RewardFunctionNorm()
-    constraint = load_constraint("pipeline/data/datasets/constraints.json", idx=2)
-
-    grpo = GRPOTrainer(
-        llm=llm,
-        validator=val,
-        simulator=simulator,
-        reward_fn=reward_fn,
-        constraint=constraint,
-        rl_config=RLConfig(
-            max_length=1024,
-            max_prompt_length=256,
-            max_completion_length=512,
-            learning_rate=1e-5,
-            save_every=1,
-            lora_r=4,
-            lora_alpha=8,
-        ),
-    )
-
-    data_dir = Path("pipeline/data")
-    run_folder_name = get_next_run_folder(data_dir)
-    run_folder_path = data_dir / run_folder_name
+    # Run folder sits inside the zycos folder
+    run_folder_name = f"Run_{run_idx + 1:03d}"
+    run_folder_path = data_dir / zycos_name / run_folder_name
     run_folder_path.mkdir(parents=True, exist_ok=True)
 
-    print(f"=== Starting Tree-Search GRPO Run: {run_folder_name} ===")
+    print(f"\n{'='*60}")
+    print(f"=== {zycos_name} | Run {run_idx + 1}/{config['n_runs']} | constraint idx={run_idx} ===")
+    print(f"{'='*60}")
 
     history: List[Dict] = []
     selected_parents: List[Dict] = []
 
     for batch_idx in range(1, N_batch + 1):
-        current_batch_id = f"{run_folder_name}/batch_{batch_idx}"
+        # batch_id includes full path so downstream classes can find it under pipeline/data/
+        current_batch_id = f"{zycos_name}/{run_folder_name}/batch_{batch_idx}"
         print(f"\n--- Processing {current_batch_id} ---")
 
         if batch_idx == 1:
@@ -308,7 +279,6 @@ def main():
 
         print(f"History size: {len(history)} evaluated netlists")
 
-        # CHANGED: only select next parents if another batch remains.
         if batch_idx < N_batch:
             selected_parents = softmax_sample_parents(
                 history=history,
@@ -331,7 +301,65 @@ def main():
 
         print(f"--- Finished {current_batch_id} ---")
 
-    print(f"\n=== Tree-Search GRPO Run {run_folder_name} Complete ===")
+    print(f"=== Finished {zycos_name}/{run_folder_name} ===")
+
+
+def main():
+    # --- Load configuration from training_config.json ---
+    config_path = Path("training_config.json")
+    assert config_path.exists(), f"training_config.json not found at {config_path.resolve()}"
+    with config_path.open("r") as f:
+        config = json.load(f)
+
+    N_RUNS = config["n_runs"]
+
+    # --- Setup shared pipeline components (loaded once, reused across all runs) ---
+    llm       = TopologyLLM(max_new_tokens=config["max_tokens"])
+    val       = validator()
+    simulator = LTSpiceSimulator()
+    reward_fn = RewardFunctionNorm()
+
+    rl = config["rl_config"]
+    grpo = GRPOTrainer(
+        llm=llm,
+        validator=val,
+        simulator=simulator,
+        reward_fn=reward_fn,
+        constraint=None,   # set per run inside run_single()
+        rl_config=RLConfig(
+            max_length=rl["max_length"],
+            max_prompt_length=rl["max_prompt_length"],
+            max_completion_length=rl["max_completion_length"],
+            learning_rate=rl["learning_rate"],
+            save_every=rl["save_every"],
+            lora_r=rl["lora_r"],
+            lora_alpha=rl["lora_alpha"],
+        ),
+    )
+
+    data_dir = Path("pipeline/data")
+
+    # Create one zycos_XXX folder for this entire training experiment
+    zycos_name = get_next_zycos_folder(data_dir)
+    zycos_path = data_dir / zycos_name
+    zycos_path.mkdir(parents=True, exist_ok=True)
+
+    print(f"=== Starting {zycos_name} | {N_RUNS} runs (constraint idx 0-{N_RUNS - 1}) ===")
+
+    for run_idx in range(N_RUNS):
+        run_single(
+            run_idx=run_idx,
+            zycos_name=zycos_name,
+            llm=llm,
+            val=val,
+            simulator=simulator,
+            reward_fn=reward_fn,
+            grpo=grpo,
+            data_dir=data_dir,
+            config=config,
+        )
+
+    print(f"\n=== {zycos_name} complete — {N_RUNS} runs finished ===")
 
 
 if __name__ == "__main__":
