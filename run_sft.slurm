@@ -25,4 +25,5 @@ sft_loop.py \
 pipeline/llm_topology_generation/llm_api.py \
 pipeline/SFT/sft_trainer.py
 
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 python sft_loop.py --config sft_config.json
