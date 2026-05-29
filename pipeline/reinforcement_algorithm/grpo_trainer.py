@@ -1,24 +1,20 @@
 import json
-from pathlib import Path
-from typing import Dict, List, Optional
 import re
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+
 from pipeline.reinforcement_algorithm.new_rl_updater import RLUpdater, RLConfig
+
 
 class GRPOTrainer:
     """
-    GRPO trainer:
+    GRPO trainer.
 
-    It uses the existing project pipeline:
-        LLM generation
-        -> validation
-        -> simulation
-        -> reward evaluation
-        -> RLUpdater.update()
+    New grouped-GRPO behavior:
+        group g1: g1_cand1, g1_cand2, g1_cand3, g1_cand4
+        group g2: g2_cand1, g2_cand2, g2_cand3, g2_cand4
 
-    The trainer then aligns:
-        prompt      = system_prompt.txt + constraint
-        completion  = pipeline/data/<batch_id>/LLM_output/*.net
-        reward      = pipeline/data/<batch_id>/reward_results.json
+    Advantages are normalized within each group, not across the whole batch.
     """
 
     def __init__(
@@ -40,7 +36,6 @@ class GRPOTrainer:
         self.output_dir = output_dir
         self.system_prompt_path = Path(system_prompt_path)
 
-        # Reuse the already-loaded LLM engine from TopologyLLM.
         self.rl_updater = RLUpdater(
             self.llm.engine,
             rl_config or RLConfig(
@@ -56,7 +51,6 @@ class GRPOTrainer:
         return Path("pipeline") / "data" / batch_id
 
     def _llm_output_dir(self, batch_id: str) -> Path:
-        # Current project uses uppercase LLM_output.
         return self._batch_dir(batch_id) / "LLM_output"
 
     def _reward_path(self, batch_id: str) -> Path:
@@ -75,12 +69,7 @@ class GRPOTrainer:
             return json.load(f)
 
     def _load_prompt(self) -> str:
-        """
-        Build the prompt used for RL log-prob calculation.
-
-        The prompt is reconstructed from:
-            system_prompt.txt + current constraint
-        """
+        """Fallback prompt if group-specific prompt file is missing."""
         if self.system_prompt_path.exists():
             system_prompt = self.system_prompt_path.read_text(encoding="utf-8")
         else:
@@ -93,6 +82,43 @@ class GRPOTrainer:
             + json.dumps(self.constraint_dict, indent=2)
             + "\n\n### SPICE Netlist:\n"
         )
+
+    def _load_group_prompt(self, batch_id: str, group_id: str) -> str:
+        """
+        Load prompt for a specific GRPO group.
+
+        Preferred grouped files:
+            prompt_g1.txt
+            prompt_g2.txt
+
+        Legacy fallback files:
+            prompt_cand1.txt
+            prompt_cand2.txt
+
+        Final fallback:
+            reconstructed system prompt + constraint.
+        """
+        batch_dir = self._batch_dir(batch_id)
+
+        # CHANGED: first try grouped prompt file, used by grouped GRPO.
+        group_prompt_path = batch_dir / f"prompt_{group_id}.txt"
+        if group_prompt_path.exists():
+            return group_prompt_path.read_text(encoding="utf-8")
+
+        # CHANGED: fallback to legacy prompt_candX.txt if group_id is gX.
+        match = re.search(r"g(\d+)", group_id)
+        if match:
+            cand_idx = match.group(1)
+            legacy_prompt_path = batch_dir / f"prompt_cand{cand_idx}.txt"
+
+            if legacy_prompt_path.exists():
+                return legacy_prompt_path.read_text(encoding="utf-8")
+
+        print(
+            f"Warning: missing prompt for group {group_id} in {batch_dir}. "
+            "Using fallback prompt."
+        )
+        return self._load_prompt()
 
     def _load_netlist(self, batch_id: str, topology_id: str) -> str:
         netlist_path = self._llm_output_dir(batch_id) / f"{topology_id}.net"
@@ -110,50 +136,55 @@ class GRPOTrainer:
 
         return fail_path.read_text(encoding="utf-8")
 
-    def _load_prompt_for_topology(self, batch_id: str, topology_id: str) -> str:
+    def _extract_group_id(self, topology_id: str) -> str:
         """
-        Load the actual prompt used to generate this candidate.
+        Extract group id from grouped filename.
 
-        Expected topology_id examples:
-            00_Step_Down_2_Commercial_Mains_to_12V_cand1_b1
-            00_Step_Down_2_Commercial_Mains_to_12V_cand2_b3
+        Example:
+            00_xxx_g1_cand3_b2 -> g1
 
-        Falls back to reconstructed prompt if the saved prompt file is missing.
+        If no group id exists, fallback to one shared group.
         """
-        match = re.search(r"_cand(\d+)_b\d+", topology_id)
-
+        match = re.search(r"_(g\d+)_cand\d+", topology_id)
         if match:
-            cand_idx = match.group(1)
-            prompt_path = self._batch_dir(batch_id) / f"prompt_cand{cand_idx}.txt"
+            return match.group(1)
 
-            if prompt_path.exists():
-                return prompt_path.read_text(encoding="utf-8")
+        return "g1"
 
-            print(f"Warning: prompt file not found: {prompt_path}. Using reconstructed prompt.")
+    def _get_reward(self, topology_id: str, info: Dict) -> Tuple[Optional[float], Optional[str]]:
+        """Read reward from reward_results.json."""
+        if "grpo_reward" in info:
+            return float(info["grpo_reward"]), "grpo_reward"
 
-        return self._load_prompt()
+        if "fitness_score" in info:
+            return float(info["fitness_score"]), "fitness_score"
 
-    def _build_training_batch(self, batch_id: str):
+        print(f"Skipping {topology_id}: no grpo_reward or fitness_score found.")
+        return None, None
+
+    def _normalize_group_rewards(self, rewards: List[float]) -> List[float]:
         """
-        Build prompt/completion/reward lists for RLUpdater.
+        Normalize rewards inside one prompt group.
 
-        reward_results.json structure:
-            {
-                "active_constraints": {...},
-                "circuits": {
-                    "top1": {
-                        "fitness_score": -0.2135,
-                        "grpo_reward": 0.3078,
-                        "loss_breakdown": {...},
-                        "raw_metrics": {...}
-                    }
-                }
-            }
+        This is the key grouped-GRPO step.
+        """
+        if len(rewards) < 2:
+            raise RuntimeError(
+                "Each GRPO group needs at least 2 samples to compute relative advantage."
+            )
 
-        RL uses:
-            prompt      = system_prompt.txt + constraint
-            completion  = pipeline/data/<batch_id>/LLM_output/<topology_id>.net
-            reward      = grpo_reward if available, otherwise fitness_score
+        mean = sum(rewards) / len(rewards)
+        var = sum((r - mean) ** 2 for r in rewards) / len(rewards)
+        std = max(var ** 0.5, 1e-8)
+
+        return [(r - mean) / std for r in rewards]
+
+    def _build_grouped_training_batch(self, batch_id: str):
+        """
+        Build prompts, completions, rewards, and grouped advantages.
+
+        Important:
+            advantages are normalized within each group_id.
         """
         reward_data = self._load_rewards(batch_id)
         circuits = reward_data.get("circuits", {})
@@ -161,40 +192,66 @@ class GRPOTrainer:
         if not circuits:
             raise RuntimeError(f"No circuits found in reward_results.json for {batch_id}")
 
-
-        prompts: List[str] = []
-        completions: List[str] = []
-        rewards: List[float] = []
+        groups: Dict[str, List[Dict]] = {}
 
         for topology_id, info in circuits.items():
+            group_id = self._extract_group_id(topology_id)
+
             try:
                 completion_text = self._load_netlist(batch_id, topology_id)
             except FileNotFoundError as e:
                 print(f"Skipping {topology_id}: {e}")
                 continue
 
-            # Use normalized GRPO reward when available.
-            if "grpo_reward" in info:
-                reward = float(info["grpo_reward"])
-                reward_source = "grpo_reward"
-            elif "fitness_score" in info:
-                reward = float(info["fitness_score"])
-                reward_source = "fitness_score"
-            else:
-                print(f"Skipping {topology_id}: no grpo_reward or fitness_score found.")
+            reward, reward_source = self._get_reward(topology_id, info)
+            if reward is None:
                 continue
 
-            prompt_text = self._load_prompt_for_topology(batch_id, topology_id)
-            prompts.append(prompt_text)
-            completions.append(completion_text)
-            rewards.append(reward)
+            prompt_text = self._load_group_prompt(batch_id, group_id)
 
-            print(f"Loaded {topology_id}: reward={reward:.4f} ({reward_source})")
+            groups.setdefault(group_id, []).append({
+                "topology_id": topology_id,
+                "prompt": prompt_text,
+                "completion": completion_text,
+                "reward": reward,
+                "reward_source": reward_source,
+            })
+
+            print(
+                f"Loaded {topology_id}: "
+                f"group={group_id}, reward={reward:.4f} ({reward_source})"
+            )
+
+        if not groups:
+            raise RuntimeError("No valid grouped prompt/completion/reward samples found.")
+
+        prompts: List[str] = []
+        completions: List[str] = []
+        rewards: List[float] = []
+        advantages: List[float] = []
+        group_ids: List[str] = []
+        topology_ids: List[str] = []
+
+        for group_id, samples in groups.items():
+            if len(samples) < 2:
+                print(f"Skipping group {group_id}: only {len(samples)} sample.")
+                continue
+
+            group_rewards = [s["reward"] for s in samples]
+            group_advantages = self._normalize_group_rewards(group_rewards)
+
+            for sample, advantage in zip(samples, group_advantages):
+                prompts.append(sample["prompt"])
+                completions.append(sample["completion"])
+                rewards.append(sample["reward"])
+                advantages.append(advantage)
+                group_ids.append(group_id)
+                topology_ids.append(sample["topology_id"])
 
         if not rewards:
-            raise RuntimeError("No valid prompt/completion/reward pairs found.")
+            raise RuntimeError("No valid GRPO groups found after grouping.")
 
-        return prompts, completions, rewards
+        return prompts, completions, rewards, advantages, group_ids, topology_ids
 
     def _save_metrics(self, batch_id: str, metrics: Dict):
         save_path = self._batch_dir(batch_id) / "grpo_metrics.json"
@@ -205,70 +262,64 @@ class GRPOTrainer:
 
         print(f"Saved metrics to {save_path}")
 
-    def update_from_batch(self, batch_id: str, max_samples: int = 2) -> Dict:
+    def update_from_batch(self, batch_id: str, max_samples: Optional[int] = None) -> Dict:
         """
-        Run one GRPO-style RL update from a batch already produced by demo.py.
-
-        This method assumes demo.py has already completed:
-            generate -> validate -> simulate -> reward
-
-        It reads:
-            pipeline/data/<batch_id>/LLM_output/*.net
-            pipeline/data/<batch_id>/reward_results.json
-            pipeline/data/<batch_id>/prompt_cand*.txt
-
-        Then it performs:
-            prompt + completion + reward
-            -> advantage normalization
-            -> LoRA policy update
-            -> save grpo_metrics.json
-            -> save LoRA adapter
+        Run grouped GRPO update from an already evaluated batch.
         """
+        (
+            prompts,
+            completions,
+            rewards,
+            advantages,
+            group_ids,
+            topology_ids,
+        ) = self._build_grouped_training_batch(batch_id)
 
-        prompts, completions, rewards = self._build_training_batch(batch_id)
-
-        # Keep small for A100 40GB stability.
         if max_samples is not None:
             prompts = prompts[:max_samples]
             completions = completions[:max_samples]
             rewards = rewards[:max_samples]
+            advantages = advantages[:max_samples]
+            group_ids = group_ids[:max_samples]
+            topology_ids = topology_ids[:max_samples]
 
         if len(rewards) < 2:
             raise RuntimeError(
-                f"GRPO update requires at least 2 samples, but got {len(rewards)}. "
-                "Increase n_generations_per_batch or check reward_results.json."
+                f"GRPO update requires at least 2 samples, but got {len(rewards)}."
             )
 
-        print(f"Running GRPO update from batch: {batch_id}")
+        print(f"Running grouped GRPO update from batch: {batch_id}")
         print(f"RL samples: {len(rewards)}")
+        print(f"Groups: {group_ids}")
         print(f"Rewards: {rewards}")
+        print(f"Advantages: {advantages}")
 
         metrics = self.rl_updater.update(
             prompts=prompts,
             completions=completions,
             rewards=rewards,
+            advantages=advantages,
         )
+
+        metrics["group_ids"] = group_ids
+        metrics["topology_ids"] = topology_ids
+        metrics["grouped_grpo"] = True
 
         self._save_metrics(batch_id, metrics)
         self.rl_updater.save(self.output_dir)
 
-        print("=== GRPO Update From Batch Done ===")
+        print("=== Grouped GRPO Update From Batch Done ===")
         print(json.dumps(metrics, indent=2))
 
         return metrics
 
-    def train(self, batch_id: str = "batch_1", n: int = 4, max_samples: int = 2):
+    def train(self, batch_id: str = "batch_1", n: int = 4, max_samples: Optional[int] = None):
         """
         Legacy full-pipeline GRPO iteration.
 
-        This method runs:
-            generate -> validate -> simulate -> reward -> update_from_batch
-
-        In the current project setup, demo.py is the main orchestrator.
-        Prefer calling update_from_batch() from demo.py after reward evaluation.
+        In the new project setup, training_loop.py is the main orchestrator.
+        This method is kept only for compatibility.
         """
-
-        # 1. Generate netlists.
         written = self.llm.generate_for_batch(
             self.constraint_dict,
             batchID=batch_id,
@@ -276,15 +327,12 @@ class GRPOTrainer:
         )
         print(f"Generated {len(written)} netlists")
 
-        # 2. Validate generated netlists.
         self.validator.validate(batch_id)
 
-        # 3. Simulate valid netlists.
         simulation_results = self.simulator.simulate(batch_id)
         print("Simulation Results:")
         print(simulation_results)
 
-        # 4. Compute rewards.
         self.reward_fn.process_batch(
             batch_id,
             self.constraint_dict,
@@ -302,7 +350,6 @@ class GRPOTrainer:
             },
         )
 
-        # 5. Reuse the same RL update logic used by demo.py.
         return self.update_from_batch(
             batch_id=batch_id,
             max_samples=max_samples,

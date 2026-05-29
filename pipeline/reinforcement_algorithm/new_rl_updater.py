@@ -1,11 +1,10 @@
 """
-rl_updater.py
+new_rl_updater.py
 
 A lightweight GRPO-style LoRA updater for the reinforcement_algorithm module.
 
 Responsibilities:
-- Receive prompts, completions, and rewards from GRPOTrainer
-- Compute normalized advantages from rewards
+- Receive prompts, completions, rewards, and optional grouped advantages
 - Compute log probabilities of completions
 - Update LoRA trainable parameters
 - Save LoRA adapter checkpoints
@@ -15,17 +14,21 @@ This module does NOT:
 - Validate netlists
 - Run LTspice
 - Compute reward scores
+- Compute grouped GRPO advantages
+
+Grouped GRPO note:
+- GRPOTrainer should compute advantages within each prompt group.
+- This updater only applies the policy update using those advantages.
 """
 
 from __future__ import annotations
 
-import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional, List, Dict
+
 import torch
 import torch.nn.functional as F
-
 
 
 @dataclass
@@ -53,6 +56,9 @@ class RLConfig:
     # Training settings
     learning_rate: float = 1e-5
     max_grad_norm: float = 1.0
+
+    # Placeholder for future KL/reference-model support.
+    # Currently this is not used because no reference model is loaded.
     kl_beta: float = 0.0
 
     # Sequence control
@@ -70,7 +76,8 @@ class RLUpdater:
     """
     GRPO-style policy updater.
 
-    It updates only LoRA parameters using externally provided rewards.
+    This class updates only LoRA parameters.
+    Grouped advantage calculation is handled by GRPOTrainer.
     """
 
     def __init__(self, engine, config: Optional[RLConfig] = None):
@@ -116,27 +123,21 @@ class RLUpdater:
 
     def _normalize_rewards(self, rewards: List[float]) -> torch.Tensor:
         """
-        Convert raw rewards into normalized advantages.
+        Fallback normalization.
 
-        GRPO uses relative reward ranking within the batch.
+        Used only when GRPOTrainer does not provide external advantages.
+        For true grouped GRPO, advantages should be passed in explicitly.
         """
         r = torch.tensor(rewards, dtype=torch.float32)
 
-        # Reward normalization: focus on relative performance within the batch.
         r_mean = r.mean()
-
-        # Use population std for stable normalization.
-        # clamp prevents division by zero when rewards have no variance.
         r_std = r.std(unbiased=False).clamp(min=1e-8)
 
         return (r - r_mean) / r_std
 
     def _prepare_text_pair(self, prompt: str, completion: str) -> tuple[str, str]:
         """
-        Shorten prompt and completion at text level before tokenization.
-
-        This avoids the common failure mode where a long prompt consumes
-        the whole context window and leaves no completion tokens.
+        Clean empty prompt/completion edge cases.
         """
         prompt = prompt.strip()
         completion = completion.strip()
@@ -157,7 +158,7 @@ class RLUpdater:
         """
         Tokenize prompt and completion separately, then concatenate.
 
-        This guarantees that completion tokens are preserved.
+        This helps preserve completion tokens when the prompt is long.
         """
         tok = self._tokenizer()
         device = self._device()
@@ -187,8 +188,11 @@ class RLUpdater:
         input_ids = torch.cat([prompt_ids, completion_ids], dim=1)
 
         if input_ids.shape[1] > self.cfg.max_length:
-            # Keep full completion as much as possible.
-            completion_len = min(completion_ids.shape[1], self.cfg.max_completion_length)
+            # Keep completion tokens as much as possible.
+            completion_len = min(
+                completion_ids.shape[1],
+                self.cfg.max_completion_length,
+            )
             available_prompt_len = max(self.cfg.max_length - completion_len, 1)
 
             prompt_ids = prompt_ids[:, -available_prompt_len:]
@@ -210,7 +214,7 @@ class RLUpdater:
         completion: str,
     ) -> Optional[torch.Tensor]:
         """
-        Compute log P(completion | prompt).
+        Compute mean log P(completion | prompt).
 
         Only completion tokens contribute to the loss.
         """
@@ -251,30 +255,56 @@ class RLUpdater:
             index=shift_labels.unsqueeze(-1),
         ).squeeze(-1)
 
+        # Mean is more stable than sum for variable completion length.
         return token_log_probs.mean()
+
     def update(
         self,
         prompts: List[str],
         completions: List[str],
         rewards: List[float],
+        advantages: Optional[List[float]] = None,
     ) -> Dict:
         """
-        Run one GRPO-style update step.
+        Run one LoRA policy update.
+
+        If advantages are provided, they are assumed to be already normalized
+        within each GRPO prompt group.
         """
         if not (len(prompts) == len(completions) == len(rewards)):
             raise ValueError("prompts, completions, and rewards must have same length.")
 
-        if len(rewards) < 2:
-            raise ValueError("GRPO update requires at least 2 samples for reward normalization.")
+        if advantages is not None and len(advantages) != len(rewards):
+            raise ValueError("advantages must have same length as rewards.")
+
+        if not rewards:
+            raise ValueError("No samples provided to RLUpdater.update().")
 
         self.engine.model.train()
 
-        advantages = self._normalize_rewards(rewards).to(self._device())
+        # NEW: use grouped advantages from GRPOTrainer when provided.
+        if advantages is None:
+            if len(rewards) < 2:
+                raise ValueError(
+                    "At least 2 samples are required when advantages are not provided."
+                )
+
+            advantages_tensor = self._normalize_rewards(rewards).to(self._device())
+            advantage_source = "normalized_rewards"
+        else:
+            advantages_tensor = torch.tensor(
+                advantages,
+                dtype=torch.float32,
+                device=self._device(),
+            )
+            advantage_source = "external_grouped_advantages"
 
         policy_losses = []
         valid_rewards = []
         valid_advantages = []
         valid_log_probs = []
+        valid_indices = []
+
         for i, (prompt, completion) in enumerate(zip(prompts, completions)):
             seq_log_prob = self._completion_log_prob(prompt, completion)
 
@@ -282,17 +312,23 @@ class RLUpdater:
                 print(f"Skipping sample {i}: no valid completion tokens.")
                 continue
 
-            advantage = advantages[i]
+            advantage = advantages_tensor[i]
+
+            # NEW: skip unstable numerical values.
+            if not torch.isfinite(advantage) or not torch.isfinite(seq_log_prob):
+                print(f"Skipping sample {i}: non-finite advantage or log_prob.")
+                continue
 
             # Policy gradient loss:
-            # high advantage -> increase probability
-            # low advantage  -> decrease probability
+            # positive advantage -> increase probability
+            # negative advantage -> decrease probability
             policy_loss = -advantage * seq_log_prob
-            valid_log_probs.append(float(seq_log_prob.detach().cpu()))
 
             policy_losses.append(policy_loss)
             valid_rewards.append(float(rewards[i]))
             valid_advantages.append(float(advantage.detach().cpu()))
+            valid_log_probs.append(float(seq_log_prob.detach().cpu()))
+            valid_indices.append(i)
 
         if not policy_losses:
             raise RuntimeError(
@@ -310,14 +346,17 @@ class RLUpdater:
             if p.requires_grad
         ]
 
-        torch.nn.utils.clip_grad_norm_(
+        # NEW: keep grad norm for debugging.
+        grad_norm = torch.nn.utils.clip_grad_norm_(
             trainable_params,
             self.cfg.max_grad_norm,
         )
 
         self.optimizer.step()
 
-        self.optimizer.zero_grad(set_to_none=True)  #release VRAM space
+        # Clear gradients after step to reduce VRAM pressure in long RL loops.
+        self.optimizer.zero_grad(set_to_none=True)
+
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
 
@@ -330,12 +369,16 @@ class RLUpdater:
             "step": self.step_id,
             "num_input_samples": len(rewards),
             "num_valid_samples": len(valid_rewards),
+            "valid_indices": valid_indices,
             "mean_reward": round(mean_reward, 6),
             "raw_rewards": valid_rewards,
             "advantages": valid_advantages,
+            "advantage_source": advantage_source,
             "policy_loss": round(float(loss.detach().cpu()), 6),
             "kl_div": 0.0,
+            "kl_beta": self.cfg.kl_beta,
             "completion_log_probs": valid_log_probs,
+            "grad_norm": round(float(grad_norm.detach().cpu()), 6),
             "total_loss": round(float(loss.detach().cpu()), 6),
             "max_length": self.cfg.max_length,
             "max_prompt_length": self.cfg.max_prompt_length,
@@ -364,4 +407,3 @@ class RLUpdater:
     @property
     def step(self) -> int:
         return self.step_id
-        

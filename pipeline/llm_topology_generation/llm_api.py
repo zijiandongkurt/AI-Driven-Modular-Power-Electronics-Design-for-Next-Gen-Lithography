@@ -1,86 +1,104 @@
 """
 llm_api.py — Packaged Python interface for the topology-generation LLM.
 
-This is a thin wrapper over LLMEngine + prompt_input + net_writer that
-exposes three high-level methods:
+This wrapper exposes:
+    - generate_from_constraint(constraint, n)
+    - generate_for_batch(...)
+    - generate_grouped_for_batch(...)
+    - generate_grouped_for_parent_entries(...)
 
-    - generate_from_constraint(constraint, n)  →  list[str]
-    - generate_from_json(json_path, out_dir, n) →  list[Path]
-    - generate_from_text(prompt, n)            →  list[str]
-
-All callers should reuse the same `TopologyLLM` instance because model
-loading is slow and Qwen3-14B consumes ~28GB of GPU memory.
-
-Snellius usage:
-    from llm_api import TopologyLLM
-    llm = TopologyLLM()   # loads Qwen3-14B from shared cache, no download
-    cands = llm.generate_from_constraint(
-        {"vin": 12, "vout_target": 5, "efficiency_target": 0.9}, n=4
-    )
-    for c in cands: print(c)
+Grouped GRPO note:
+    For true grouped GRPO, use generate_grouped_for_batch()
+    or generate_grouped_for_parent_entries().
 """
 
 from __future__ import annotations
 
 from pathlib import Path
 
-import torch
 import json
 import re
+import torch
 
-from .llm_engine_minimal import LLMEngine, SNELLIUS_HF_CACHE, DEFAULT_MODEL_ID
-from .prompt_input import load_constraints, make_prompt, make_prompt_demo, slug
-from .net_writer import write_netlists, get_llm_output_dir
 from transformers import TextStreamer, StoppingCriteria, StoppingCriteriaList
 
-def _save_prompt(prompt: str, batchID: str, identifier: str = None) -> None:
+from .llm_engine_minimal import LLMEngine, SNELLIUS_HF_CACHE, DEFAULT_MODEL_ID
+from .prompt_input import make_prompt, make_prompt_demo, slug
+from .net_writer import write_netlists, get_llm_output_dir
+
+
+# CHANGED: supports both legacy prompt_candX.txt and grouped prompt_gX.txt.
+def _save_prompt(
+    prompt: str,
+    batchID: str,
+    candidate_idx: int | None = None,
+    group_id: str | None = None,
+) -> None:
     """Save the prompt used for generation."""
     batch_dir = get_llm_output_dir(batchID).parent
     batch_dir.mkdir(parents=True, exist_ok=True)
-    
-    # Name the file based on the identifier (e.g., prompt_parent_00_Step_Down_cand1.txt)
-    filename = f"prompt_{identifier}.txt" if identifier else "prompt.txt"
-    
+
+    if group_id is not None:
+        filename = f"prompt_{group_id}.txt"
+    elif candidate_idx is not None:
+        filename = f"prompt_cand{candidate_idx}.txt"
+    else:
+        filename = "prompt.txt"
+
     (batch_dir / filename).write_text(prompt, encoding="utf-8")
 
+
 def _save_raw_output(raw_outputs: list[str], batchID: str) -> None:
-    """Save the raw LLM completions to data/<batchID>/raw_output.txt."""
+    """Save raw LLM completions to data/<batchID>/raw_output.txt."""
     batch_dir = get_llm_output_dir(batchID).parent
     batch_dir.mkdir(parents=True, exist_ok=True)
-    
+
     output_path = batch_dir / "raw_output.txt"
-    # Use append mode to handle cases where multiple constraints are in one batch
+
     with output_path.open("a", encoding="utf-8") as f:
         for i, raw in enumerate(raw_outputs):
-            f.write(f"\n{'='*60}\n")
-            f.write(f" CANDIDATE {i+1}\n")
-            f.write(f"{'='*60}\n\n")
+            f.write(f"\n{'=' * 60}\n")
+            f.write(f" CANDIDATE {i + 1}\n")
+            f.write(f"{'=' * 60}\n\n")
             f.write(raw)
             f.write("\n")
 
+
 class StopAtEndCriteria(StoppingCriteria):
+    """Stop generation once .end appears."""
+
     def __init__(self, tokenizer):
         self.tokenizer = tokenizer
 
-    def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor, **kwargs) -> bool:
-        # Decode the last 10 tokens to check if the model just typed .end
-        tail_text = self.tokenizer.decode(input_ids[0][-10:], skip_special_tokens=True).lower()
-        if ".end" in tail_text or ". end" in tail_text:
-            return True
-        return False
-    
+    def __call__(
+        self,
+        input_ids: torch.LongTensor,
+        scores: torch.FloatTensor,
+        **kwargs,
+    ) -> bool:
+        tail_text = self.tokenizer.decode(
+            input_ids[0][-10:],
+            skip_special_tokens=True,
+        ).lower()
+
+        return ".end" in tail_text or ". end" in tail_text
+
 
 def normalize_netlist(netlist: str) -> str:
-    """Strips comments and normalizes whitespace to detect cheating."""
-    lines = netlist.strip().split('\n')
+    """Strip comments and normalize whitespace for duplicate detection."""
+    lines = netlist.strip().split("\n")
     cleaned = []
+
     for line in lines:
         line = line.strip().lower()
-        if line.startswith('*') or not line:
+
+        if line.startswith("*") or not line:
             continue
-        # Normalize multiple spaces to a single space
-        cleaned.append(' '.join(line.split()))
-    return '\n'.join(cleaned)
+
+        cleaned.append(" ".join(line.split()))
+
+    return "\n".join(cleaned)
+
 
 class TopologyLLM:
     """High-level interface around LLMEngine."""
@@ -88,7 +106,7 @@ class TopologyLLM:
     def __init__(
         self,
         model_id: str = DEFAULT_MODEL_ID,
-        quantization: str | None = None,  # None = full bfloat16 (fits on A100 80GB)
+        quantization: str | None = None,
         max_new_tokens: int = 512,
         temperature: float = 0.7,
         top_p: float = 0.9,
@@ -96,6 +114,7 @@ class TopologyLLM:
     ):
         self.model_id = model_id
         self.max_new_tokens = max_new_tokens
+
         self.engine = LLMEngine(
             model_id=model_id,
             quantization=quantization,
@@ -105,37 +124,44 @@ class TopologyLLM:
             hf_cache_dir=hf_cache_dir,
         )
 
-    # ── Internal generation primitive ──────────────────────────────────
-
-    def _generate(self, prompt: str, n: int, temp_override: float = None) -> list[dict[str, str]]:
+    def _generate(
+        self,
+        prompt: str,
+        n: int,
+        temp_override: float | None = None,
+    ) -> list[dict[str, str]]:
         """
-        Generate `n` completions and return both raw and cleaned versions.
-
-        Args:
-            prompt: The formatted input string for the LLM.
-            n: Number of candidates to generate.
+        Generate n completions from the same prompt.
 
         Returns:
-            A list of dictionaries, each containing:
-                - 'raw': The full decoded string from the model.
-                - 'cleaned': The SPICE netlist extracted via engine._clean().
+            [
+                {
+                    "raw": raw model text,
+                    "cleaned": cleaned SPICE netlist
+                }
+            ]
         """
         tok = self.engine.tokenizer
         model = self.engine.model
+
         ids = tok(prompt, return_tensors="pt")
         ids = {k: v.to(model.device) for k, v in ids.items()}
 
         streamer = TextStreamer(tok, skip_prompt=True)
         stop_criteria = StoppingCriteriaList([StopAtEndCriteria(tok)])
 
-        # Use the override if provided, otherwise default to engine's temperature
-        gen_temp = temp_override if temp_override is not None else self.engine._temperature
+        gen_temp = (
+            temp_override
+            if temp_override is not None
+            else self.engine._temperature
+        )
 
         results: list[dict[str, str]] = []
+
         for i in range(n):
             if n > 1:
-                print(f"\n--- Generating Candidate {i+1}/{n} ---")
-            
+                print(f"\n--- Generating Candidate {i + 1}/{n} ---")
+
             with torch.no_grad():
                 out = model.generate(
                     **ids,
@@ -145,26 +171,82 @@ class TopologyLLM:
                     top_p=self.engine._top_p,
                     pad_token_id=tok.pad_token_id,
                     streamer=streamer,
-                    stopping_criteria=stop_criteria
+                    stopping_criteria=stop_criteria,
                 )
-            
+
             gen_ids = out[0][ids["input_ids"].shape[1]:]
             raw = tok.decode(gen_ids, skip_special_tokens=True)
+
             results.append({
                 "raw": raw,
-                "cleaned": self.engine._clean(raw) #
+                "cleaned": self.engine._clean(raw),
             })
+
         return results
 
-    def generate_from_constraint(self, constraint: dict, n: int = 4) -> list[str]:
+    # NEW: shared duplicate retry helper.
+    def _generate_with_retry(
+        self,
+        prompt: str,
+        previous_netlist: str = "",
+        max_retries: int = 3,
+    ) -> dict[str, str]:
         """
-        Apply the constraint template and return n cleaned netlists.
-        
-        Note: Raw output is not saved to disk in this standalone method.
+        Generate one candidate.
+
+        If previous_netlist is provided, retry when the model outputs
+        the exact same normalized netlist.
         """
+        previous_clean = (
+            normalize_netlist(previous_netlist)
+            if previous_netlist
+            else ""
+        )
+
+        attempts = 0
+        current_temp = self.engine._temperature
+        current_prompt = prompt
+
+        while attempts <= max_retries:
+            result = self._generate(
+                current_prompt,
+                1,
+                temp_override=current_temp,
+            )[0]
+
+            new_clean = normalize_netlist(result["cleaned"])
+
+            if previous_clean and new_clean == previous_clean:
+                attempts += 1
+
+                if attempts <= max_retries:
+                    print(
+                        f"\n[!] Duplicate netlist detected. "
+                        f"Retrying {attempts}/{max_retries}..."
+                    )
+
+                    current_temp += 0.15
+                    current_prompt += (
+                        "\n\n[SYSTEM WARNING]: You outputted the exact same circuit. "
+                        "You MUST change topology, timing, duty cycle, or component values."
+                    )
+                else:
+                    print("\n[!] Max retries reached. Accepting duplicate.")
+                    return result
+            else:
+                return result
+
+        return result
+
+    def generate_from_constraint(
+        self,
+        constraint: dict,
+        n: int = 4,
+    ) -> list[str]:
+        """Generate n cleaned netlists from one constraint prompt."""
         prompt = make_prompt(constraint)
-        res = self._generate(prompt, n)
-        return [r["cleaned"] for r in res]
+        results = self._generate(prompt, n)
+        return [r["cleaned"] for r in results]
 
     def generate_for_batch(
         self,
@@ -172,56 +254,40 @@ class TopologyLLM:
         batchID: str,
         n: int = 4,
         DEMO: bool = False,
-        previous_batch_id: str = None,
-        label: str = None
+        previous_batch_id: str | None = None,
     ) -> list[Path]:
-        if label is None:
-            label = slug(constraint, 0)
+        """
+        Legacy generation method.
+
+        Kept for demo/backward compatibility.
+        For grouped GRPO, use generate_grouped_for_batch().
+        """
+        label = slug(constraint, 0)
         results = []
-        
+
         for i in range(1, n + 1):
             if DEMO and previous_batch_id:
-                feedback = self._aggregate_previous_batch_data(previous_batch_id, label, i)
+                feedback = self._aggregate_previous_batch_data(
+                    previous_batch_id=previous_batch_id,
+                    label=label,
+                    candidate_idx=i,
+                )
+
                 prompt = make_prompt_demo(constraint, feedback)
-                
-                # --- BULLETPROOF PREVIOUS NETLIST EXTRACTION ---
-                prev_clean = ""
-                # Grabs everything between "Submitted Netlist:" and ".end"
-                match = re.search(r'Submitted Netlist:\n(.*?\.end)', feedback, re.IGNORECASE | re.DOTALL)
-                if match:
-                    prev_clean = normalize_netlist(match.group(1))
-                # -----------------------------------------------
+                previous_netlist = self._extract_submitted_netlist(feedback)
             else:
                 prompt = make_prompt(constraint)
-                prev_clean = ""
+                previous_netlist = ""
 
-            _save_prompt(prompt, batchID, identifier=f"cand{i}")
+            _save_prompt(prompt, batchID, candidate_idx=i)
 
-            # --- THE RETRY BOUNCER ---
-            max_retries = 3
-            attempts = 0
-            current_temp = self.engine._temperature
-            current_prompt = prompt
-            
-            while attempts <= max_retries:
-                res = self._generate(current_prompt, 1, temp_override=current_temp)[0]
-                new_clean = normalize_netlist(res["cleaned"])
-                
-                if prev_clean and new_clean == prev_clean:
-                    attempts += 1
-                    if attempts <= max_retries:
-                        print(f"\n[!] Duplicate netlist detected for candidate {i}. Rejecting and retrying (Attempt {attempts}/{max_retries})...")
-                        current_temp += 0.15  # Bump temperature to force creativity
-                        current_prompt += "\n\n[SYSTEM WARNING]: FATAL ERROR. You just outputted the EXACT SAME circuit as last time. You MUST change the component values, duty cycle, or topology to proceed. DO NOT REPEAT YOURSELF."
-                    else:
-                        print(f"\n[!] Max retries reached for candidate {i}. Accepting duplicate.")
-                        results.append(res)
-                        break
-                else:
-                    results.append(res)
-                    break
-            # --------------------------
-            
+            result = self._generate_with_retry(
+                prompt=prompt,
+                previous_netlist=previous_netlist,
+            )
+
+            results.append(result)
+
         _save_raw_output([r["raw"] for r in results], batchID)
 
         return write_netlists(
@@ -231,90 +297,109 @@ class TopologyLLM:
             batchID=batchID,
         )
     
-
-    def generate_from_states(
+    # =========================
+    # NEW: grouped generation for GRPO tree search
+    # =========================
+    def generate_grouped_for_batch(
         self,
         constraint: dict,
         batchID: str,
-        seed_states: list[dict],
-        candidates_per_state: int = 4,
-        label: str = None
+        parent_ids: list[str],
+        previous_batch_id: str | None,
+        outputs_per_parent: int = 4,
+        DEMO: bool = True,
     ) -> list[Path]:
         """
-        Generate multiple candidate branches from a set of explicit seed states.
-        
-        Args:
-            constraint: The active constraint set dictionary.
-            batchID: The identifier for the current batch.
-            seed_states: List of dicts from NetlistDatabase containing 'id', 'netlist_text', 'fitness', and 'feedback'.
-            candidates_per_state: Number of branches to spawn per seed state.
-            
-        Returns:
-            List of paths to the netlists
+        Grouped generation for GRPO.
+
+        Each selected parent produces one prompt, and each prompt generates
+        multiple children.
+
+        This wrapper supports the old interface where all parents come from
+        the same previous batch.
         """
-        if label is None:
-            label = slug(constraint, 0)
-        all_results = []       # Holds dicts of {"raw": ..., "cleaned": ...}
-        
-        cand_counter = 1
-        
-        for state in seed_states:
-            parent_id = state["id"]
-            prev_clean = normalize_netlist(state["netlist_text"])
-            
-            # Construct the exact feedback block expected by the LLM
-            feedback_block = "\n\n=== FEEDBACK FROM PREVIOUS ITERATION ===\n"
-            feedback_block += "Review your previous attempt below. Identify the failures and generate a new, corrected netlist. Higher fitness scores are better.\n\n"
-            feedback_block += f"Topology '{parent_id}'\n"
-            feedback_block += f"  - Fitness Score: {state['fitness']:.4f}\n"
-            
-            feedback_block += "  - Submitted Netlist:\n"
-            for line in state["netlist_text"].strip().split('\n'):
-                feedback_block += f"      {line}\n"
-                
-            feedback_block += "\n  - Performance / Errors:\n"
-            for line in state["feedback"].strip().split('\n'):
-                if line.strip():  # Avoid printing empty bullet points
-                    feedback_block += f"      * {line}\n"
-                
-            feedback_block += "  - CRITICAL RULE: You MUST NOT output the exact same netlist. You must adjust your topology, timing parameters (PULSE), or component values to improve the score.\n"
-            
-            # Create the full prompt
-            prompt = make_prompt_demo(constraint, feedback_block)
-            
-            print(f"\nBranching {candidates_per_state} candidates from parent state: {parent_id} (Fitness: {state['fitness']:.4f})")
-            
-            _save_prompt(prompt, batchID, identifier=f"parent_{parent_id}")
 
-            for _ in range(candidates_per_state):
-                
-                # --- THE RETRY BOUNCER ---
-                max_retries = 3
-                attempts = 0
-                current_temp = self.engine._temperature
-                current_prompt = prompt
-                
-                while attempts <= max_retries:
-                    res = self._generate(current_prompt, 1, temp_override=current_temp)[0]
-                    new_clean = normalize_netlist(res["cleaned"])
-                    
-                    if prev_clean and new_clean == prev_clean:
-                        attempts += 1
-                        if attempts <= max_retries:
-                            print(f"\n[!] Duplicate netlist detected (parent: {parent_id}). Rejecting and retrying (Attempt {attempts}/{max_retries})...")
-                            current_temp += 0.15  # Bump temperature to force creativity
-                            current_prompt += "\n\n[SYSTEM WARNING]: FATAL ERROR. You outputted the EXACT SAME circuit as the parent netlist. You MUST change the component values, duty cycle, or topology to proceed."
-                        else:
-                            print(f"\n[!] Max retries reached for branch of {parent_id}. Accepting duplicate.")
-                            all_results.append(res)
-                            break
-                    else:
-                        all_results.append(res)
-                        break
-                
-                cand_counter += 1
+        # NEW: convert parent_ids into parent_entries used by the new tree loop.
+        parent_entries = [
+            {
+                "netlist_id": parent_id,
+                "batch_id": previous_batch_id,
+            }
+            for parent_id in parent_ids
+        ]
 
-        # Save all raw outputs for the batch in one go
+        return self.generate_grouped_for_parent_entries(
+            constraint=constraint,
+            batchID=batchID,
+            parent_entries=parent_entries,
+            outputs_per_parent=outputs_per_parent,
+            DEMO=DEMO,
+        )
+
+    # =========================
+    # NEW: grouped generation from historical parent entries
+    # =========================
+    def generate_grouped_for_parent_entries(
+        self,
+        constraint: dict,
+        batchID: str,
+        parent_entries: list[dict],
+        outputs_per_parent: int = 4,
+        DEMO: bool = True,
+    ) -> list[Path]:
+        """
+        Tree-search grouped generation.
+
+        parent_entries example:
+            {
+                "netlist_id": "00_xxx_g1_cand2_b1",
+                "batch_id": "Run_001/batch_1",
+                "depth": 1
+            }
+
+        This supports selecting parents from different historical batches.
+        """
+
+        label = slug(constraint, 0)
+
+        all_results = []
+        all_names = []
+
+        for group_idx, parent in enumerate(parent_entries, start=1):
+            group_id = f"g{group_idx}"
+
+            parent_id = parent.get("netlist_id")
+            parent_batch_id = parent.get("batch_id")
+
+            # NEW: build one prompt per selected parent.
+            if DEMO and parent_id and parent_batch_id:
+                feedback = self._aggregate_previous_batch_data_by_id(
+                    previous_batch_id=parent_batch_id,
+                    target_circuit_name=parent_id,
+                )
+                prompt = make_prompt_demo(constraint, feedback)
+                previous_netlist = self._extract_submitted_netlist(feedback)
+            else:
+                prompt = make_prompt(constraint)
+                previous_netlist = ""
+
+            # NEW: save group-specific prompt for GRPOTrainer.
+            # This creates prompt_g1.txt, prompt_g2.txt, etc.
+            _save_prompt(prompt, batchID, group_id=group_id)
+
+            # NEW: generate multiple children from the same parent prompt.
+            for cand_idx in range(1, outputs_per_parent + 1):
+                result = self._generate_with_retry(
+                    prompt=prompt,
+                    previous_netlist=previous_netlist,
+                )
+
+                all_results.append(result)
+
+                # NEW: grouped filename identity.
+                # Example: label_g1_cand1_b2.net
+                all_names.append(f"{group_id}_cand{cand_idx}")
+
         _save_raw_output([r["raw"] for r in all_results], batchID)
 
         return write_netlists(
@@ -322,110 +407,246 @@ class TopologyLLM:
             constraint=constraint,
             label=label,
             batchID=batchID,
+            custom_names=all_names,
         )
 
-    def _aggregate_previous_batch_data(self, previous_batch_id: str, label: str, candidate_idx: int) -> str:
+    # NEW: extract previous submitted netlist from feedback
+    def _extract_submitted_netlist(self, feedback: str) -> str:
         """
-        Reads feedback from the previous batch specifically targeting a single candidate lineage.
-        Looks for the circuit named f"{label}_cand{candidate_idx}".
+        Extract the previous submitted netlist from feedback text.
+        Used for duplicate detection.
         """
+
+        match = re.search(
+            r"Submitted Netlist:\n(.*?\.end)",
+            feedback,
+            re.IGNORECASE | re.DOTALL,
+        )
+
+        return match.group(1) if match else ""
+
+    # =========================
+    # NEW: optional JSON loader
+    # =========================
+    def _read_json_if_exists(self, path: Path) -> dict:
+        """Read JSON file if it exists, otherwise return empty dict."""
+
+        if not path.exists():
+            return {}
+
+        with path.open("r", encoding="utf-8") as f:
+            return json.load(f)
+
+    # =========================
+    # NEW: load feedback using exact parent id
+    # =========================
+    def _aggregate_previous_batch_data_by_id(
+        self,
+        previous_batch_id: str,
+        target_circuit_name: str,
+    ) -> str:
+        """
+        Read feedback for one selected parent circuit by exact circuit id.
+        Used by grouped GRPO generation.
+        """
+
         if not previous_batch_id:
             return ""
 
-        data_dir = Path("pipeline/data")
-        batch_path = data_dir / previous_batch_id
+        batch_path = Path("pipeline") / "data" / previous_batch_id
         reward_file = batch_path / "reward_results.json"
         validation_file = batch_path / "validation_results.json"
 
-        prev_b_suffix = ""
-        match = re.search(r'batch_(\d+)', str(previous_batch_id))
-        if match:
-            prev_b_suffix = f"_b{match.group(1)}"
-
-        # Look for e.g., "00_Step_Down_cand1_b1"
-        target_circuit_name = f"{label}{prev_b_suffix}_cand{candidate_idx}"
-
         if not reward_file.exists():
-            return f"\n[System Note: Previous batch data '{previous_batch_id}' not found.]\n"
+            return (
+                f"\n[System Note: Previous batch data "
+                f"'{previous_batch_id}' not found.]\n"
+            )
 
         try:
-            with open(reward_file, 'r') as f:
-                reward_data = json.load(f)
-            
-            val_data = {}
-            if validation_file.exists():
-                with open(validation_file, 'r') as f:
-                    val_data = json.load(f)
-            
+            reward_data = self._read_json_if_exists(reward_file)
+            val_data = self._read_json_if_exists(validation_file)
+
             circuits = reward_data.get("circuits", {})
             active_constraints = reward_data.get("active_constraints", {})
-            
-            # If this specific candidate wasn't in the previous batch, skip feedback
+
+            # NEW: direct parent lookup by exact topology id.
             if target_circuit_name not in circuits:
-                return f"\n[System Note: No previous iteration found for '{target_circuit_name}'.]\n"
+                return (
+                    f"\n[System Note: No previous circuit found "
+                    f"for '{target_circuit_name}'.]\n"
+                )
 
             details = circuits[target_circuit_name]
             score = details.get("fitness_score", "N/A")
             source = details.get("source", "unknown")
 
-            prompt_addition = f"\n\n=== FEEDBACK FROM PREVIOUS ITERATION ===\n"
-            prompt_addition += f"Review your previous attempt below. Identify the failures and generate a new, corrected netlist. Higher fitness scores are better.\n\n"
-            
+            prompt_addition = "\n\n=== FEEDBACK FROM PREVIOUS ITERATION ===\n"
+            prompt_addition += (
+                "Review the selected previous attempt below. "
+                "Generate a corrected or improved netlist. "
+                "Higher fitness scores are better.\n\n"
+            )
+
             prompt_addition += f"Topology '{target_circuit_name}'\n"
             prompt_addition += f"  - Status: {source}\n"
-            prompt_addition += f"  - Fitness Score: {score if isinstance(score, str) else f'{score:.4f}'}\n"
+            prompt_addition += (
+                f"  - Fitness Score: "
+                f"{score if isinstance(score, str) else f'{score:.4f}'}\n"
+            )
 
-            # Load the actual generated netlist
-            netlist_content = "[Netlist file not found]"
-            netlist_path = batch_path / "LLM_output" / f"{target_circuit_name}.net"
-            if netlist_path.exists():
-                netlist_content = netlist_path.read_text(encoding="utf-8").strip()
-            
+            netlist_content = self._load_previous_netlist(
+                batch_path=batch_path,
+                target_circuit_name=target_circuit_name,
+            )
+
             prompt_addition += "  - Submitted Netlist:\n"
-            for line in netlist_content.split('\n'):
+            for line in netlist_content.split("\n"):
                 prompt_addition += f"      {line}\n"
 
             if source == "simulation" and "raw_metrics" in details:
-                m = details["raw_metrics"]
-                losses = details.get("loss_breakdown", {})
-                v_out = m.get('simulation_output_voltage', 0.0)
-                eff = m.get('efficiency', 0.0)
-                
-                target_vout = active_constraints.get('vout_target', 'N/A')
-                target_eff = active_constraints.get('efficiency_target', 'N/A')
-
-                prompt_addition += f"  - Performance: V_out = {v_out:.4f}V (Target: {target_vout}V), Efficiency = {eff:.4f} (Target: {target_eff})\n"
-                # 1. Inject Raw Metrics
-                prompt_addition += "  - Raw Metrics:\n"
-                for k, v in m.items():
-                    val_str = f"{v:.4f}" if isinstance(v, float) else str(v)
-                    prompt_addition += f"      * {k}: {val_str}\n"
-
-                # 2. Inject Loss Breakdown
-                if losses:
-                    prompt_addition += "  - Loss Breakdown (lower is better):\n"
-                    for k, v in losses.items():
-                        val_str = f"{v:.4f}" if isinstance(v, float) else str(v)
-                        prompt_addition += f"      * {k}: {val_str}\n"
-
-                prompt_addition += "  - CRITICAL RULE: You MUST NOT output the exact same netlist. You must adjust your topology, timing parameters (PULSE), or component values to improve the score.\n"
+                prompt_addition += self._format_simulation_feedback(
+                    details=details,
+                    active_constraints=active_constraints,
+                )
 
             elif source == "validation_penalty":
-                circuit_val = val_data.get(target_circuit_name, {})
-                checks = circuit_val.get("checks", {})
-                failed_tests = [test for test, val in checks.items() if val == 0 or val is False]
-                
-                if failed_tests:
-                    prompt_addition += f"  - FAILED TESTS: {', '.join(failed_tests)}\n"
-                    prompt_addition += "  - FIX: Ensure your new netlist specifically resolves these violations.\n"
-                else:
-                    prompt_addition += "  - Note: Circuit failed basic structural/syntax checks.\n"
-            
+                prompt_addition += self._format_validation_feedback(
+                    val_data=val_data,
+                    target_circuit_name=target_circuit_name,
+                )
+
             prompt_addition += "\n"
             return prompt_addition
 
         except Exception as e:
-            return f"\n[System Note: Error reading feedback data for '{target_circuit_name}': {e}]\n"
+            return (
+                f"\n[System Note: Error reading feedback data for "
+                f"'{target_circuit_name}': {e}]\n"
+            )
+
+    # =========================
+    # NEW: load previous netlist content
+    # =========================
+    def _load_previous_netlist(
+        self,
+        batch_path: Path,
+        target_circuit_name: str,
+    ) -> str:
+        """
+        Load previous netlist.
+
+        Supports both LLM_output and llm_output folder names.
+        """
+
+        netlist_path = batch_path / "LLM_output" / f"{target_circuit_name}.net"
+
+        if not netlist_path.exists():
+            netlist_path = batch_path / "llm_output" / f"{target_circuit_name}.net"
+
+        if netlist_path.exists():
+            return netlist_path.read_text(encoding="utf-8").strip()
+
+        return "[Netlist file not found]"
+
+    # =========================
+    # NEW: format simulation feedback
+    # =========================
+    def _format_simulation_feedback(
+        self,
+        details: dict,
+        active_constraints: dict,
+    ) -> str:
+        """Format simulation metrics into prompt feedback."""
+
+        metrics = details.get("raw_metrics", {})
+        losses = details.get("loss_breakdown", {})
+
+        v_out = metrics.get("simulation_output_voltage", 0.0)
+        eff = metrics.get("efficiency", 0.0)
+
+        target_vout = active_constraints.get("vout_target", "N/A")
+        target_eff = active_constraints.get("efficiency_target", "N/A")
+
+        text = (
+            f"  - Performance: V_out = {v_out:.4f}V "
+            f"(Target: {target_vout}V), "
+            f"Efficiency = {eff:.4f} "
+            f"(Target: {target_eff})\n"
+        )
+
+        text += "  - Raw Metrics:\n"
+        for key, value in metrics.items():
+            value_text = f"{value:.4f}" if isinstance(value, float) else str(value)
+            text += f"      * {key}: {value_text}\n"
+
+        if losses:
+            text += "  - Loss Breakdown lower is better:\n"
+            for key, value in losses.items():
+                value_text = f"{value:.4f}" if isinstance(value, float) else str(value)
+                text += f"      * {key}: {value_text}\n"
+
+        text += (
+            "  - CRITICAL RULE: Do not output the exact same netlist. "
+            "Change topology, timing, duty cycle, or component values.\n"
+        )
+
+        return text
+
+    # =========================
+    # NEW: format validation feedback
+    # =========================
+    def _format_validation_feedback(
+        self,
+        val_data: dict,
+        target_circuit_name: str,
+    ) -> str:
+        """Format validation failures into prompt feedback."""
+
+        circuit_val = val_data.get(target_circuit_name, {})
+        checks = circuit_val.get("checks", {})
+
+        failed_tests = [
+            test
+            for test, value in checks.items()
+            if value == 0 or value is False
+        ]
+
+        if failed_tests:
+            return (
+                f"  - FAILED TESTS: {', '.join(failed_tests)}\n"
+                "  - FIX: Ensure your new netlist resolves these violations.\n"
+            )
+
+        return "  - Note: Circuit failed basic structural/syntax checks.\n"
+
+    # =========================
+    # CHANGED: legacy feedback now reuses exact-id feedback function
+    # =========================
+    def _aggregate_previous_batch_data(
+        self,
+        previous_batch_id: str,
+        label: str,
+        candidate_idx: int,
+    ) -> str:
+        """
+        Legacy feedback method for generate_for_batch().
+
+        New grouped GRPO should use _aggregate_previous_batch_data_by_id().
+        """
+
+        if not previous_batch_id:
+            return ""
+
+        match = re.search(r"batch_(\d+)", str(previous_batch_id))
+        prev_b_suffix = f"_b{match.group(1)}" if match else ""
+
+        target_circuit_name = f"{label}_cand{candidate_idx}{prev_b_suffix}"
+
+        return self._aggregate_previous_batch_data_by_id(
+            previous_batch_id=previous_batch_id,
+            target_circuit_name=target_circuit_name,
+        )
 
 
 # ── Convenience singleton (lazy-loaded) ────────────────────────────────
@@ -434,18 +655,22 @@ _singleton: TopologyLLM | None = None
 
 
 def get_llm(**kwargs) -> TopologyLLM:
-    """Return a process-wide singleton TopologyLLM.
+    """Return a process-wide singleton TopologyLLM."""
 
-    Subsequent calls ignore kwargs and return the already-loaded instance.
-    """
     global _singleton
+
     if _singleton is None:
         _singleton = TopologyLLM(**kwargs)
+
     return _singleton
 
 
 if __name__ == "__main__":
-    # Quick smoke test — verify model loads from Snellius cache
+    # Smoke test.
+    print("llm_api.py import OK. Instantiate TopologyLLM only on HPC or with local model cache.")
     llm = TopologyLLM()
-    out = llm.generate_from_text("### Hello world:\n", n=1)
+    out = llm.generate_from_constraint(
+        {"vin": 12, "vout_target": 5, "efficiency_target": 0.9},
+        n=1,
+    )
     print(out[0][:200])
