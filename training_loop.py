@@ -94,14 +94,14 @@ def save_history(history: List[Dict], run_folder_path: Path) -> None:
 def softmax_sample_parents(
     history: List[Dict],
     k: int,
-    alpha_depth: float,
     temperature: float,
     seed: int = 42,
 ) -> List[Dict]:
     """
-    Select parents from all historical states using:
-        score = fitness + alpha_depth * depth
-    followed by temperature-scaled softmax sampling.
+    Select parents from all historical states using fitness-only
+    temperature-scaled softmax sampling.
+
+    Depth is kept only for lineage tracking and is not used for selection.
     """
     if len(history) < k:
         raise RuntimeError(f"Not enough history states to sample {k} parents.")
@@ -109,7 +109,7 @@ def softmax_sample_parents(
     rng = random.Random(seed)
 
     scores = [
-        float(item["fitness"]) + alpha_depth * int(item["depth"])
+        float(item["fitness"])
         for item in history
     ]
 
@@ -167,7 +167,6 @@ def run_single(run_idx: int, zycos_name: str, llm, val, simulator, reward_fn, gr
     SEED_PROMPTS        = config["seed_prompts"]
     PARENTS_PER_BATCH   = config["parents_per_batch"]
     OUTPUTS_PER_PARENT  = config["outputs_per_parent"]
-    ALPHA_DEPTH         = config["alpha_depth"]
     SOFTMAX_TEMPERATURE = config["softmax_temperature"]
     RANDOM_SEED         = config["random_seed"]
     weights             = config["weights"]
@@ -277,14 +276,13 @@ def run_single(run_idx: int, zycos_name: str, llm, val, simulator, reward_fn, gr
             selected_parents = softmax_sample_parents(
                 history=history,
                 k=PARENTS_PER_BATCH,
-                alpha_depth=ALPHA_DEPTH,
                 temperature=SOFTMAX_TEMPERATURE,
                 seed=RANDOM_SEED + batch_idx,
             )
 
             print("Selected parents for next batch:")
             for p in selected_parents:
-                score = p["fitness"] + ALPHA_DEPTH * p["depth"]
+                score = p["fitness"]
                 print(
                     f"  {p['netlist_id']} | "
                     f"fitness={p['fitness']:.4f}, "
