@@ -91,52 +91,112 @@ def save_history(history: List[Dict], run_folder_path: Path) -> None:
         json.dump(history, f, indent=2)
 
 
-def softmax_sample_parents(
+def _softmax_sample_from_pool(
+    pool: List[Dict],
+    temperature: float,
+    rng: random.Random,
+) -> Dict:
+    """Sample one item from a pool using temperature-scaled softmax over fitness."""
+    scores = [float(item["fitness"]) for item in pool]
+    max_score = max(scores)
+
+    exp_scores = [
+        math.exp((score - max_score) / max(temperature, 1e-8))
+        for score in scores
+    ]
+
+    total = sum(exp_scores)
+    r = rng.random() * total
+
+    acc = 0.0
+    for item, weight in zip(pool, exp_scores):
+        acc += weight
+        if acc >= r:
+            return item
+
+    return pool[-1]
+
+
+def epsilon_greedy_topk_sample_parents(
     history: List[Dict],
     k: int,
+    top_k: int,
+    epsilon: float,
     temperature: float,
     seed: int = 42,
 ) -> List[Dict]:
     """
-    Select parents from all historical states using fitness-only
-    temperature-scaled softmax sampling.
+    Select parents using epsilon-greedy Top-K softmax.
 
-    Depth is kept only for lineage tracking and is not used for selection.
+    Exploitation:
+        With probability 1 - epsilon, sample from the Top-K candidates
+        using temperature-scaled softmax over fitness.
+
+    Exploration:
+        With probability epsilon, randomly sample from the long-tail
+        candidates outside Top-K.
+
+    Depth is only used for lineage tracking and is not used for selection.
     """
     if len(history) < k:
         raise RuntimeError(f"Not enough history states to sample {k} parents.")
 
     rng = random.Random(seed)
 
-    scores = [
-        float(item["fitness"])
-        for item in history
-    ]
+    sorted_history = sorted(
+        history,
+        key=lambda item: float(item["fitness"]),
+        reverse=True,
+    )
+    # top-k netlists
+    top_k_pool = sorted_history[:max(1, min(top_k, len(sorted_history)))]
+    long_tail_pool = sorted_history[len(top_k_pool):]
 
-    max_score = max(scores)
-    exp_scores = [
-        math.exp((s - max_score) / max(temperature, 1e-8))
-        for s in scores
-    ]
-
-    selected = []
-    available = list(range(len(history)))
+    selected: List[Dict] = []
+    selected_ids = set()
 
     for _ in range(k):
-        total = sum(exp_scores[i] for i in available)
-        r = rng.random() * total
+        available_top = [
+            item for item in top_k_pool
+            if item["netlist_id"] not in selected_ids
+        ]
 
-        acc = 0.0
-        chosen_idx = available[-1]
+        available_tail = [
+            item for item in long_tail_pool
+            if item["netlist_id"] not in selected_ids
+        ]
+        # Epsilon-greedy 
+        use_exploration = (
+            bool(available_tail)
+            and rng.random() < epsilon
+        )
 
-        for idx in available:
-            acc += exp_scores[idx]
-            if acc >= r:
-                chosen_idx = idx
+        if use_exploration:
+            chosen = rng.choice(available_tail)
+            selection_mode = "epsilon_random_long_tail"
+        else:
+            #exploitation / top-K softmax 
+            candidate_pool = available_top if available_top else available_tail
+            if not candidate_pool:
                 break
 
-        selected.append(history[chosen_idx])
-        available.remove(chosen_idx)
+            chosen = _softmax_sample_from_pool(
+                pool=candidate_pool,
+                temperature=temperature,
+                rng=rng,
+            )
+            selection_mode = "topk_softmax"
+
+        chosen = dict(chosen)
+        chosen["selection_mode"] = selection_mode
+
+        selected.append(chosen)
+        selected_ids.add(chosen["netlist_id"])
+
+    if len(selected) < k:
+        raise RuntimeError(
+            f"Only selected {len(selected)} parents, but required {k}."
+        )
 
     return selected
 
@@ -160,16 +220,28 @@ def run_eval_pipeline(
     reward_fn.process_batch(batch_id, constraint, weights=weights)
 
 
-def run_single(run_idx: int, zycos_name: str, llm, val, simulator, reward_fn, grpo, data_dir: Path, config: Dict) -> None:
-    """Run the full training loop for a single constraint (run_idx)."""
+def run_single(
+    run_idx: int,
+    zycos_name: str,
+    llm,
+    val,
+    simulator,
+    reward_fn,
+    grpo,
+    data_dir: Path,
+    config: Dict,
+) -> None:
+    """Run the full training loop for a single constraint."""
 
-    N_batch             = config["n_batch"]
-    SEED_PROMPTS        = config["seed_prompts"]
-    PARENTS_PER_BATCH   = config["parents_per_batch"]
-    OUTPUTS_PER_PARENT  = config["outputs_per_parent"]
+    N_batch = config["n_batch"]
+    SEED_PROMPTS = config["seed_prompts"]
+    PARENTS_PER_BATCH = config["parents_per_batch"]
+    OUTPUTS_PER_PARENT = config["outputs_per_parent"]
     SOFTMAX_TEMPERATURE = config["softmax_temperature"]
-    RANDOM_SEED         = config["random_seed"]
-    weights             = config["weights"]
+    RANDOM_SEED = config["random_seed"]
+    TOP_K = config.get("top_k", 8)
+    EPSILON = config.get("epsilon", 0.15)
+    weights = config["weights"]
 
     constraint = load_constraint(config["constraint_path"], idx=run_idx)
 
@@ -177,9 +249,9 @@ def run_single(run_idx: int, zycos_name: str, llm, val, simulator, reward_fn, gr
     run_folder_path = data_dir / zycos_name / run_folder_name
     run_folder_path.mkdir(parents=True, exist_ok=True)
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"=== {zycos_name} | Run {run_idx + 1}/{config['n_runs']} | constraint idx={run_idx} ===")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     history: List[Dict] = []
     selected_parents: List[Dict] = []
@@ -273,9 +345,11 @@ def run_single(run_idx: int, zycos_name: str, llm, val, simulator, reward_fn, gr
         print(f"History size: {len(history)} evaluated netlists")
 
         if batch_idx < N_batch:
-            selected_parents = softmax_sample_parents(
+            selected_parents = epsilon_greedy_topk_sample_parents(
                 history=history,
                 k=PARENTS_PER_BATCH,
+                top_k=TOP_K,
+                epsilon=EPSILON,
                 temperature=SOFTMAX_TEMPERATURE,
                 seed=RANDOM_SEED + batch_idx,
             )
@@ -283,11 +357,13 @@ def run_single(run_idx: int, zycos_name: str, llm, val, simulator, reward_fn, gr
             print("Selected parents for next batch:")
             for p in selected_parents:
                 score = p["fitness"]
+                mode = p.get("selection_mode", "unknown")
                 print(
                     f"  {p['netlist_id']} | "
                     f"fitness={p['fitness']:.4f}, "
                     f"depth={p['depth']}, "
                     f"score={score:.4f}, "
+                    f"mode={mode}, "
                     f"batch={p['batch_id']}"
                 )
 
@@ -297,27 +373,29 @@ def run_single(run_idx: int, zycos_name: str, llm, val, simulator, reward_fn, gr
 
 
 def main():
-    # --- Load configuration ---
     config_path = Path("training_config.json")
     assert config_path.exists(), f"training_config.json not found at {config_path.resolve()}"
+
     with config_path.open("r") as f:
         config = json.load(f)
 
     N_RUNS = config["n_runs"]
 
-    # --- Create zycos folder first so checkpoint dir can reference it ---
-    data_dir   = Path("pipeline/data")
+    data_dir = Path("pipeline/data")
     zycos_name = get_next_zycos_folder(data_dir)
     zycos_path = data_dir / zycos_name
     zycos_path.mkdir(parents=True, exist_ok=True)
 
-    # --- Setup shared pipeline components (loaded once, reused across all runs) ---
     sft_lora_path = config.get("sft_lora_path", None)
-    llm = TopologyLLM(max_new_tokens=config["max_tokens"], lora_path=sft_lora_path)
+    llm = TopologyLLM(
+        max_new_tokens=config["max_tokens"],
+        lora_path=sft_lora_path,
+    )
+
     if sft_lora_path:
         print(f"Loaded SFT LoRA adapter from: {sft_lora_path}")
 
-    val       = validator()
+    val = validator()
     simulator = LTSpiceSimulator()
     reward_fn = RewardFunctionNorm()
 
