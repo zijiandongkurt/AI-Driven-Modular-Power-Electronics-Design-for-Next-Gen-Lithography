@@ -8,6 +8,8 @@
 #SBATCH --mem=64G
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=a.kumas@student.tue.nl
+#SBATCH --mail-type=END,FAIL
+#SBATCH --mail-user=a.kumas@student.tue.nl
 #SBATCH -o ./logs/slurm-benchmark-%j.out
 
 module load 2024

@@ -47,6 +47,7 @@ def main():
         max_length=config.get("max_length",        2048),
         max_prompt_length=int(config.get("max_length", 2048) * 0.75),
         max_completion_length=int(config.get("max_length", 2048) * 0.50),
+        gradient_checkpointing=config.get("gradient_checkpointing", True),
         output_dir=output_dir,
     )
 

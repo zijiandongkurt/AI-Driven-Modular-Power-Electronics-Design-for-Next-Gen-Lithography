@@ -89,6 +89,7 @@ class SFTConfig:
 
     # ── Runtime ────────────────────────────────────────────────────────
     bf16: bool = True
+    gradient_checkpointing: bool = True
     seed: int = 42
     output_dir: str = "./checkpoints/sft-lora"
 
@@ -128,6 +129,10 @@ class SFTTrainer:
             self.engine._model = get_peft_model(self.engine._model, lora_config)
             self.engine._is_peft = True
             self.engine._model.print_trainable_parameters()
+
+        if self.cfg.gradient_checkpointing:
+            self.engine._model.enable_input_require_grads()
+            self.engine._model.gradient_checkpointing_enable()
 
         trainable_params = [
             p for p in self.engine.model.parameters() if p.requires_grad
