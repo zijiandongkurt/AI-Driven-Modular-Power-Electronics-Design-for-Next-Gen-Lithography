@@ -31,4 +31,5 @@ pipeline/graphs_and_visualizations/plot_probabilities.py \
 pipeline/graphs_and_visualizations/plot_cumulative_probabilities.py \
 pipeline/utility/summary_logger.py
 
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 python training_loop_random.py

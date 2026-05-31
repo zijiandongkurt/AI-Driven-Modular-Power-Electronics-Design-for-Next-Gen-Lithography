@@ -109,6 +109,9 @@ class RLUpdater:
             self.engine._is_peft = True
             self.engine._model.print_trainable_parameters()
 
+        self.engine._model.enable_input_require_grads()
+        self.engine._model.gradient_checkpointing_enable()
+
         trainable_params = [
             p for p in self.engine.model.parameters()
             if p.requires_grad
@@ -420,13 +423,20 @@ class RLUpdater:
             )
             advantage_source = "external_grouped_advantages"
 
-        policy_losses = []
-        kl_terms = []
-        entropy_terms = []
         valid_rewards = []
         valid_advantages = []
         valid_log_probs = []
         valid_indices = []
+
+        # Metrics accumulators (detached, for reporting only)
+        policy_loss_sum = 0.0
+        kl_sum = 0.0
+        entropy_sum = 0.0
+        n_valid = 0
+
+        # Per-sample backward: keeps only ONE forward graph in memory at a time
+        # instead of holding all N graphs until a single batched backward call.
+        self.optimizer.zero_grad(set_to_none=True)
 
         for i, (prompt, completion) in enumerate(zip(prompts, completions)):
             stats = self._completion_stats(prompt, completion)
@@ -438,59 +448,60 @@ class RLUpdater:
             seq_log_prob = stats["log_prob_mean"]
             advantage = advantages_tensor[i]
 
-            # NEW: skip unstable numerical values.
             if not torch.isfinite(advantage) or not torch.isfinite(seq_log_prob):
                 print(f"Skipping sample {i}: non-finite advantage or log_prob.")
                 continue
 
-            # Policy gradient loss:
-            # positive advantage -> increase probability
-            # negative advantage -> decrease probability
             policy_loss = -advantage * seq_log_prob
-            policy_losses.append(policy_loss)
 
-            # KL(policy || base), per-token mean, only when a reference exists.
+            kl_term = torch.tensor(0.0, device=self._device())
             ref_lp = stats["ref_log_prob_mean"]
             if ref_lp is not None:
-                kl_terms.append(seq_log_prob - ref_lp)
+                kl_term = seq_log_prob - ref_lp
 
-            # Entropy bonus (maximized -> subtracted from loss), when requested.
+            entropy_term = torch.tensor(0.0, device=self._device())
             ent = stats["entropy_mean"]
             if ent is not None:
-                entropy_terms.append(ent)
+                entropy_term = ent
 
+            sample_loss = (
+                policy_loss
+                + self.cfg.kl_beta * kl_term
+                - self.cfg.entropy_beta * entropy_term
+            )
+
+            # Backward immediately — frees activations before the next sample.
+            sample_loss.backward()
+
+            # Collect metrics (detached from graph).
+            policy_loss_sum += float(policy_loss.detach().cpu())
+            kl_sum += float(kl_term.detach().cpu())
+            entropy_sum += float(entropy_term.detach().cpu())
             valid_rewards.append(float(rewards[i]))
             valid_advantages.append(float(advantage.detach().cpu()))
             valid_log_probs.append(float(seq_log_prob.detach().cpu()))
             valid_indices.append(i)
+            n_valid += 1
 
-        if not policy_losses:
+            del stats, sample_loss
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+
+        if n_valid == 0:
             raise RuntimeError(
                 "No valid samples for RL update. "
                 "Likely prompt/completion truncation removed all completion tokens."
             )
 
-        policy_loss_mean = torch.stack(policy_losses).mean()
+        # Normalise accumulated gradients to mean (equivalent to mean-loss backward).
+        for p in self.engine.model.parameters():
+            if p.requires_grad and p.grad is not None:
+                p.grad.div_(n_valid)
 
-        if kl_terms:
-            kl_mean = torch.stack(kl_terms).mean()
-        else:
-            kl_mean = torch.tensor(0.0, device=self._device())
-
-        if entropy_terms:
-            entropy_mean = torch.stack(entropy_terms).mean()
-        else:
-            entropy_mean = torch.tensor(0.0, device=self._device())
-
-        # Total objective: policy gradient + KL anchor - entropy bonus.
-        loss = (
-            policy_loss_mean
-            + self.cfg.kl_beta * kl_mean
-            - self.cfg.entropy_beta * entropy_mean
-        )
-
-        self.optimizer.zero_grad(set_to_none=True)
-        loss.backward()
+        policy_loss_mean = torch.tensor(policy_loss_sum / n_valid)
+        kl_mean = torch.tensor(kl_sum / n_valid)
+        entropy_mean = torch.tensor(entropy_sum / n_valid)
+        loss = policy_loss_mean + self.cfg.kl_beta * kl_mean - self.cfg.entropy_beta * entropy_mean
 
         trainable_params = [
             p for p in self.engine.model.parameters()
