@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH -t 2:00:00
+#SBATCH -t 6:00:00
 #SBATCH -p gpu_h100
 #SBATCH -N 1
 #SBATCH --cpus-per-task=4
