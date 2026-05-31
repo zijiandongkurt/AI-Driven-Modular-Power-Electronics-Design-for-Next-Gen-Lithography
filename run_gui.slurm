@@ -20,5 +20,7 @@ mkdir -p logs
 
 source $HOME/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/bin/activate
 
+python -m py_compile run_gui.py
+
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 python run_gui.py
