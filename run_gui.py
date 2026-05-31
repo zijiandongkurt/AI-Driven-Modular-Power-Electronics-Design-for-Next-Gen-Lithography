@@ -135,7 +135,7 @@ def generate_netlists(
 
 # ── UI ────────────────────────────────────────────────────────────────────────
 
-with gr.Blocks(title="Power Electronics Topology Generator", theme=gr.themes.Soft()) as demo:
+with gr.Blocks(title="Power Electronics Topology Generator") as demo:
 
     gr.Markdown("# ⚡ AI Power Electronics Topology Generator")
     gr.Markdown(
@@ -219,4 +219,4 @@ with gr.Blocks(title="Power Electronics Topology Generator", theme=gr.themes.Sof
 
 
 if __name__ == "__main__":
-    demo.launch(share=True)
+    demo.launch(server_name="0.0.0.0", server_port=7860, share=False, theme=gr.themes.Soft())
