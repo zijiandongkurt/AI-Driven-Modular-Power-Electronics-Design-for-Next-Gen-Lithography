@@ -1,0 +1,65 @@
+{
+    "active_constraints": {
+        "_comment": "Phase 1: 9V to 12V Custom (Boost)",
+        "vin_min": 8,
+        "vin_max": 10,
+        "vout_target": 12,
+        "efficiency_target": 0.8,
+        "power_in": 15
+    },
+    "circuits": {
+        "00_Phase_1_9V_to_12V_Custom_Boost_g2_cand3_b2": {
+            "fitness_score": -0.52,
+            "source": "validation_penalty",
+            "grpo_reward": -0.4625856280326843
+        },
+        "00_Phase_1_9V_to_12V_Custom_Boost_g1_cand2_b2": {
+            "fitness_score": -0.865,
+            "source": "validation_penalty",
+            "grpo_reward": -0.9720712304115295
+        },
+        "00_Phase_1_9V_to_12V_Custom_Boost_g1_cand4_b2": {
+            "fitness_score": -0.865,
+            "source": "validation_penalty",
+            "grpo_reward": -0.9720712304115295
+        },
+        "00_Phase_1_9V_to_12V_Custom_Boost_g1_cand1_b2": {
+            "fitness_score": 0.6081040140147687,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 368.3590267523249,
+                "efficiency_loss": 13.09062586027382,
+                "volume_loss": 20000.0,
+                "component_cost_loss": 7.0
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 5.930741175791521,
+                "efficiency": 0.1454687069863091,
+                "total_volume_cm3": 10000.0,
+                "total_components": 7
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.9896649538077268,
+            "grpo_reward": 1.0
+        },
+        "00_Phase_1_9V_to_12V_Custom_Boost_g1_cand3_b2": {
+            "fitness_score": 0.6081040140147687,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 368.3590267523249,
+                "efficiency_loss": 13.09062586027382,
+                "volume_loss": 20000.0,
+                "component_cost_loss": 7.0
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 5.930741175791521,
+                "efficiency": 0.1454687069863091,
+                "total_volume_cm3": 10000.0,
+                "total_components": 7
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.9896649538077268,
+            "grpo_reward": 1.0
+        }
+    }
+}

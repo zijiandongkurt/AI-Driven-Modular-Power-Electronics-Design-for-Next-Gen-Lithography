@@ -1,0 +1,58 @@
+=== TRAINING SUMMARY: Run_003 ===
+Constraint Index: 8
+Batches Completed: 10 / 10
+Total Time Elapsed: 1447.06 sec (24.12 min)
+Average Time per Batch: 144.71 sec
+Average Time per Netlist: 18.09 sec
+
+--- TOPOLOGY YIELD (this batch) ---
+Valid:   8
+Invalid: 0
+Total candidates in history: 80
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.7278 (00_Phase_1_28V_Avionics_to_12V_Buck_g1_cand2_b3)
+  Batch 1 Best: 0.5975 (00_Phase_1_28V_Avionics_to_12V_Buck_g1_cand4_b1)
+  Batch 2 Best: 0.6114 (00_Phase_1_28V_Avionics_to_12V_Buck_g2_cand3_b2)
+  Batch 3 Best: 0.7278 (00_Phase_1_28V_Avionics_to_12V_Buck_g1_cand2_b3)
+  Batch 4 Best: 0.7278 (00_Phase_1_28V_Avionics_to_12V_Buck_g1_cand2_b3)
+  Batch 5 Best: 0.7278 (00_Phase_1_28V_Avionics_to_12V_Buck_g1_cand2_b3)
+  Batch 6 Best: 0.7278 (00_Phase_1_28V_Avionics_to_12V_Buck_g1_cand2_b3)
+  Batch 7 Best: 0.7278 (00_Phase_1_28V_Avionics_to_12V_Buck_g1_cand2_b3)
+  Batch 8 Best: 0.7278 (00_Phase_1_28V_Avionics_to_12V_Buck_g1_cand2_b3)
+  Batch 9 Best: 0.7278 (00_Phase_1_28V_Avionics_to_12V_Buck_g1_cand2_b3)
+  Batch 10 Best: 0.7278 (00_Phase_1_28V_Avionics_to_12V_Buck_g1_cand2_b3)
+
+--- BEST NETLIST METRICS ---
+Output Voltage: 17.4387 V
+Efficiency:     0.5317
+Total Volume:   10000.0000 cm^3
+
+=========================================
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-05-31T20:08:45
+* Constraint: Phase 1: 28V Avionics to 12V (Buck)
+*   vin_min = 24
+*   vin_max = 32
+*   vout_target = 12
+*   efficiency_target = 0.81
+*   power_in = 40
+* Candidate: 2 of 8
+* Grouped name: g1_cand2
+*
+* 24V to 12V Buck-Boost Converter
+Vin in 0 24
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.36
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.save V(*) I(*)
+.end
+
+

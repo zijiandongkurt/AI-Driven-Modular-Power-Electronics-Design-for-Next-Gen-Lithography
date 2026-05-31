@@ -1,0 +1,162 @@
+{
+    "active_constraints": {
+        "_comment": "Phase 1: 28V Avionics to 12V (Buck)",
+        "vin_min": 24,
+        "vin_max": 32,
+        "vout_target": 12,
+        "efficiency_target": 0.81,
+        "power_in": 40
+    },
+    "circuits": {
+        "00_Phase_1_28V_Avionics_to_12V_Buck_g1_cand1_b3": {
+            "fitness_score": 0.5793360934818423,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 855.9987444179562,
+                "efficiency_loss": 12.071652265958075,
+                "volume_loss": 20000.0,
+                "component_cost_loss": 4.0
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 2.747979980469368,
+                "efficiency": 0.2064173867020963,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.6139738121724022,
+            "grpo_reward": -0.3448059856891632
+        },
+        "00_Phase_1_28V_Avionics_to_12V_Buck_g1_cand2_b3": {
+            "fitness_score": 0.7277796812641502,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 295.7959591096554,
+                "efficiency_loss": 5.566541036566084,
+                "volume_loss": 20000.0,
+                "component_cost_loss": 4.0
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 17.438712707154657,
+                "efficiency": 0.5316729481716959,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": 1.0
+        },
+        "00_Phase_1_28V_Avionics_to_12V_Buck_g1_cand3_b3": {
+            "fitness_score": 0.597461445487218,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 1196.9956039431831,
+                "efficiency_loss": 7.103022844142597,
+                "volume_loss": 20000.0,
+                "component_cost_loss": 4.0
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 22.9407294269769,
+                "efficiency": 0.4548488577928702,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.4765848921485982,
+            "grpo_reward": -0.002246234333142638
+        },
+        "00_Phase_1_28V_Avionics_to_12V_Buck_g1_cand4_b3": {
+            "fitness_score": 0.592137595597454,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 855.9987444179562,
+                "efficiency_loss": 10.69553634231485,
+                "volume_loss": 20000.0,
+                "component_cost_loss": 4.0
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 2.747979980469368,
+                "efficiency": 0.2752231828842575,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.6139738121724022,
+            "grpo_reward": -0.10286492109298706
+        },
+        "00_Phase_1_28V_Avionics_to_12V_Buck_g2_cand1_b3": {
+            "fitness_score": 0.5581245345395653,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 1247.0828306541894,
+                "efficiency_loss": 13.066043897646466,
+                "volume_loss": 60.31573863446155,
+                "component_cost_loss": 4.0
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 0.8327137107791972,
+                "efficiency": 0.1566978051176767,
+                "total_volume_cm3": 30.157869317230777,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.46066096362077025,
+            "grpo_reward": -0.7456935048103333
+        },
+        "00_Phase_1_28V_Avionics_to_12V_Buck_g2_cand2_b3": {
+            "fitness_score": 0.597461445487218,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 1196.9956039431831,
+                "efficiency_loss": 7.103022844142597,
+                "volume_loss": 20000.0,
+                "component_cost_loss": 4.0
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 22.9407294269769,
+                "efficiency": 0.4548488577928702,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.4765848921485982,
+            "grpo_reward": -0.002246234333142638
+        },
+        "00_Phase_1_28V_Avionics_to_12V_Buck_g2_cand3_b3": {
+            "fitness_score": 0.5896023971759647,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 868.6391652593647,
+                "efficiency_loss": 10.869223082823511,
+                "volume_loss": 20000.0,
+                "component_cost_loss": 4.0
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 2.679918641667527,
+                "efficiency": 0.2665388458588244,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.6077375181805753,
+            "grpo_reward": -0.15077820420265198
+        },
+        "00_Phase_1_28V_Avionics_to_12V_Buck_g2_cand4_b3": {
+            "fitness_score": 0.5387394788921995,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 3590.448960624644,
+                "efficiency_loss": 2.767356603246367,
+                "volume_loss": 20000.0,
+                "component_cost_loss": 4.0
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 30.94848004623232,
+                "efficiency": 0.6716321698376817,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.14337782402751484,
+            "grpo_reward": -1.0
+        }
+    }
+}

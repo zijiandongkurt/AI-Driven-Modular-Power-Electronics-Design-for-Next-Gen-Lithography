@@ -1,0 +1,58 @@
+=== TRAINING SUMMARY: Run_008 ===
+Constraint Index: 1
+Batches Completed: 10 / 10
+Total Time Elapsed: 914.90 sec (15.25 min)
+Average Time per Batch: 91.49 sec
+Average Time per Netlist: 11.44 sec
+
+--- TOPOLOGY YIELD (this batch) ---
+Valid:   8
+Invalid: 0
+Total candidates in history: 80
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.6484 (00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g1_cand3_b10)
+  Batch 1 Best: 0.6353 (00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g2_cand2_b1)
+  Batch 2 Best: 0.6353 (00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g2_cand2_b1)
+  Batch 3 Best: 0.6428 (00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g1_cand1_b3)
+  Batch 4 Best: 0.6428 (00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g1_cand1_b3)
+  Batch 5 Best: 0.6484 (00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g2_cand2_b5)
+  Batch 6 Best: 0.6484 (00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g2_cand2_b5)
+  Batch 7 Best: 0.6484 (00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g2_cand2_b5)
+  Batch 8 Best: 0.6484 (00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g2_cand2_b5)
+  Batch 9 Best: 0.6484 (00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g2_cand2_b5)
+  Batch 10 Best: 0.6484 (00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g1_cand3_b10)
+
+--- BEST NETLIST METRICS ---
+Output Voltage: 4.9013 V
+Efficiency:     0.3676
+Total Volume:   10000.0000 cm^3
+
+=========================================
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-05-31T21:55:42
+* Constraint: Phase 1: 24V Industrial to 12V Bus (Buck)
+*   vin_min = 20
+*   vin_max = 28
+*   vout_target = 12
+*   efficiency_target = 0.82
+*   power_in = 30
+* Candidate: 3 of 8
+* Grouped name: g1_cand3
+*
+* 20V to 12V Buck, D=0.6
+Vin in 0 20
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 100u
+Rload out 0 0.48
+Vgate gate 0 PULSE(0 12 0 1n 1n 6.666u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+

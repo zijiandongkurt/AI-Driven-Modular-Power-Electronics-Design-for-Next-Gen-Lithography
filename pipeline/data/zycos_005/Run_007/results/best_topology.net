@@ -1,0 +1,26 @@
+* OVERALL BEST CANDIDATE: 00_Phase_1_9V_to_12V_Custom_Boost_g1_cand3_b5
+* FITNESS SCORE: 0.9721
+*
+* Generated: 2026-05-31T21:31:48
+* Constraint: Phase 1: 9V to 12V Custom (Boost)
+*   vin_min = 8
+*   vin_max = 10
+*   vout_target = 12
+*   efficiency_target = 0.8
+*   power_in = 15
+* Candidate: 3 of 8
+* Grouped name: g1_cand3
+*
+* 8V to 12V Boost, 15W
+Vin in 0 8
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

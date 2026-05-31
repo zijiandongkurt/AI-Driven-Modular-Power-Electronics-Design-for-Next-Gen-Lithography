@@ -1,0 +1,58 @@
+=== TRAINING SUMMARY: Run_007 ===
+Constraint Index: 11
+Batches Completed: 10 / 10
+Total Time Elapsed: 1283.70 sec (21.40 min)
+Average Time per Batch: 128.37 sec
+Average Time per Netlist: 19.75 sec
+
+--- TOPOLOGY YIELD (this batch) ---
+Valid:   8
+Invalid: 0
+Total candidates in history: 65
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.9721 (00_Phase_1_9V_to_12V_Custom_Boost_g1_cand3_b5)
+  Batch 1 Best: -0.5200 (00_Phase_1_9V_to_12V_Custom_Boost_g2_cand4_b1)
+  Batch 2 Best: 0.6081 (00_Phase_1_9V_to_12V_Custom_Boost_g1_cand1_b2)
+  Batch 3 Best: 0.6081 (00_Phase_1_9V_to_12V_Custom_Boost_g1_cand1_b2)
+  Batch 4 Best: 0.8121 (00_Phase_1_9V_to_12V_Custom_Boost_g2_cand3_b4)
+  Batch 5 Best: 0.9721 (00_Phase_1_9V_to_12V_Custom_Boost_g1_cand3_b5)
+  Batch 6 Best: 0.9721 (00_Phase_1_9V_to_12V_Custom_Boost_g1_cand3_b5)
+  Batch 7 Best: 0.9721 (00_Phase_1_9V_to_12V_Custom_Boost_g1_cand3_b5)
+  Batch 8 Best: 0.9721 (00_Phase_1_9V_to_12V_Custom_Boost_g1_cand3_b5)
+  Batch 9 Best: 0.9721 (00_Phase_1_9V_to_12V_Custom_Boost_g1_cand3_b5)
+  Batch 10 Best: 0.9721 (00_Phase_1_9V_to_12V_Custom_Boost_g1_cand3_b5)
+
+--- BEST NETLIST METRICS ---
+Output Voltage: 12.0532 V
+Efficiency:     0.8811
+Total Volume:   35.8973 cm^3
+
+=========================================
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-05-31T21:31:48
+* Constraint: Phase 1: 9V to 12V Custom (Boost)
+*   vin_min = 8
+*   vin_max = 10
+*   vout_target = 12
+*   efficiency_target = 0.8
+*   power_in = 15
+* Candidate: 3 of 8
+* Grouped name: g1_cand3
+*
+* 8V to 12V Boost, 15W
+Vin in 0 8
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+

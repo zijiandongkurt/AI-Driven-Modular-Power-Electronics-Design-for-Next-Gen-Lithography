@@ -1,0 +1,62 @@
+=== TRAINING SUMMARY: Run_009 ===
+Constraint Index: 10
+Batches Completed: 10 / 10
+Total Time Elapsed: 1323.17 sec (22.05 min)
+Average Time per Batch: 132.32 sec
+Average Time per Netlist: 17.18 sec
+
+--- TOPOLOGY YIELD (this batch) ---
+Valid:   8
+Invalid: 0
+Total candidates in history: 77
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.7854 (00_Phase_1_12V_to_9V_Device_Buck_g1_cand3_b8)
+  Batch 1 Best: 0.7125 (00_Phase_1_12V_to_9V_Device_Buck_g1_cand4_b1)
+  Batch 2 Best: 0.7434 (00_Phase_1_12V_to_9V_Device_Buck_g1_cand1_b2)
+  Batch 3 Best: 0.7434 (00_Phase_1_12V_to_9V_Device_Buck_g1_cand1_b2)
+  Batch 4 Best: 0.7434 (00_Phase_1_12V_to_9V_Device_Buck_g1_cand1_b2)
+  Batch 5 Best: 0.7434 (00_Phase_1_12V_to_9V_Device_Buck_g1_cand1_b2)
+  Batch 6 Best: 0.7434 (00_Phase_1_12V_to_9V_Device_Buck_g1_cand1_b2)
+  Batch 7 Best: 0.7434 (00_Phase_1_12V_to_9V_Device_Buck_g1_cand1_b2)
+  Batch 8 Best: 0.7854 (00_Phase_1_12V_to_9V_Device_Buck_g1_cand3_b8)
+  Batch 9 Best: 0.7854 (00_Phase_1_12V_to_9V_Device_Buck_g1_cand3_b8)
+  Batch 10 Best: 0.7854 (00_Phase_1_12V_to_9V_Device_Buck_g1_cand3_b8)
+
+--- BEST NETLIST METRICS ---
+Output Voltage: 4.7863 V
+Efficiency:     0.6910
+Total Volume:   37.0009 cm^3
+
+=========================================
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-05-31T22:13:54
+* Constraint: Phase 1: 12V to 9V Device (Buck)
+*   vin_min = 11
+*   vin_max = 14
+*   vout_target = 9
+*   efficiency_target = 0.79
+*   power_in = 15
+* Candidate: 3 of 8
+* Grouped name: g1_cand3
+*
+* 12V to 9V interleaved 2-phase buck
+Vin in 0 12
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 47u
+L2 sw2 out 47u
+C1 out 0 220u
+Rload out 0 0.545
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+

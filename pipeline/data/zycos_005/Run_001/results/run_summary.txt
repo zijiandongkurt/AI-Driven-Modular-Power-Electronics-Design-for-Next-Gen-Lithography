@@ -1,0 +1,58 @@
+=== TRAINING SUMMARY: Run_001 ===
+Constraint Index: 3
+Batches Completed: 10 / 10
+Total Time Elapsed: 926.90 sec (15.45 min)
+Average Time per Batch: 92.69 sec
+Average Time per Netlist: 11.59 sec
+
+--- TOPOLOGY YIELD (this batch) ---
+Valid:   8
+Invalid: 0
+Total candidates in history: 80
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.9094 (00_Phase_1_9V_Battery_to_5V_Logic_Buck_g1_cand3_b7)
+  Batch 1 Best: 0.8985 (00_Phase_1_9V_Battery_to_5V_Logic_Buck_g1_cand1_b1)
+  Batch 2 Best: 0.8985 (00_Phase_1_9V_Battery_to_5V_Logic_Buck_g1_cand1_b1)
+  Batch 3 Best: 0.8985 (00_Phase_1_9V_Battery_to_5V_Logic_Buck_g1_cand1_b1)
+  Batch 4 Best: 0.8985 (00_Phase_1_9V_Battery_to_5V_Logic_Buck_g1_cand1_b1)
+  Batch 5 Best: 0.8985 (00_Phase_1_9V_Battery_to_5V_Logic_Buck_g1_cand1_b1)
+  Batch 6 Best: 0.8985 (00_Phase_1_9V_Battery_to_5V_Logic_Buck_g1_cand1_b1)
+  Batch 7 Best: 0.9094 (00_Phase_1_9V_Battery_to_5V_Logic_Buck_g1_cand3_b7)
+  Batch 8 Best: 0.9094 (00_Phase_1_9V_Battery_to_5V_Logic_Buck_g1_cand3_b7)
+  Batch 9 Best: 0.9094 (00_Phase_1_9V_Battery_to_5V_Logic_Buck_g1_cand3_b7)
+  Batch 10 Best: 0.9094 (00_Phase_1_9V_Battery_to_5V_Logic_Buck_g1_cand3_b7)
+
+--- BEST NETLIST METRICS ---
+Output Voltage: 3.6075 V
+Efficiency:     0.6909
+Total Volume:   36.5110 cm^3
+
+=========================================
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-05-31T19:42:56
+* Constraint: Phase 1: 9V Battery to 5V Logic (Buck)
+*   vin_min = 7
+*   vin_max = 10
+*   vout_target = 5
+*   efficiency_target = 0.8
+*   power_in = 10
+* Candidate: 3 of 8
+* Grouped name: g1_cand3
+*
+* 9V to 5V Buck Converter
+Vin in 0 9
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 22u
+C1 out 0 100u
+Rload out 0 0.278
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.save V(*) I(*)
+.end
+
+

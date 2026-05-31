@@ -1,0 +1,137 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 277V to 3.3V async buck, 100W
+Vin in 0 277
+M1 in gate sw 0 NMOS W=0.012 L=0.012
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 100u
+Rload out 0 0.109
+Vgate gate 0 PULSE(0 12 0 1n 1n 0.0116 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+ No credit for re-submitting same netlist. Topology is 00_Step_Down_4_208V_277V_Phase_to_3_3V_MCU_cand4_b1. D=11.6m, t_on=116n, Rload=109m
+* 277V to 3.3V async buck, 100W
+Vin in 0 277
+M1 in gate sw 0 NMOS W=0.012 L=0.012
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 100u
+Rload out 0 0.109
+Vgate gate 0 PULSE(0 12 0 1n 1n 116n 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+* 208V to 3.3V async buck, 100W
+Vin in 0 208
+M1 in gate sw 0 NMOS W=0.012 L=0.012
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 100u
+Rload out 0 0.109
+Vgate gate 0 PULSE(0 12 0 1n 1n 0.0116 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 208V to 3.3V async buck, 100W
+Vin in 0 208
+M1 in gate sw 0 NMOS W=0.012 L=0.012
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 100u
+Rload out 0 0.109
+Vgate gate 0 PULSE(0 12 0 1n 1n 0.0116 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+* 208V to 3.3V Buck Converter
+Vin in 0 208
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.278
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+* 208V to 3.3V Buck Converter
+Vin in 0 208
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.278
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+* 277V to 3.3V Buck Converter
+Vin in 0 277
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.278
+Vgate gate 0 PULSE(0 12 0 1n 1n 2.89u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 277V to 3.3V Buck Converter
+Vin in 0 277
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.278
+Vgate gate 0 PULSE(0 12 0 1n 1n 0.012u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
