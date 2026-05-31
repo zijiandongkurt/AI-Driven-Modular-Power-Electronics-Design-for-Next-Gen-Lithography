@@ -1,6 +1,8 @@
+import json
 import re
 import pandas as pd
 from pathlib import Path
+from typing import List, Dict
 from pipeline.utility.netlist_database import NetlistDatabase
 
 class SummaryLogger:
@@ -8,13 +10,14 @@ class SummaryLogger:
     Handles logging and formatting of the MCTS/RL Loop execution summary.
     Generates run_summary.txt and outputs the current best_topology.net to disk.
     """
-    def __init__(self, run_folder_path: Path, n_batches: int, sim_params: dict, weights: dict):
+    def __init__(self, run_folder_path: Path, n_batches: int, sim_params: dict, weights: dict, constraint_idx: int = None):
         self.run_folder_path = Path(run_folder_path)
         self.results_dir = self.run_folder_path / "results"
         self.results_dir.mkdir(parents=True, exist_ok=True)
         self.n_batches = n_batches
         self.sim_params = sim_params
         self.weights = weights
+        self.constraint_idx = constraint_idx
         
         self.best_fitness_history = []
         self.batch_times = []
@@ -133,3 +136,100 @@ class SummaryLogger:
             f.write("=========================================\n")
             f.write(best_record["netlist_text"])
             f.write("\n\n")
+
+    def log_batch_training(
+        self,
+        batch_idx: int,
+        batch_duration: float,
+        history: List[Dict],
+        batch_id: str,
+    ) -> None:
+        """Training-loop variant of log_batch.
+
+        Works directly from the running history list and the per-batch
+        reward/validation JSON files instead of requiring a NetlistDatabase.
+        Overwrites results/run_summary.txt and results/best_topology.net after
+        every batch so progress is visible mid-run.
+        """
+        if not history:
+            return
+
+        self.batch_times.append(batch_duration)
+        avg_time_batch = sum(self.batch_times) / len(self.batch_times)
+        avg_time_netlist = sum(self.batch_times) / max(len(history), 1)
+
+        # Best candidate across all history so far
+        best_entry = max(history, key=lambda x: x["fitness"])
+        best_cand_id = best_entry["netlist_id"]
+        best_fitness = best_entry["fitness"]
+        self.best_fitness_history.append((best_cand_id, best_fitness))
+
+        data_root = Path("pipeline") / "data"
+
+        # Valid / invalid count for the current batch
+        val_path = data_root / batch_id / "validation_results.json"
+        n_valid = n_invalid = 0
+        if val_path.exists():
+            with val_path.open(encoding="utf-8") as f:
+                val_data = json.load(f)
+            for v in val_data.values():
+                if v.get("passed", False):
+                    n_valid += 1
+                else:
+                    n_invalid += 1
+
+        # Raw metrics and netlist text for the global best candidate
+        best_batch_dir = data_root / best_entry.get("batch_id", batch_id)
+        reward_path = best_batch_dir / "reward_results.json"
+        raw_metrics: Dict = {}
+        if reward_path.exists():
+            with reward_path.open(encoding="utf-8") as f:
+                rdata = json.load(f)
+            raw_metrics = rdata.get("circuits", {}).get(best_cand_id, {}).get("raw_metrics", {})
+
+        net_file = best_batch_dir / "LLM_output" / f"{best_cand_id}.net"
+        netlist_text = net_file.read_text(encoding="utf-8") if net_file.exists() else ""
+
+        # Overwrite best_topology.net
+        best_netlist_path = self.results_dir / "best_topology.net"
+        with best_netlist_path.open("w", encoding="utf-8") as f:
+            f.write(f"* OVERALL BEST CANDIDATE: {best_cand_id}\n")
+            f.write(f"* FITNESS SCORE: {best_fitness:.4f}\n*\n")
+            f.write(netlist_text)
+
+        # Overwrite run_summary.txt
+        summary_path = self.results_dir / "run_summary.txt"
+        with summary_path.open("w", encoding="utf-8") as f:
+            f.write(f"=== TRAINING SUMMARY: {self.run_folder_path.name} ===\n")
+            if self.constraint_idx is not None:
+                f.write(f"Constraint Index: {self.constraint_idx}\n")
+            f.write(f"Batches Completed: {batch_idx} / {self.n_batches}\n")
+            total_sec = sum(self.batch_times)
+            f.write(f"Total Time Elapsed: {total_sec:.2f} sec ({total_sec / 60:.2f} min)\n")
+            f.write(f"Average Time per Batch: {avg_time_batch:.2f} sec\n")
+            f.write(f"Average Time per Netlist: {avg_time_netlist:.2f} sec\n\n")
+
+            f.write("--- TOPOLOGY YIELD (this batch) ---\n")
+            f.write(f"Valid:   {n_valid}\n")
+            f.write(f"Invalid: {n_invalid}\n")
+            f.write(f"Total candidates in history: {len(history)}\n\n")
+
+            f.write("--- FITNESS PROGRESSION ---\n")
+            f.write(f"Overall Best Fitness: {best_fitness:.4f} ({best_cand_id})\n")
+            for b_idx, (b_id, b_fit) in enumerate(self.best_fitness_history, 1):
+                f.write(f"  Batch {b_idx} Best: {b_fit:.4f} ({b_id})\n")
+
+            f.write("\n--- BEST NETLIST METRICS ---\n")
+            if raw_metrics:
+                f.write(f"Output Voltage: {raw_metrics.get('simulation_output_voltage', 0):.4f} V\n")
+                f.write(f"Efficiency:     {raw_metrics.get('efficiency', 0):.4f}\n")
+                f.write(f"Total Volume:   {raw_metrics.get('total_volume_cm3', 0):.4f} cm^3\n")
+            else:
+                f.write("No raw metrics available.\n")
+
+            if netlist_text:
+                f.write("\n=========================================\n")
+                f.write("OVERALL BEST SPICE NETLIST:\n")
+                f.write("=========================================\n")
+                f.write(netlist_text)
+                f.write("\n\n")

@@ -2,6 +2,7 @@ import json
 import math
 import random
 import re
+import time
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -12,6 +13,10 @@ from pipeline.reward_evaluation.reward_function_norm import RewardFunctionNorm
 from pipeline.llm_topology_generation.prompt_input import load_constraint
 from pipeline.reinforcement_algorithm.grpo_trainer import GRPOTrainer
 from pipeline.reinforcement_algorithm.new_rl_updater import RLConfig
+from pipeline.graphs_and_visualizations.Visualize_demo_results import plot_run_results
+from pipeline.graphs_and_visualizations.plot_probabilities import plot_softmax_probabilities
+from pipeline.graphs_and_visualizations.plot_cumulative_probabilities import plot_cumulative_probabilities
+from pipeline.utility.summary_logger import SummaryLogger
 
 
 def get_next_zycos_folder(data_dir: Path) -> str:
@@ -256,10 +261,19 @@ def run_single(
     )
     print(f"{'=' * 60}")
 
+    logger = SummaryLogger(
+        run_folder_path=run_folder_path,
+        n_batches=N_batch,
+        sim_params={},
+        weights=weights,
+        constraint_idx=run_idx,
+    )
+
     history: List[Dict] = []
     selected_parents: List[Dict] = []
 
     for batch_idx in range(1, N_batch + 1):
+        batch_start = time.time()
         current_batch_id = f"{zycos_name}/{run_folder_name}/batch_{batch_idx}"
         print(f"\n--- Processing {current_batch_id} ---")
 
@@ -345,6 +359,29 @@ def run_single(
 
         save_history(history, run_folder_path)
 
+        logger.log_batch_training(
+            batch_idx=batch_idx,
+            batch_duration=time.time() - batch_start,
+            history=history,
+            batch_id=current_batch_id,
+        )
+
+        run_id = f"{zycos_name}/{run_folder_name}"
+        plot_softmax_probabilities(
+            run_id=run_id,
+            target_batch=batch_idx + 1,
+            temperature=SOFTMAX_TEMPERATURE,
+            top_k=TOP_K,
+            epsilon=EPSILON,
+        )
+        plot_cumulative_probabilities(
+            run_id=run_id,
+            target_batch=batch_idx + 1,
+            temperature=SOFTMAX_TEMPERATURE,
+            top_k=TOP_K,
+            epsilon=EPSILON,
+        )
+
         print(f"History size: {len(history)} evaluated netlists")
 
         if batch_idx < N_batch:
@@ -373,6 +410,9 @@ def run_single(
         print(f"--- Finished {current_batch_id} ---")
 
     print(f"=== Finished {zycos_name}/{run_folder_name} ===")
+
+    print(f"[training_loop] Generating result plots for {run_folder_name}...")
+    plot_run_results(str(run_folder_path))
 
 
 def main():

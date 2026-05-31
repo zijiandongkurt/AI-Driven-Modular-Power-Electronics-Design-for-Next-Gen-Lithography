@@ -1,10 +1,10 @@
+import argparse
 import copy
 import re
 import numpy as np
 from pathlib import Path
 import json
 import sys
-import os
 from pathlib import Path
 
 # Add the parent directory (project root) to the Python path
@@ -68,54 +68,19 @@ def extract_metrics(run_folder: str) -> dict:
     return metrics
 
 def main():
-    TRIALS_PER_TASK = 3 
-    
-    base_config = {
-        "run_settings": {
-            "n_batches": 15,
-            "sampled_states_per_batch": 2,
-            "candidates_per_prompt": 4,
-            "max_tokens": 2048,
-            "update_plots_per_batch": False, 
-            "model_id": "",
-            "run_prefix": "" 
-        },
-        "mcts_settings": {
-            "temperature": 0.05,
-            "top_k": 15,
-            "epsilon": 0.15
-        },
-        "constraint_settings": {
-            "dataset_path": "",
-            "index": 0,
-            "phase": ""
-        },
-        "weights": {
-            "v_out": 10.0, "efficiency": 20.0,
-            "volume": 2.0, "component_cost": 1.0,
-            "components": {"mosfet": 1.0, "diode": 1.0, "inductor": 1.0, "capacitor": 1.0}
-        }
-    }
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config", type=str, default="benchmark_config.json", help="Path to benchmark config file.")
+    args = parser.parse_args()
 
-    models = {
-        "Base": "Qwen/Qwen2.5-3B-Instruct"#,
-        #"SFT": "path/to/your/sft/model",     
-        #"RL": "path/to/your/rl/model"        
-    }
+    config_path = Path(args.config)
+    assert config_path.exists(), f"Config file not found: {config_path.resolve()}"
+    with config_path.open("r", encoding="utf-8") as f:
+        config = json.load(f)
 
-    tasks = [
-        {"phase": "Phase1", "label": "P1_Buck_Std",      "file": "pipeline/data/datasets/constraints_easy.json",   "idx": 0},
-        {"phase": "Phase1", "label": "P1_Boost_Std",     "file": "pipeline/data/datasets/constraints_easy.json",   "idx": 6},
-        {"phase": "Phase1", "label": "P1_Buck_RatioLim", "file": "pipeline/data/datasets/constraints_easy.json",   "idx": 16},
-        
-        {"phase": "Phase2", "label": "P2_Buck_Extreme",  "file": "pipeline/data/datasets/constraints_medium.json", "idx": 0},
-        {"phase": "Phase2", "label": "P2_Buck_HighPwr",  "file": "pipeline/data/datasets/constraints_medium.json", "idx": 10},
-        {"phase": "Phase2", "label": "P2_Boost_Extreme", "file": "pipeline/data/datasets/constraints_medium.json", "idx": 19},
-        
-        {"phase": "Phase3", "label": "P3_Buck_Mains",    "file": "pipeline/data/datasets/constraints_hard.json",   "idx": 0},
-        {"phase": "Phase3", "label": "P3_Boost_Extreme", "file": "pipeline/data/datasets/constraints_hard.json",   "idx": 1},
-        {"phase": "Phase3", "label": "P3_Buck_MaxPwr",   "file": "pipeline/data/datasets/constraints_hard.json",   "idx": 10},
-    ]
+    TRIALS_PER_TASK = config["trials_per_task"]
+    base_config     = config["base_config"]
+    models          = config["models"]
+    tasks           = config["tasks"]
 
     master_results = {model: {task["label"]: [] for task in tasks} for model in models.keys()}
 

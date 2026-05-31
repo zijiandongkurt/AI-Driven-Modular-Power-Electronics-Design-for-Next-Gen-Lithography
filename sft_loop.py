@@ -81,10 +81,28 @@ def main():
     with hist_path.open("w", encoding="utf-8") as f:
         json.dump(history, f, indent=2)
 
+    run_config = {
+        "model_id":       model_id,
+        "quantization":   quant or "bf16 (full)",
+        "train_path":     train_path,
+        "val_path":       val_path,
+        "output_dir":     output_dir,
+        "epochs":         cfg.epochs,
+        "batch_size":     cfg.batch_size,
+        "learning_rate":  cfg.learning_rate,
+        "lora_r":         cfg.lora_r,
+        "lora_alpha":     cfg.lora_alpha,
+        "max_length":     cfg.max_length,
+    }
+    cfg_path = Path(output_dir) / "run_config.json"
+    with cfg_path.open("w", encoding="utf-8") as f:
+        json.dump(run_config, f, indent=2)
+
     print()
     print("════════════════════════════════════════════════════════════════")
     print(f"[sft_loop] final adapter : {final}")
     print(f"[sft_loop] history       : {hist_path}")
+    print(f"[sft_loop] run config    : {cfg_path}")
     print("════════════════════════════════════════════════════════════════")
 
 
