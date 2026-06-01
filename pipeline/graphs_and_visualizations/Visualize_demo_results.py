@@ -9,6 +9,12 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, '..', '..'))
+if PROJECT_ROOT_DIR not in sys.path:
+    sys.path.append(PROJECT_ROOT_DIR)
+
 
 def extract_batch_number(folder_name):
     match = re.search(r'\d+', folder_name)
@@ -196,6 +202,32 @@ def plot_run_results(run_dir):
     plt.savefig(os.path.join(results_dir, '0_summary_valid_topologies.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
+    # --- NEW: Summary: Duplicate Topologies Bar Chart ---
+    try:
+        from pipeline.utility.check_duplicates import get_duplicates_per_batch
+        
+        dup_data = get_duplicates_per_batch(run_dir)
+        dup_counts = [dup_data.get(b, 0) for b in batches]
+        
+        plt.figure(figsize=(9, 6))
+        # Use a distinct color like coral/orange for duplicates
+        plt.bar(batches, dup_counts, color='coral', alpha=0.8, edgecolor='black')
+        plt.title('Duplicate Topologies Per Batch (Mode Collapse)', fontsize=14, fontweight='bold')
+        plt.xlabel('Batch Number', fontsize=12)
+        plt.ylabel('Duplicate Circuits', fontsize=12)
+        plt.xticks(batches)
+        
+        # Scale Y axis dynamically based on max duplicates
+        max_dup = max(dup_counts) if dup_counts and max(dup_counts) > 0 else 4
+        plt.yticks(range(0, int(max_dup) + 2))
+        plt.grid(axis='y', alpha=0.3)
+        
+        plt.savefig(os.path.join(results_dir, '0_summary_duplicate_topologies.png'), dpi=300, bbox_inches='tight')
+        plt.close()
+        print("✅ Added duplicate topologies plot.")
+    except Exception as e:
+        print(f"⚠️ Could not generate duplicates plot: {e}")
+
     # --- NEW: Multi-line Fitness Progress (Batch vs Global) ---
     plt.figure(figsize=(11, 7))
     plt.plot(batches, batch_avg_fitness, label='Batch Avg Fitness', marker='o', linestyle='-', color='royalblue', alpha=0.7)
@@ -221,7 +253,7 @@ if __name__ == '__main__':
     PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, '..', '..'))
     DATA_DIR = os.path.join(PROJECT_ROOT, 'pipeline', 'data')
     
-    target_run = None 
+    target_run = "zycos_006/Run_005" 
     
     if target_run:
         run_path = os.path.join(DATA_DIR, target_run)
