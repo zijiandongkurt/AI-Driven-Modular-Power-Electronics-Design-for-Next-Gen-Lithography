@@ -95,6 +95,92 @@ def save_history(history: List[Dict], run_folder_path: Path) -> None:
     with path.open("w", encoding="utf-8") as f:
         json.dump(history, f, indent=2)
 
+def generate_global_training_summary(zycos_path: Path, current_run_idx: int, total_runs: int):
+    """
+    Scans all completed runs in the current zycos folder and generates a live-updating
+    master summary file tracking global progress, aggregate yields, and the best overall fitness.
+    """
+    summary_files = list(zycos_path.glob("Run_*/results/run_summary.txt"))
+    if not summary_files:
+        return
+
+    total_time = 0.0
+    total_valid = 0
+    total_invalid = 0
+    total_netlists = 0
+    total_batches = 0
+    
+    global_best_fit = -float('inf')
+    global_best_cand = "None"
+    global_best_run = "None"
+    global_best_constraint = "None"
+
+    # 1. Extract data from all completed runs
+    for sf in summary_files:
+        text = sf.read_text(encoding="utf-8")
+        run_name = sf.parent.parent.name
+        
+        # Time Metrics
+        m_time = re.search(r"Total Time Elapsed:\s*([\d.]+)", text)
+        if m_time: total_time += float(m_time.group(1))
+        
+        m_batch = re.search(r"Batches Completed:\s*(\d+)", text)
+        if m_batch: total_batches += int(m_batch.group(1))
+        
+        # Yield Metrics
+        m_valid = re.search(r"Valid:\s*(\d+)", text)
+        if m_valid: total_valid += int(m_valid.group(1))
+        
+        m_invalid = re.search(r"Invalid:\s*(\d+)", text)
+        if m_invalid: total_invalid += int(m_invalid.group(1))
+        
+        m_hist = re.search(r"Total candidates in history:\s*(\d+)", text)
+        if m_hist: total_netlists += int(m_hist.group(1))
+        
+        # Best Fitness Tracker
+        m_fit = re.search(r"Overall Best Fitness:\s*([\d.-]+)\s*\(([^)]+)\)", text)
+        m_constraint = re.search(r"Constraint Index:\s*(\d+)", text)
+        
+        if m_fit:
+            fit_val = float(m_fit.group(1))
+            if fit_val > global_best_fit:
+                global_best_fit = fit_val
+                global_best_cand = m_fit.group(2)
+                global_best_run = run_name
+                global_best_constraint = m_constraint.group(1) if m_constraint else "Unknown"
+
+    # 2. Calculate Averages
+    avg_time_per_run = total_time / len(summary_files) if summary_files else 0
+    avg_time_per_batch = total_time / total_batches if total_batches > 0 else 0
+    avg_time_per_netlist = total_time / total_netlists if total_netlists > 0 else 0
+    global_validity = (total_valid / total_netlists * 100) if total_netlists > 0 else 0
+    runs_remaining = total_runs - current_run_idx
+
+    # 3. Format the Master Summary
+    master_text = f"""=== GLOBAL TRAINING RUN SUMMARY: {zycos_path.name} ===
+Progress: {current_run_idx} / {total_runs} Runs Completed ({runs_remaining} remaining)
+
+--- AGGREGATE TIME METRICS ---
+Total Time Elapsed: {total_time:.2f} sec ({total_time / 3600:.2f} hours)
+Average Time per Run: {avg_time_per_run:.2f} sec
+Average Time per Batch: {avg_time_per_batch:.2f} sec
+Average Time per Netlist: {avg_time_per_netlist:.2f} sec
+
+--- AGGREGATE TOPOLOGY YIELD ---
+Total Candidates Generated: {total_netlists}
+Total Valid: {total_valid}
+Total Invalid: {total_invalid}
+Global Validity Rate: {global_validity:.2f}%
+
+--- GLOBAL BEST FITNESS ---
+Best Overall Score: {global_best_fit:.4f}
+Best Candidate: {global_best_cand}
+Found in: {global_best_run} (Constraint: {global_best_constraint})
+==================================================
+"""
+    # 4. Save to the root of the zycos folder
+    out_path = zycos_path / "training_run_summary.txt"
+    out_path.write_text(master_text, encoding="utf-8")
 
 def _softmax_sample_from_pool(
     pool: List[Dict],
@@ -488,6 +574,8 @@ def main():
             data_dir=data_dir,
             config=config,
         )
+        
+    generate_global_training_summary(zycos_path, local_run_idx + 1, len(constraint_indices))
 
     print(f"\n=== {zycos_name} complete — {len(constraint_indices)} runs finished ===")
 

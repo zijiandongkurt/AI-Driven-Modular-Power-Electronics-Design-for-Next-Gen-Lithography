@@ -168,7 +168,9 @@ class SummaryLogger:
 
         # Valid / invalid count for the current batch
         val_path = data_root / batch_id / "validation_results.json"
-        n_valid = n_invalid = 0
+        # Valid / invalid count for the ENTIRE run (calculated from history)
+        n_valid = sum(1 for cand in history if cand.get("is_valid", False))
+        n_invalid = len(history) - n_valid
         if val_path.exists():
             with val_path.open(encoding="utf-8") as f:
                 val_data = json.load(f)
@@ -209,7 +211,7 @@ class SummaryLogger:
             f.write(f"Average Time per Batch: {avg_time_batch:.2f} sec\n")
             f.write(f"Average Time per Netlist: {avg_time_netlist:.2f} sec\n\n")
 
-            f.write("--- TOPOLOGY YIELD (this batch) ---\n")
+            f.write("--- TOPOLOGY YIELD (entire run) ---\n")
             f.write(f"Valid:   {n_valid}\n")
             f.write(f"Invalid: {n_invalid}\n")
             f.write(f"Total candidates in history: {len(history)}\n\n")
