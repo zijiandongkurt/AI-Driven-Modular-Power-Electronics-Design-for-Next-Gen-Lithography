@@ -19,31 +19,59 @@ except ImportError as e:
     sys.exit(1)
 
 def generate_mock_trial(model, phase_power):
-    """Generates realistic fake data based on the model type."""
+    """Generates realistic fake data based on the SFT briefing and project specs."""
     is_base = model == "Base"
+    is_sft = model == "SFT"
     is_rl = model == "RL"
     
-    # Base model fails more often, RL almost never fails
-    if is_base and np.random.rand() < 0.4:
-        return {"fitness": -0.6, "auc": 0.0, "validity": 0.0, "learning_curve": [-0.6]*15, 
-                "v_error_pct": None, "efficiency": None, "volume": None, "components": None, "target_power": phase_power}
+    # --- 1. Validity Rates ---
+    if is_base:
+        validity = np.random.uniform(60.0, 70.0) # ~65% from briefing
+    elif is_sft:
+        validity = np.random.uniform(70.0, 80.0) # ~75% from briefing
+    else:
+        validity = np.random.uniform(98.0, 100.0) # 100% for RL
         
-    v_err = np.random.uniform(0.5, 5.0) if is_rl else np.random.uniform(10.0, 45.0)
-    eff = np.random.uniform(85, 98) if is_rl else np.random.uniform(40, 75)
-    fit = np.random.uniform(0.85, 0.99) if is_rl else np.random.uniform(0.5, 0.75)
+    # --- 2. Fitness & Pareto Metrics ---
+    # All models start with at least 1 valid topology, so fitness >= 0.5
+    curve_start = np.random.uniform(0.50, 0.55)
     
-    curve = np.linspace(-0.6, fit, 15) + np.random.normal(0, 0.05, 15)
-    curve = np.clip(curve, -0.6, 1.0).tolist()
+    if is_base:
+        fit = np.random.uniform(0.55, 0.65)
+        v_err = np.random.uniform(20.0, 45.0)
+        eff = np.random.uniform(40, 65)
+        auc_val = np.random.uniform(0.5, 0.6)
+        components = np.random.randint(15, 25)
+    elif is_sft:
+        fit = np.random.uniform(0.70, 0.85)
+        v_err = np.random.uniform(5.0, 20.0)
+        eff = np.random.uniform(65, 85)
+        auc_val = np.random.uniform(0.65, 0.8)
+        components = np.random.randint(8, 15)
+    else: # RL
+        fit = np.random.uniform(0.90, 0.99)
+        v_err = np.random.uniform(0.1, 4.0)
+        eff = np.random.uniform(90, 99)
+        auc_val = np.random.uniform(0.85, 0.98)
+        components = np.random.randint(5, 10)
+    
+    # --- 3. Learning Curves ---
+    # Interpolate from ~0.5 to final fitness, add slight variance
+    curve = np.linspace(curve_start, fit, 15) + np.random.normal(0, 0.02, 15)
+    
+    # Strictly enforce that no point drops below 0.5
+    curve[0] = max(0.5, curve[0]) 
+    curve = np.clip(curve, 0.5, 1.0).tolist()
     
     return {
         "fitness": fit,
-        "auc": np.random.uniform(0.4, 0.9),
-        "validity": np.random.uniform(80, 100) if is_rl else np.random.uniform(20, 60),
+        "auc": auc_val,
+        "validity": validity,
         "learning_curve": curve,
         "v_error_pct": v_err,
         "efficiency": eff,
         "volume": phase_power / np.random.uniform(0.5, 3.0),
-        "components": np.random.randint(5, 12) if is_rl else np.random.randint(10, 25),
+        "components": components,
         "target_power": phase_power
     }
 
