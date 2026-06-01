@@ -1,0 +1,57 @@
+=== TRAINING SUMMARY: Run_006 ===
+Constraint Index: 2
+Batches Completed: 10 / 10
+Total Time Elapsed: 937.90 sec (15.63 min)
+Average Time per Batch: 93.79 sec
+Average Time per Netlist: 12.02 sec
+
+--- TOPOLOGY YIELD (this batch) ---
+Valid:   8
+Invalid: 0
+Total candidates in history: 78
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.7640 (00_Phase_2_36V_to_3_3V_Buck_10_9_1_g1_cand1_b1)
+  Batch 1 Best: 0.7640 (00_Phase_2_36V_to_3_3V_Buck_10_9_1_g1_cand1_b1)
+  Batch 2 Best: 0.7640 (00_Phase_2_36V_to_3_3V_Buck_10_9_1_g1_cand1_b1)
+  Batch 3 Best: 0.7640 (00_Phase_2_36V_to_3_3V_Buck_10_9_1_g1_cand1_b1)
+  Batch 4 Best: 0.7640 (00_Phase_2_36V_to_3_3V_Buck_10_9_1_g1_cand1_b1)
+  Batch 5 Best: 0.7640 (00_Phase_2_36V_to_3_3V_Buck_10_9_1_g1_cand1_b1)
+  Batch 6 Best: 0.7640 (00_Phase_2_36V_to_3_3V_Buck_10_9_1_g1_cand1_b1)
+  Batch 7 Best: 0.7640 (00_Phase_2_36V_to_3_3V_Buck_10_9_1_g1_cand1_b1)
+  Batch 8 Best: 0.7640 (00_Phase_2_36V_to_3_3V_Buck_10_9_1_g1_cand1_b1)
+  Batch 9 Best: 0.7640 (00_Phase_2_36V_to_3_3V_Buck_10_9_1_g1_cand1_b1)
+  Batch 10 Best: 0.7640 (00_Phase_2_36V_to_3_3V_Buck_10_9_1_g1_cand1_b1)
+
+--- BEST NETLIST METRICS ---
+Output Voltage: 2.7480 V
+Efficiency:     0.2064
+Total Volume:   10000.0000 cm^3
+
+=========================================
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-06-01T01:20:43
+* Constraint: Phase 2: 36V to 3.3V (Buck - 10.9:1)
+*   vin_min = 32
+*   vin_max = 40
+*   vout_target = 3.3
+*   efficiency_target = 0.85
+*   power_in = 50
+* Candidate: 1 of 8
+* Grouped name: g1_cand1
+*
+Vin in 0 32
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.278
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+

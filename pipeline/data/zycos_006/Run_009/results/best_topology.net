@@ -1,0 +1,25 @@
+* OVERALL BEST CANDIDATE: 00_Phase_2_48V_to_12V_Server_Bus_Buck_High_Pwr_g2_cand1_b3
+* FITNESS SCORE: 0.5966
+*
+* Generated: 2026-06-01T02:44:16
+* Constraint: Phase 2: 48V to 12V Server Bus (Buck - High Pwr)
+*   vin_min = 44
+*   vin_max = 52
+*   vout_target = 12
+*   efficiency_target = 0.9
+*   power_in = 150
+* Candidate: 5 of 8
+* Grouped name: g2_cand1
+*
+Vin in 0 44
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 220u
+C1 out 0 220u
+Rload out Vin/4.333 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
