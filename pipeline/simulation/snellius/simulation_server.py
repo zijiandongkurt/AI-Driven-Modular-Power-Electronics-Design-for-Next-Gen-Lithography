@@ -104,6 +104,10 @@ class SimulationServer:
 
     def _load_results(self, results_path: Path) -> pd.DataFrame:
         """Load simulation_results.csv into a DataFrame."""
-        df = pd.read_csv(results_path)
-        print(f"Loaded {len(df)} result(s) from {results_path}")
-        return df
+        try:
+            df = pd.read_csv(results_path)
+            print(f"Loaded {len(df)} result(s) from {results_path}")
+            return df
+        except pd.errors.EmptyDataError:
+            print(f"[{results_path.parent.name}] Empty CSV — all simulations failed, returning empty DataFrame.")
+            return pd.DataFrame()

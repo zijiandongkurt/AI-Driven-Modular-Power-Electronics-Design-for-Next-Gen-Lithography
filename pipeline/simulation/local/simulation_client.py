@@ -125,8 +125,18 @@ def run():
 
                 # 3. Extract metrics → simulation_results.csv
                 print(f"[{batch_id}] Extracting metrics...")
-                extractor = RawExtractor(local_raw_dir)
-                extractor.extract(netlist_map, local_results)
+                try:
+                    extractor = RawExtractor(local_raw_dir)
+                    extractor.extract(netlist_map, local_results)
+                except AssertionError as err:
+                    print(f"[{batch_id}] Extractor: {err}")
+
+                # If all simulations failed no CSV is produced — create an empty
+                # placeholder so upload and mark-done always run.
+                if not local_results.exists():
+                    local_results.parent.mkdir(parents=True, exist_ok=True)
+                    local_results.touch()
+                    print(f"[{batch_id}] All simulations failed — uploading empty results.")
 
                 # 4. Upload simulation_results.csv to Snellius
                 print(f"[{batch_id}] Uploading results...")

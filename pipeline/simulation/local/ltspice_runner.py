@@ -71,6 +71,7 @@ class LTSpiceSimulator:
             output_folder=self.output_dir,
             simulator=LTspice,
             parallel_sims=4,
+            timeout=60,
         )
 
         netlist_map = {}
