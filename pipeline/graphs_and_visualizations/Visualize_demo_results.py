@@ -15,6 +15,7 @@ PROJECT_ROOT_DIR = os.path.abspath(os.path.join(SCRIPT_DIR, '..', '..'))
 if PROJECT_ROOT_DIR not in sys.path:
     sys.path.append(PROJECT_ROOT_DIR)
 
+from pipeline.utility.topology_hasher import get_topological_hash
 
 def extract_batch_number(folder_name):
     match = re.search(r'\d+', folder_name)
@@ -60,6 +61,12 @@ def plot_run_results(run_dir):
     target_voltage = None
     target_efficiency = None
 
+    global_seen_hashes = set() # Track what we've already plotted
+    unique_valid_counts = []   # Track for the bar chart
+    total_cands_per_batch = []
+    cumulative_uniqueness_rates = []
+    cumulative_total = 0
+
     # --- 1. DATA EXTRACTION ---
     for folder in batch_folders:
         b_idx = extract_batch_number(os.path.basename(folder))
@@ -67,14 +74,21 @@ def plot_run_results(run_dir):
         
         reward_file = os.path.join(folder, 'reward_results.json')
         valid_file = os.path.join(folder, 'validation_results.json')
+        llm_out_dir = os.path.join(folder, 'LLM_output')
         
         new_cands = {}
         b_fit_batch = [] # Only the fitness of circuits IN THIS BATCH
+        batch_unique_valid = 0
         
         # Read Rewards and Metrics
         if os.path.exists(reward_file):
             with open(reward_file, 'r') as f:
                 reward_data = json.load(f)
+
+                # --- NEW: Count total attempted this batch ---
+                batch_total = len(reward_data.get('circuits', {}))
+                total_cands_per_batch.append(batch_total)
+                cumulative_total += batch_total
                 
                 if target_voltage is None:
                     ac = reward_data.get('active_constraints', {})
@@ -86,9 +100,21 @@ def plot_run_results(run_dir):
                     metrics['fitness'] = cdata.get('fitness_score')
                     
                     if metrics['fitness'] is not None:
-                        new_cands[cid] = metrics
-                        cumulative_db[cid] = metrics
-                        b_fit_batch.append(metrics['fitness'])
+                        # --- NEW: Check Uniqueness before plotting ---
+                        net_path = os.path.join(llm_out_dir, f"{cid}.net")
+                        if os.path.exists(net_path):
+                            net_text = open(net_path, "r", encoding="utf-8").read()
+                            t_hash = get_topological_hash(net_text)
+                            
+                            if t_hash not in global_seen_hashes:
+                                global_seen_hashes.add(t_hash)
+                                new_cands[cid] = metrics
+                                cumulative_db[cid] = metrics
+                                b_fit_batch.append(metrics['fitness'])
+                                
+                                # Check if it was valid for the bar chart
+                                if val_data.get(cid, {}).get("passed", False):
+                                    batch_unique_valid += 1
 
         # Read Validation Yield
         val_count = 0
@@ -97,6 +123,11 @@ def plot_run_results(run_dir):
                 val_data = json.load(f)
                 val_count = sum(1 for v in val_data.values() if v.get('passed', False))
         valid_counts.append(val_count)
+
+        # Calculate Uniqueness Rate up to this batch
+        c_unique = len(global_seen_hashes)
+        u_rate = (c_unique / cumulative_total * 100) if cumulative_total > 0 else 0
+        cumulative_uniqueness_rates.append(u_rate)
 
         # Snapshot history for this batch
         history[b_idx] = {
@@ -191,42 +222,51 @@ def plot_run_results(run_dir):
 
     # Summary: Valid Topologies Bar Chart
     plt.figure(figsize=(9, 6))
-    plt.bar(batches, valid_counts, color='mediumseagreen', alpha=0.8, edgecolor='black')
-    plt.title('Valid Topologies Per Batch', fontsize=14, fontweight='bold')
+    plt.bar(batches, valid_counts, color='lightgray', edgecolor='black', label='Total Valid Generated')
+    plt.bar(batches, unique_valid_counts, color='mediumseagreen', alpha=0.9, edgecolor='black', label='Unique Valid Topologies')
+    plt.title('Topology Yield: Unique vs Total Valid', fontsize=14, fontweight='bold')
     plt.xlabel('Batch Number', fontsize=12)
     plt.ylabel('Valid Circuits', fontsize=12)
     plt.xticks(batches)
-    max_valid = max(valid_counts) if valid_counts else 4
-    plt.yticks(range(0, int(max_valid) + 2))
+    plt.legend()
     plt.grid(axis='y', alpha=0.3)
     plt.savefig(os.path.join(results_dir, '0_summary_valid_topologies.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
-    # --- NEW: Summary: Duplicate Topologies Bar Chart ---
+    # --- NEW: Yield Rates (Validity vs Uniqueness) ---
     try:
-        from pipeline.utility.check_duplicates import get_duplicates_per_batch
+        batch_validity_rates = [(v / t * 100) if t > 0 else 0 for v, t in zip(valid_counts, total_cands_per_batch)]
         
-        dup_data = get_duplicates_per_batch(run_dir)
-        dup_counts = [dup_data.get(b, 0) for b in batches]
+        fig, ax1 = plt.subplots(figsize=(10, 6))
         
-        plt.figure(figsize=(9, 6))
-        # Use a distinct color like coral/orange for duplicates
-        plt.bar(batches, dup_counts, color='coral', alpha=0.8, edgecolor='black')
-        plt.title('Duplicate Topologies Per Batch (Mode Collapse)', fontsize=14, fontweight='bold')
-        plt.xlabel('Batch Number', fontsize=12)
-        plt.ylabel('Duplicate Circuits', fontsize=12)
-        plt.xticks(batches)
+        # Plot Validity Rate (Batch-level)
+        ax1.plot(batches, batch_validity_rates, color='mediumseagreen', marker='o', linewidth=2.5, label='Validity Rate (Per Batch)')
+        ax1.set_xlabel('Batch Number', fontsize=12)
+        ax1.set_ylabel('Validity Rate (%)', fontsize=12, color='darkgreen')
+        ax1.tick_params(axis='y', labelcolor='darkgreen')
+        ax1.set_ylim(0, 105)
+        ax1.set_xticks(batches)
+        ax1.grid(True, linestyle='--', alpha=0.3)
         
-        # Scale Y axis dynamically based on max duplicates
-        max_dup = max(dup_counts) if dup_counts and max(dup_counts) > 0 else 4
-        plt.yticks(range(0, int(max_dup) + 2))
-        plt.grid(axis='y', alpha=0.3)
+        # Plot Cumulative Uniqueness Rate on the same axes
+        ax2 = ax1.twinx()
+        ax2.plot(batches, cumulative_uniqueness_rates, color='coral', marker='s', linestyle='--', linewidth=2.5, label='Cumulative Uniqueness Rate')
+        ax2.set_ylabel('Uniqueness Rate (%)', fontsize=12, color='orangered')
+        ax2.tick_params(axis='y', labelcolor='orangered')
+        ax2.set_ylim(0, 105)
         
-        plt.savefig(os.path.join(results_dir, '0_summary_duplicate_topologies.png'), dpi=300, bbox_inches='tight')
+        plt.title('Exploration vs. Yield: Uniqueness & Validity Rates', fontsize=14, fontweight='bold')
+        
+        # Combine legends from both axes
+        lines_1, labels_1 = ax1.get_legend_handles_labels()
+        lines_2, labels_2 = ax2.get_legend_handles_labels()
+        ax1.legend(lines_1 + lines_2, labels_1 + labels_2, loc='lower center', bbox_to_anchor=(0.5, -0.2), ncol=2)
+        
+        plt.savefig(os.path.join(results_dir, '0_summary_yield_rates.png'), dpi=300, bbox_inches='tight')
         plt.close()
-        print("✅ Added duplicate topologies plot.")
+        print("✅ Added Yield Rates line chart.")
     except Exception as e:
-        print(f"⚠️ Could not generate duplicates plot: {e}")
+        print(f"⚠️ Could not generate yield rates plot: {e}")
 
     # --- NEW: Multi-line Fitness Progress (Batch vs Global) ---
     plt.figure(figsize=(11, 7))

@@ -2,6 +2,7 @@ import json
 import numpy as np
 from pathlib import Path
 
+from pipeline.utility.topology_hasher import get_topological_hash
 
 class NetlistDatabase:
     """
@@ -16,6 +17,10 @@ class NetlistDatabase:
         self.total_valid   = 0
         self.total_invalid = 0
 
+        self.seen_hashes = set()
+        self.total_unique = 0
+        self.total_duplicates = 0
+
     def add_record(
         self,
         candidate_id,
@@ -26,6 +31,15 @@ class NetlistDatabase:
         metrics=None,
         batch_id=None,
     ):
+        # --- NEW: Calculate topological hash on entry ---
+        topo_hash = get_topological_hash(netlist_text)
+        # --- NEW: Track Global Uniqueness ---
+        if topo_hash not in self.seen_hashes:
+            self.seen_hashes.add(topo_hash)
+            self.total_unique += 1
+        else:
+            self.total_duplicates += 1
+
         self.records[candidate_id] = {
             "netlist_text": netlist_text,
             "fitness":      fitness,
@@ -33,6 +47,7 @@ class NetlistDatabase:
             "is_valid":     is_valid,
             "metrics":      metrics or {},
             "batch_id":     batch_id,
+            "topo_hash":    topo_hash
         }
 
         if is_valid:
@@ -110,17 +125,36 @@ class NetlistDatabase:
 
         keys = list(self.records.keys())
 
+        # 1. Sort everything by fitness first
         scored_candidates = [
             (k, self.records[k]["fitness"]) for k in keys
         ]
         scored_candidates.sort(key=lambda x: x[1], reverse=True)
 
-        elite_candidates = scored_candidates[:top_k]
+        # --- NEW: Filter out topological duplicates ---
+        unique_scored = []
+        seen_hashes = set()
+        
+        for k, score in scored_candidates:
+            thash = self.records[k].get("topo_hash", k)
+            if thash not in seen_hashes:
+                seen_hashes.add(thash)
+                unique_scored.append((k, score))
+                
+        # Use the unique list moving forward
+        scored_candidates = unique_scored
+
+        # Protect against edge case where filtering leaves us with fewer than top_k items
+        actual_top_k = min(top_k, len(scored_candidates))
+
+        # 2. Split into Elite and Long Tail
+        elite_candidates = scored_candidates[:actual_top_k]
         elite_keys       = [x[0] for x in elite_candidates]
         elite_scores     = np.array([x[1] for x in elite_candidates])
 
-        long_tail_keys = [x[0] for x in scored_candidates[top_k:]]
+        long_tail_keys = [x[0] for x in scored_candidates[actual_top_k:]]
 
+        # 3. Softmax Probabilities
         exp_scores   = np.exp((elite_scores - np.max(elite_scores)) / self.temperature)
         elite_probs  = exp_scores / np.sum(exp_scores)
 

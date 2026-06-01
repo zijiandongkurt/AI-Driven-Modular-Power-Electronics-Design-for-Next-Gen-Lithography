@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import numpy as np
 from pathlib import Path
@@ -7,6 +8,13 @@ import re
 import matplotlib
 matplotlib.use('Agg') # Thread-safe backend
 import matplotlib.pyplot as plt
+
+# --- NEW: Import the hasher ---
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.append(str(PROJECT_ROOT))
+from pipeline.utility.topology_hasher import get_topological_hash
+
 
 def plot_cumulative_probabilities(run_id: str, target_batch: int, temperature: float = 0.05, top_k: int = 15, epsilon: float = 0.15, label: str = ""):
     """
@@ -19,12 +27,14 @@ def plot_cumulative_probabilities(run_id: str, target_batch: int, temperature: f
         return
 
     records = {}
+    seen_hashes = set() # --- NEW: Global hash tracker ---
 
     # 1. Reconstruct database
     for b_idx in range(1, target_batch):
         batch_folder = data_dir / f"batch_{b_idx}"
         reward_file = batch_folder / "reward_results.json"
         valid_file = batch_folder / "validation_results.json"
+        llm_out_dir = batch_folder / "LLM_output"
 
         if not reward_file.exists() or not valid_file.exists():
             continue
@@ -40,7 +50,15 @@ def plot_cumulative_probabilities(run_id: str, target_batch: int, temperature: f
             fitness = metrics.get("fitness_score", -1.0)
             
             if fitness is not None and fitness > -1.0:
-                records[cand_id] = {"fitness": fitness}
+                # --- NEW: Check Uniqueness ---
+                net_file = llm_out_dir / f"{cand_id}.net"
+                if net_file.exists():
+                    net_text = net_file.read_text(encoding="utf-8")
+                    t_hash = get_topological_hash(net_text)
+                    
+                    if t_hash not in seen_hashes:
+                        seen_hashes.add(t_hash)
+                        records[cand_id] = {"fitness": fitness}
 
     if not records:
         print(f"Database is empty before Batch {target_batch}.")
@@ -74,7 +92,6 @@ def plot_cumulative_probabilities(run_id: str, target_batch: int, temperature: f
         probs[long_tail_indices] = tail_prob
 
     # 5. Sort for the Pareto Chart
-    # Sort Elites by probability, and Tail by raw fitness (to prevent visual sorting inversions)
     if len(top_k_indices) > 0:
         elite_sorted_idx = top_k_indices[np.argsort(probs[top_k_indices])[::-1]]
     else:
@@ -85,7 +102,6 @@ def plot_cumulative_probabilities(run_id: str, target_batch: int, temperature: f
     else:
         tail_sorted_idx = np.array([], dtype=int)
         
-    # Concatenate them so the dashed boundary line is perfectly accurate
     sorted_indices = np.concatenate((elite_sorted_idx, tail_sorted_idx))
     
     sorted_probs = probs[sorted_indices]
@@ -106,27 +122,24 @@ def plot_cumulative_probabilities(run_id: str, target_batch: int, temperature: f
     ax2.plot(x_pos, cumulative_probs, color='crimson', marker='.', linestyle='-', linewidth=2, label='Cumulative Mass')
     ax2.set_ylabel('Cumulative Probability', color='crimson', fontsize=12, fontweight='bold')
     
-    # Boundary Line separating Elite from Long Tail
     boundary_x = min(top_k - 0.5, len(keys) - 0.5)
     ax1.axvline(x=boundary_x, color='black', linestyle='--', alpha=0.8, linewidth=2, label="Top-K Boundary")
     ax_fit.axvline(x=boundary_x, color='black', linestyle='--', alpha=0.8, linewidth=2)
 
-    # Add Text Label for the Boundary
     ax1.text(boundary_x + 1, ax1.get_ylim()[1]*0.8, f"Exploration Zone\n(Epsilon = {epsilon*100:.0f}%)", 
              color='black', fontsize=11, alpha=0.8, va='top')
     ax1.text(boundary_x - 1, ax1.get_ylim()[1]*0.8, f"Exploitation Zone\n(Top {top_k})", 
              color='black', fontsize=11, alpha=0.8, ha='right', va='top')
 
-    # Format Y axes as percentages
     ax1.set_yticklabels(['{:,.1%}'.format(x) for x in ax1.get_yticks()])
     ax2.set_yticklabels(['{:,.0%}'.format(x) for x in ax2.get_yticks()])
 
-    ax1.set_title(f"Cumulative Sampling (Top-K Epsilon-Greedy) & Raw Fitness\nBefore Batch {target_batch} | Temp: {temperature}, K: {top_k}, ε: {epsilon}", fontsize=14, fontweight='bold')
+    ax1.set_title(f"Cumulative Sampling (Unique Topologies Only)\nBefore Batch {target_batch} | Temp: {temperature}, K: {top_k}, ε: {epsilon}", fontsize=14, fontweight='bold')
     
     # --- BOTTOM PANEL: Raw Fitness ---
     ax_fit.plot(x_pos, sorted_fitness, color='forestgreen', marker='x', linestyle='-', linewidth=1.5, alpha=0.8)
     ax_fit.set_ylabel('Raw Fitness Score', color='forestgreen', fontsize=12, fontweight='bold')
-    ax_fit.set_xlabel('Candidate Rank (Most Likely -> Least Likely)', fontsize=12)
+    ax_fit.set_xlabel('Unique Candidate Rank (Most Likely -> Least Likely)', fontsize=12)
     ax_fit.grid(True, linestyle='--', alpha=0.4)
 
     # Save to disk
@@ -137,9 +150,3 @@ def plot_cumulative_probabilities(run_id: str, target_batch: int, temperature: f
     
     plt.savefig(filename, dpi=300, bbox_inches='tight')
     plt.close()
-
-    print(f"✅ Generated Epsilon-Greedy plot: {filename}")
-
-if __name__ == "__main__":
-    plot_cumulative_probabilities(run_id="Run_012", target_batch=12, temperature=0.05, top_k=15, epsilon=0.15)
-    plot_cumulative_probabilities(run_id="Run_012", target_batch=13, temperature=0.05, top_k=15, epsilon=0.15)

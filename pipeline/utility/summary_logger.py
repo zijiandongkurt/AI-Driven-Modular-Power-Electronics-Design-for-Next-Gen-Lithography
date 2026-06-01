@@ -64,6 +64,11 @@ class SummaryLogger:
             f.write(f"Valid Topologies: {db.total_valid}\n")
             f.write(f"Invalid Topologies: {db.total_invalid}\n")
             f.write(f"Validity Rate: {valid_pct:.1f}%\n\n")
+
+            unique_pct = (db.total_unique / total_generated * 100) if total_generated > 0 else 0
+            f.write(f"Unique Topologies (Globally): {db.total_unique}\n")
+            f.write(f"Exact Duplicates (Globally):  {db.total_duplicates}\n")
+            f.write(f"Global Uniqueness Rate: {unique_pct:.1f}%\n\n")
             
             f.write("--- FITNESS PROGRESSION ---\n")
             f.write(f"Overall Best Fitness: {best_fitness:.4f} ({best_cand_id})\n")
@@ -214,7 +219,16 @@ class SummaryLogger:
             f.write("--- TOPOLOGY YIELD (entire run) ---\n")
             f.write(f"Valid:   {n_valid}\n")
             f.write(f"Invalid: {n_invalid}\n")
-            f.write(f"Total candidates in history: {len(history)}\n\n")
+            f.write(f"Total candidates in history: {len(history)}\n")
+            
+            unique_hashes = set(cand.get("topo_hash", cand["netlist_id"]) for cand in history)
+            n_unique = len(unique_hashes)
+            n_total = len(history)
+            unique_pct = (n_unique / n_total * 100) if n_total > 0 else 0
+            
+            f.write(f"Unique Topologies: {n_unique}\n")
+            f.write(f"Exact Duplicates:  {n_total - n_unique}\n")
+            f.write(f"Uniqueness Rate:   {unique_pct:.1f}%\n\n")
 
             f.write("--- FITNESS PROGRESSION ---\n")
             f.write(f"Overall Best Fitness: {best_fitness:.4f} ({best_cand_id})\n")

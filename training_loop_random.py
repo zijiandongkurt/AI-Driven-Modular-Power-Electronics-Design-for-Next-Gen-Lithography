@@ -17,7 +17,10 @@ from pipeline.graphs_and_visualizations.Visualize_demo_results import plot_run_r
 from pipeline.graphs_and_visualizations.plot_probabilities import plot_softmax_probabilities
 from pipeline.graphs_and_visualizations.plot_cumulative_probabilities import plot_cumulative_probabilities
 from pipeline.utility.summary_logger import SummaryLogger
+from pipeline.utility.topology_hasher import get_topological_hash
 
+# --- NEW: Import your net_writer ---
+from pipeline.llm_topology_generation.net_writer import write_netlists
 
 def get_next_zycos_folder(data_dir: Path) -> str:
     """Find next zycos_XXX folder."""
@@ -69,6 +72,13 @@ def add_batch_to_history(
         if fitness is None:
             continue
 
+        # --- Calculate Topological Hash ---
+        net_path = Path("pipeline") / "data" / batch_id / "LLM_output" / f"{netlist_id}.net"
+        topo_hash = "unknown"
+        if net_path.exists():
+            net_text = net_path.read_text(encoding="utf-8")
+            topo_hash = get_topological_hash(net_text)
+
         group_id = parse_group_id(netlist_id)
         parent = group_to_parent.get(group_id)
 
@@ -86,6 +96,7 @@ def add_batch_to_history(
             "parent_id": parent_id,
             "fitness": float(fitness),
             "depth": depth,
+            "topo_hash": topo_hash
         })
 
 
@@ -115,19 +126,16 @@ def generate_global_training_summary(zycos_path: Path, current_run_idx: int, tot
     global_best_run = "None"
     global_best_constraint = "None"
 
-    # 1. Extract data from all completed runs
     for sf in summary_files:
         text = sf.read_text(encoding="utf-8")
         run_name = sf.parent.parent.name
         
-        # Time Metrics
         m_time = re.search(r"Total Time Elapsed:\s*([\d.]+)", text)
         if m_time: total_time += float(m_time.group(1))
         
         m_batch = re.search(r"Batches Completed:\s*(\d+)", text)
         if m_batch: total_batches += int(m_batch.group(1))
         
-        # Yield Metrics
         m_valid = re.search(r"Valid:\s*(\d+)", text)
         if m_valid: total_valid += int(m_valid.group(1))
         
@@ -137,7 +145,6 @@ def generate_global_training_summary(zycos_path: Path, current_run_idx: int, tot
         m_hist = re.search(r"Total candidates in history:\s*(\d+)", text)
         if m_hist: total_netlists += int(m_hist.group(1))
         
-        # Best Fitness Tracker
         m_fit = re.search(r"Overall Best Fitness:\s*([\d.-]+)\s*\(([^)]+)\)", text)
         m_constraint = re.search(r"Constraint Index:\s*(\d+)", text)
         
@@ -149,14 +156,12 @@ def generate_global_training_summary(zycos_path: Path, current_run_idx: int, tot
                 global_best_run = run_name
                 global_best_constraint = m_constraint.group(1) if m_constraint else "Unknown"
 
-    # 2. Calculate Averages
     avg_time_per_run = total_time / len(summary_files) if summary_files else 0
     avg_time_per_batch = total_time / total_batches if total_batches > 0 else 0
     avg_time_per_netlist = total_time / total_netlists if total_netlists > 0 else 0
     global_validity = (total_valid / total_netlists * 100) if total_netlists > 0 else 0
     runs_remaining = total_runs - current_run_idx
 
-    # 3. Format the Master Summary
     master_text = f"""=== GLOBAL TRAINING RUN SUMMARY: {zycos_path.name} ===
 Progress: {current_run_idx} / {total_runs} Runs Completed ({runs_remaining} remaining)
 
@@ -178,7 +183,6 @@ Best Candidate: {global_best_cand}
 Found in: {global_best_run} (Constraint: {global_best_constraint})
 ==================================================
 """
-    # 4. Save to the root of the zycos folder
     out_path = zycos_path / "training_run_summary.txt"
     out_path.write_text(master_text, encoding="utf-8")
 
@@ -218,24 +222,23 @@ def epsilon_greedy_topk_sample_parents(
 ) -> List[Dict]:
     """
     Select parents using epsilon-greedy Top-K softmax.
-
-    Exploitation:
-        With probability 1 - epsilon, sample from the Top-K candidates
-        using temperature-scaled softmax over fitness.
-
-    Exploration:
-        With probability epsilon, randomly sample from the long-tail
-        candidates outside Top-K.
-
-    Depth is only used for lineage tracking and is not used for selection.
     """
     if len(history) < k:
         raise RuntimeError(f"Not enough history states to sample {k} parents.")
 
     rng = random.Random(seed)
 
+    # --- Filter out Topological Duplicates ---
+    unique_history = []
+    seen_hashes = set()
+    for item in history:
+        thash = item.get("topo_hash", item["netlist_id"]) # Fallback if hash missing
+        if thash not in seen_hashes:
+            seen_hashes.add(thash)
+            unique_history.append(item)
+
     sorted_history = sorted(
-        history,
+        unique_history,
         key=lambda item: float(item["fitness"]),
         reverse=True,
     )
@@ -256,7 +259,7 @@ def epsilon_greedy_topk_sample_parents(
             item for item in long_tail_pool
             if item["netlist_id"] not in selected_ids
         ]
-        # Epsilon-greedy 
+        
         use_exploration = (
             bool(available_tail)
             and rng.random() < epsilon
@@ -266,7 +269,6 @@ def epsilon_greedy_topk_sample_parents(
             chosen = rng.choice(available_tail)
             selection_mode = "epsilon_random_long_tail"
         else:
-            #exploitation / top-K softmax 
             candidate_pool = available_top if available_top else available_tail
             if not candidate_pool:
                 break
@@ -312,8 +314,8 @@ def run_eval_pipeline(
 
 
 def run_single(
-    run_idx: int,          # constraint index
-    local_run_idx: int,    # run counter
+    run_idx: int,          
+    local_run_idx: int,    
     zycos_name: str,
     llm,
     val,
@@ -420,6 +422,43 @@ def run_single(
             }
 
         print(f"Generated {len(written) if written else 0} netlists.")
+
+        # --- NEW: Extract from raw_output.txt and use net_writer to save .net files ---
+        candidate_texts = []
+        raw_file = Path("pipeline") / "data" / current_batch_id / "raw_output.txt"
+        
+        # Pull text from the file LLM_API created
+        if raw_file.exists():
+            text = raw_file.read_text(encoding="utf-8")
+            blocks = re.split(r"={10,}\n\s*CANDIDATE \d+\s*\n={10,}\n", text)
+            candidate_texts = [b.strip() for b in blocks[1:] if b.strip()]
+            
+        if candidate_texts:
+            # Reconstruct the expected custom names map (e.g. g1_cand1, g2_cand2)
+            custom_names = []
+            for g_id in group_to_parent.keys():
+                for c_idx in range(1, OUTPUTS_PER_PARENT + 1):
+                    custom_names.append(f"{g_id}_cand{c_idx}")
+                    
+            if len(custom_names) == len(candidate_texts):
+                # Format constraint label (e.g., "00_Phase_2_80V_to_9V...")
+                label_raw = constraint.get("_comment", f"Topology_{run_idx}")
+                clean_label = "00_" + re.sub(r'[^a-zA-Z0-9]', '_', label_raw)
+                clean_label = re.sub(r'_+', '_', clean_label).strip('_')
+                
+                print(f"Saving {len(candidate_texts)} .net files to LLM_output...")
+                write_netlists(
+                    netlists=candidate_texts,
+                    constraint=constraint,
+                    label=clean_label,
+                    batchID=current_batch_id,
+                    custom_names=custom_names
+                )
+            else:
+                print(f"⚠️ Mismatch: {len(custom_names)} custom names vs {len(candidate_texts)} texts. Skipping net_writer.")
+        else:
+            print("⚠️ No candidate texts found in raw_output.txt to save.")
+        # -----------------------------------------------------------------------------
 
         run_eval_pipeline(
             batch_id=current_batch_id,
