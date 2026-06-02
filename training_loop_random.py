@@ -5,6 +5,7 @@ import re
 import time
 from pathlib import Path
 from typing import Dict, List, Optional
+import torch
 
 from pipeline.llm_topology_generation.llm_api import TopologyLLM
 from pipeline.netlist_validation.validator import validator
@@ -42,11 +43,18 @@ def get_next_zycos_folder(data_dir: Path) -> str:
 def load_reward_data(batch_id: str) -> Dict:
     """Load reward_results.json for a batch."""
     path = Path("pipeline") / "data" / batch_id / "reward_results.json"
+    
+    # 🛡️ SAFETY NET 1: Missing File Trap
     if not path.exists():
-        raise FileNotFoundError(f"Missing reward file: {path}")
+        print(f"⚠️ Missing reward file: {path}. Treating batch as empty/failed.")
+        return {"circuits": {}}
 
-    with path.open("r", encoding="utf-8") as f:
-        return json.load(f)
+    try:
+        with path.open("r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"⚠️ Error reading reward file {path}: {e}")
+        return {"circuits": {}}
 
 
 def parse_group_id(netlist_id: str) -> Optional[str]:
@@ -222,9 +230,11 @@ def epsilon_greedy_topk_sample_parents(
 ) -> List[Dict]:
     """
     Select parents using epsilon-greedy Top-K softmax.
+    Includes a fallback to sample with replacement from unique topologies 
+    if we run out of unique candidates.
     """
-    if len(history) < k:
-        raise RuntimeError(f"Not enough history states to sample {k} parents.")
+    if not history:
+        raise RuntimeError("History is completely empty. Cannot sample parents.")
 
     rng = random.Random(seed)
 
@@ -242,6 +252,7 @@ def epsilon_greedy_topk_sample_parents(
         key=lambda item: float(item["fitness"]),
         reverse=True,
     )
+    
     # top-k netlists
     top_k_pool = sorted_history[:max(1, min(top_k, len(sorted_history)))]
     long_tail_pool = sorted_history[len(top_k_pool):]
@@ -260,36 +271,36 @@ def epsilon_greedy_topk_sample_parents(
             if item["netlist_id"] not in selected_ids
         ]
         
-        use_exploration = (
-            bool(available_tail)
-            and rng.random() < epsilon
-        )
-
-        if use_exploration:
-            chosen = rng.choice(available_tail)
-            selection_mode = "epsilon_random_long_tail"
+        # --- THE FIX: Sample from Unique History with Replacement ---
+        if not available_top and not available_tail:
+            # We have exhausted all unique topologies!
+            # Fallback: Pick randomly from the unique champions we already found.
+            chosen = rng.choice(sorted_history)
+            selection_mode = "fallback_duplicate_unique"
+        # ----------------------------------------------------------
         else:
-            candidate_pool = available_top if available_top else available_tail
-            if not candidate_pool:
-                break
-
-            chosen = _softmax_sample_from_pool(
-                pool=candidate_pool,
-                temperature=temperature,
-                rng=rng,
+            use_exploration = (
+                bool(available_tail)
+                and rng.random() < epsilon
             )
-            selection_mode = "topk_softmax"
+
+            if use_exploration:
+                chosen = rng.choice(available_tail)
+                selection_mode = "epsilon_random_long_tail"
+            else:
+                candidate_pool = available_top if available_top else available_tail
+                chosen = _softmax_sample_from_pool(
+                    pool=candidate_pool,
+                    temperature=temperature,
+                    rng=rng,
+                )
+                selection_mode = "topk_softmax"
 
         chosen = dict(chosen)
         chosen["selection_mode"] = selection_mode
 
         selected.append(chosen)
         selected_ids.add(chosen["netlist_id"])
-
-    if len(selected) < k:
-        raise RuntimeError(
-            f"Only selected {len(selected)} parents, but required {k}."
-        )
 
     return selected
 
@@ -365,65 +376,86 @@ def run_single(
         current_batch_id = f"{zycos_name}/{run_folder_name}/batch_{batch_idx}"
         print(f"\n--- Processing {current_batch_id} ---")
 
-        if batch_idx == 1:
-            seed_parent_ids = [
-                f"seed_prompt_{i}"
-                for i in range(1, SEED_PROMPTS + 1)
-            ]
+        # 🛡️ SAFETY NET 2: LLM Generation PyTorch/OOM Error Trap
+        max_retries = 3
+        generation_success = False
+        written = None
+        group_to_parent = {}
+        
+        for attempt in range(max_retries):
+            try:
+                if batch_idx == 1:
+                    seed_parent_ids = [
+                        f"seed_prompt_{i}"
+                        for i in range(1, SEED_PROMPTS + 1)
+                    ]
 
-            print("Generating seed groups...")
-            written = llm.generate_grouped_for_batch(
-                constraint=constraint,
-                batchID=current_batch_id,
-                parent_ids=seed_parent_ids,
-                previous_batch_id=None,
-                outputs_per_parent=OUTPUTS_PER_PARENT,
-                DEMO=False,
-            )
-
-            group_to_parent = {
-                f"g{i}": None
-                for i in range(1, SEED_PROMPTS + 1)
-            }
-
-        else:
-            print("Generating children from selected parents...")
-
-            if hasattr(llm, "generate_grouped_for_parent_entries"):
-                written = llm.generate_grouped_for_parent_entries(
-                    constraint=constraint,
-                    batchID=current_batch_id,
-                    parent_entries=selected_parents,
-                    outputs_per_parent=OUTPUTS_PER_PARENT,
-                    DEMO=True,
-                )
-            else:
-                parent_batches = {p["batch_id"] for p in selected_parents}
-                if len(parent_batches) != 1:
-                    raise RuntimeError(
-                        "Selected parents come from different batches. "
-                        "Please add llm.generate_grouped_for_parent_entries()."
+                    print("Generating seed groups...")
+                    written = llm.generate_grouped_for_batch(
+                        constraint=constraint,
+                        batchID=current_batch_id,
+                        parent_ids=seed_parent_ids,
+                        previous_batch_id=None,
+                        outputs_per_parent=OUTPUTS_PER_PARENT,
+                        DEMO=False,
                     )
 
-                previous_batch_id = selected_parents[0]["batch_id"]
+                    group_to_parent = {
+                        f"g{i}": None
+                        for i in range(1, SEED_PROMPTS + 1)
+                    }
+                else:
+                    print("Generating children from selected parents...")
+                    if hasattr(llm, "generate_grouped_for_parent_entries"):
+                        written = llm.generate_grouped_for_parent_entries(
+                            constraint=constraint,
+                            batchID=current_batch_id,
+                            parent_entries=selected_parents,
+                            outputs_per_parent=OUTPUTS_PER_PARENT,
+                            DEMO=True,
+                        )
+                    else:
+                        parent_batches = {p["batch_id"] for p in selected_parents}
+                        if len(parent_batches) != 1:
+                            raise RuntimeError("Selected parents come from different batches.")
+                        previous_batch_id = selected_parents[0]["batch_id"]
 
-                written = llm.generate_grouped_for_batch(
-                    constraint=constraint,
-                    batchID=current_batch_id,
-                    parent_ids=[p["netlist_id"] for p in selected_parents],
-                    previous_batch_id=previous_batch_id,
-                    outputs_per_parent=OUTPUTS_PER_PARENT,
-                    DEMO=True,
-                )
+                        written = llm.generate_grouped_for_batch(
+                            constraint=constraint,
+                            batchID=current_batch_id,
+                            parent_ids=[p["netlist_id"] for p in selected_parents],
+                            previous_batch_id=previous_batch_id,
+                            outputs_per_parent=OUTPUTS_PER_PARENT,
+                            DEMO=True,
+                        )
 
-            group_to_parent = {
-                f"g{i}": parent
-                for i, parent in enumerate(selected_parents, start=1)
-            }
+                    group_to_parent = {
+                        f"g{i}": parent
+                        for i, parent in enumerate(selected_parents, start=1)
+                    }
+                
+                generation_success = True
+                break  # Exit retry loop on success
+
+            except RuntimeError as e:
+                if "out of memory" in str(e).lower():
+                    print(f"⚠️ CUDA OOM during LLM generation (Attempt {attempt + 1}/{max_retries}). Clearing cache...")
+                    if torch.cuda.is_available():
+                        torch.cuda.empty_cache()
+                else:
+                    print(f"⚠️ PyTorch error during LLM Generation: {e}")
+                time.sleep(5)
+            except Exception as e:
+                print(f"⚠️ LLM Generation failed (Attempt {attempt + 1}/{max_retries}): {e}")
+                time.sleep(5)
+                
+        if not generation_success:
+            print(f"❌ LLM failed to generate after {max_retries} attempts. Skipping batch {batch_idx}.")
+            continue # Allows the loop to skip to the next batch instead of crashing
 
         print(f"Generated {len(written) if written else 0} netlists.")
 
-        # --- NEW: Extract from raw_output.txt and use net_writer to save .net files ---
+        # --- Extract from raw_output.txt and use net_writer to save .net files ---
         candidate_texts = []
         raw_file = Path("pipeline") / "data" / current_batch_id / "raw_output.txt"
         
@@ -434,26 +466,28 @@ def run_single(
             candidate_texts = [b.strip() for b in blocks[1:] if b.strip()]
             
         if candidate_texts:
-            # Reconstruct the expected custom names map (e.g. g1_cand1, g2_cand2)
             custom_names = []
             for g_id in group_to_parent.keys():
                 for c_idx in range(1, OUTPUTS_PER_PARENT + 1):
                     custom_names.append(f"{g_id}_cand{c_idx}")
                     
             if len(custom_names) == len(candidate_texts):
-                # Format constraint label (e.g., "00_Phase_2_80V_to_9V...")
                 label_raw = constraint.get("_comment", f"Topology_{run_idx}")
                 clean_label = "00_" + re.sub(r'[^a-zA-Z0-9]', '_', label_raw)
                 clean_label = re.sub(r'_+', '_', clean_label).strip('_')
                 
                 print(f"Saving {len(candidate_texts)} .net files to LLM_output...")
-                write_netlists(
-                    netlists=candidate_texts,
-                    constraint=constraint,
-                    label=clean_label,
-                    batchID=current_batch_id,
-                    custom_names=custom_names
-                )
+                # 🛡️ SAFETY NET 3: Netlist Writer Exception Trap
+                try:
+                    write_netlists(
+                        netlists=candidate_texts,
+                        constraint=constraint,
+                        label=clean_label,
+                        batchID=current_batch_id,
+                        custom_names=custom_names
+                    )
+                except Exception as e:
+                    print(f"⚠️ Error writing netlists for {current_batch_id}: {e}")
             else:
                 print(f"⚠️ Mismatch: {len(custom_names)} custom names vs {len(candidate_texts)} texts. Skipping net_writer.")
         else:
@@ -470,10 +504,21 @@ def run_single(
         )
 
         print("Running GRPO RL update...")
-        grpo.update_from_batch(
-            batch_id=current_batch_id,
-            max_samples=None,
-        )
+        # 🛡️ SAFETY NET 4: GRPO Update PyTorch/OOM Trap
+        try:
+            grpo.update_from_batch(
+                batch_id=current_batch_id,
+                max_samples=None,
+            )
+        except RuntimeError as e:
+            if "out of memory" in str(e).lower():
+                print(f"⚠️ CUDA OOM during GRPO update for batch {batch_idx}. Clearing cache and skipping update.")
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+            else:
+                print(f"⚠️ GRPO Update failed with PyTorch error: {e}")
+        except Exception as e:
+            print(f"⚠️ GRPO Update failed: {e}")
 
         add_batch_to_history(
             history=history,
