@@ -457,7 +457,24 @@ class RLUpdater:
             kl_term = torch.tensor(0.0, device=self._device())
             ref_lp = stats["ref_log_prob_mean"]
             if ref_lp is not None:
-                kl_term = seq_log_prob - ref_lp
+                # Schulman k3 estimator of KL(policy || ref): always >= 0 and,
+                # crucially, with the CORRECT gradient that pulls the policy
+                # back toward the reference. The previous naive term
+                # (seq_log_prob - ref_lp) is the wrong KL estimator as a loss:
+                # minimising it merely drives log pi(y) downward, suppressing
+                # the policy's own completions. That produced a runaway
+                # NEGATIVE kl_loss (-15 -> -24 over a run) and collapsing
+                # completion log-probs (-16 -> -26). ref_lp is detached, so the
+                # gradient flows only through seq_log_prob. The clamp only
+                # guards exp() against fp32 overflow; it is set wide (+/-20) so
+                # that realistic divergences -- e.g. a checkpoint already at
+                # log pi ~ -16 vs ref ~ -1, i.e. log_ratio ~ 15 -- stay inside
+                # the gradient-flowing region and can be pulled back, instead
+                # of saturating (a tighter clamp would zero the gradient
+                # exactly where the pull-back is most needed). The optimizer's
+                # grad-norm clip bounds the resulting step.
+                log_ratio = (ref_lp - seq_log_prob).clamp(-20.0, 20.0)
+                kl_term = torch.exp(log_ratio) - log_ratio - 1.0
 
             entropy_term = torch.tensor(0.0, device=self._device())
             ent = stats["entropy_mean"]
