@@ -124,6 +124,7 @@ def plot_run_results(run_dir):
 
         val_count = sum(1 for v in val_data.values() if v.get('passed', False))
         valid_counts.append(val_count)
+        unique_valid_counts.append(batch_unique_valid)
 
         # Calculate Uniqueness Rate up to this batch
         c_unique = len(global_seen_hashes)
