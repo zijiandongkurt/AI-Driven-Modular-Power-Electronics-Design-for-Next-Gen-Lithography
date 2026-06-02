@@ -79,7 +79,13 @@ def plot_run_results(run_dir):
         new_cands = {}
         b_fit_batch = [] # Only the fitness of circuits IN THIS BATCH
         batch_unique_valid = 0
-        
+        val_data = {}
+
+        # Read Validation Yield first so val_data is available during reward processing
+        if os.path.exists(valid_file):
+            with open(valid_file, 'r') as f:
+                val_data = json.load(f)
+
         # Read Rewards and Metrics
         if os.path.exists(reward_file):
             with open(reward_file, 'r') as f:
@@ -116,13 +122,9 @@ def plot_run_results(run_dir):
                                 if val_data.get(cid, {}).get("passed", False):
                                     batch_unique_valid += 1
 
-        # Read Validation Yield
-        val_count = 0
-        if os.path.exists(valid_file):
-            with open(valid_file, 'r') as f:
-                val_data = json.load(f)
-                val_count = sum(1 for v in val_data.values() if v.get('passed', False))
+        val_count = sum(1 for v in val_data.values() if v.get('passed', False))
         valid_counts.append(val_count)
+        unique_valid_counts.append(batch_unique_valid)
 
         # Calculate Uniqueness Rate up to this batch
         c_unique = len(global_seen_hashes)

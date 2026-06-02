@@ -1,0 +1,61 @@
+=== TRAINING SUMMARY: Run_001 ===
+Constraint Index: 1
+Batches Completed: 10 / 10
+Total Time Elapsed: 1593.92 sec (26.57 min)
+Average Time per Batch: 159.39 sec
+Average Time per Netlist: 13.39 sec
+
+--- TOPOLOGY YIELD (entire run) ---
+Valid:   12
+Invalid: 119
+Total candidates in history: 119
+Unique Topologies: 39
+Exact Duplicates:  80
+Uniqueness Rate:   32.8%
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.8238 (00_Phase_2_5V_to_48V_Phantom_Power_Boost_1_9_6_g3_cand2_b3)
+  Batch 1 Best: 0.5451 (00_Phase_2_5V_to_48V_Phantom_Power_Boost_1_9_6_g1_cand3_b1)
+  Batch 2 Best: 0.5451 (00_Phase_2_5V_to_48V_Phantom_Power_Boost_1_9_6_g1_cand3_b1)
+  Batch 3 Best: 0.8238 (00_Phase_2_5V_to_48V_Phantom_Power_Boost_1_9_6_g3_cand2_b3)
+  Batch 4 Best: 0.8238 (00_Phase_2_5V_to_48V_Phantom_Power_Boost_1_9_6_g3_cand2_b3)
+  Batch 5 Best: 0.8238 (00_Phase_2_5V_to_48V_Phantom_Power_Boost_1_9_6_g3_cand2_b3)
+  Batch 6 Best: 0.8238 (00_Phase_2_5V_to_48V_Phantom_Power_Boost_1_9_6_g3_cand2_b3)
+  Batch 7 Best: 0.8238 (00_Phase_2_5V_to_48V_Phantom_Power_Boost_1_9_6_g3_cand2_b3)
+  Batch 8 Best: 0.8238 (00_Phase_2_5V_to_48V_Phantom_Power_Boost_1_9_6_g3_cand2_b3)
+  Batch 9 Best: 0.8238 (00_Phase_2_5V_to_48V_Phantom_Power_Boost_1_9_6_g3_cand2_b3)
+  Batch 10 Best: 0.8238 (00_Phase_2_5V_to_48V_Phantom_Power_Boost_1_9_6_g3_cand2_b3)
+
+--- BEST NETLIST METRICS ---
+Output Voltage: 26.9469 V
+Efficiency:     0.8878
+Total Volume:   30.7409 cm^3
+
+=========================================
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-06-02T14:48:35
+* Constraint: Phase 2: 5V to 48V Phantom Power (Boost - 1:9.6)
+*   vin_min = 4.5
+*   vin_max = 5.5
+*   vout_target = 48
+*   efficiency_target = 0.85
+*   power_in = 60
+* Candidate: 8 of 12
+* Grouped name: g3_cand2
+*
+* 5V to 6V boost, D=833m, t_on=8.33u
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 6
+Vgate gate 0 PULSE(0 12 0 1n 1n 8.33u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+

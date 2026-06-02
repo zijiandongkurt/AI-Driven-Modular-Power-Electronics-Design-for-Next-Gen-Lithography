@@ -1,0 +1,51 @@
+=== TRAINING SUMMARY: Run_005 ===
+Constraint Index: 11
+Batches Completed: 1 / 10
+Total Time Elapsed: 120.32 sec (2.01 min)
+Average Time per Batch: 120.32 sec
+Average Time per Netlist: 10.03 sec
+
+--- TOPOLOGY YIELD (entire run) ---
+Valid:   12
+Invalid: 12
+Total candidates in history: 12
+Unique Topologies: 2
+Exact Duplicates:  10
+Uniqueness Rate:   16.7%
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.7672 (00_Phase_2_12V_to_48V_Audio_Amp_Boost_High_Pwr_g1_cand1_b1)
+  Batch 1 Best: 0.7672 (00_Phase_2_12V_to_48V_Audio_Amp_Boost_High_Pwr_g1_cand1_b1)
+
+--- BEST NETLIST METRICS ---
+Output Voltage: 32.4809 V
+Efficiency:     0.7518
+Total Volume:   10000.0000 cm^3
+
+=========================================
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-06-02T16:25:21
+* Constraint: Phase 2: 12V to 48V Audio Amp (Boost - High Pwr)
+*   vin_min = 11
+*   vin_max = 15
+*   vout_target = 48
+*   efficiency_target = 0.9
+*   power_in = 150
+* Candidate: 1 of 12
+* Grouped name: g1_cand1
+*
+Vin in 0 15
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 3.2
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+
