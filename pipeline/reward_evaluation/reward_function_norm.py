@@ -11,7 +11,7 @@ from pathlib import Path
 
 LOSS_CAP = {
     "voltage_tracking_loss": 100.0,   # (5V - 0V)^2 * weight=10 = 250 worst case; cap lower
-    "efficiency_loss":        20.0,   # max penalty_efficiency=1.0 * weight=20
+    "efficiency_loss":        1.0,   # max penalty_efficiency=1.0 
     "volume_loss":           100.0,   # cap raw volume contribution
     "component_cost_loss":    10.0,   # max ~10 components * weight=1
 }
