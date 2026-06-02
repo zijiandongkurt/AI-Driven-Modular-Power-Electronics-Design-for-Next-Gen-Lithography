@@ -52,7 +52,6 @@ VALIDATION_CHECK_WEIGHTS = {
 class RewardFunctionNorm:
     def __init__(self):
         self.MAX_PENALTY = 10000.0
-        LOSS_CAP["volume_loss"] = self.MAX_PENALTY
 
     # ── Validation reward (invalid topologies) ───────────────────────────
 
