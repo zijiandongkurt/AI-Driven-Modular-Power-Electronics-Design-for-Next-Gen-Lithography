@@ -52,6 +52,7 @@ VALIDATION_CHECK_WEIGHTS = {
 class RewardFunctionNorm:
     def __init__(self):
         self.MAX_PENALTY = 10000.0
+        LOSS_CAP["volume_loss"] = self.MAX_PENALTY
 
     # ── Validation reward (invalid topologies) ───────────────────────────
 
@@ -127,31 +128,27 @@ class RewardFunctionNorm:
             comp_weights.get('capacitor', 1.0) * count_capacitors
         )
 
-        # --- Apply top-level weights ---
-        loss_v_out      = weights.get('v_out', 1.0)           * penalty_v_out
-        loss_efficiency = weights.get('efficiency', 1.0)      * penalty_efficiency
-        loss_volume     = weights.get('volume', 1.0)          * penalty_volume
-        loss_components = weights.get('component_cost', 1.0)  * penalty_components
-
         # --- Normalize each term to [0, 1] using per-component caps ---
-        norm_v_out      = min(loss_v_out      / LOSS_CAP["voltage_tracking_loss"], 1.0)
-        norm_efficiency = min(loss_efficiency / LOSS_CAP["efficiency_loss"],       1.0)
-        norm_volume     = min(loss_volume     / LOSS_CAP["volume_loss"],           1.0)
-        norm_components = min(loss_components / LOSS_CAP["component_cost_loss"],   1.0)
+        norm_v_out      = min(penalty_v_out      / LOSS_CAP["voltage_tracking_loss"], 1.0)
+        norm_efficiency = min(penalty_efficiency / LOSS_CAP["efficiency_loss"],       1.0)
+        norm_volume     = min(penalty_volume     / LOSS_CAP["volume_loss"],           1.0)
+        norm_components = min(penalty_components / LOSS_CAP["component_cost_loss"],   1.0)
 
-        # --- Weighted sum of normalized terms → total in [0, 1] ---
+        # --- Apply top-level weights ---
+        loss_v_out      = weights.get('v_out', 1.0)           * norm_v_out
+        loss_efficiency = weights.get('efficiency', 1.0)      * norm_efficiency
+        loss_volume     = weights.get('volume', 1.0)          * norm_volume
+        loss_components = weights.get('component_cost', 1.0)  * norm_components
+        
+        # --- calculate total weight ---
         total_w = (
             weights.get('v_out', 1.0) +
             weights.get('efficiency', 1.0) +
             weights.get('volume', 1.0) +
             weights.get('component_cost', 1.0)
         )
-        total_loss = (
-            weights.get('v_out', 1.0)          * norm_v_out +
-            weights.get('efficiency', 1.0)     * norm_efficiency +
-            weights.get('volume', 1.0)         * norm_volume +
-            weights.get('component_cost', 1.0) * norm_components
-        ) / max(total_w, 1e-8)
+        # sum up normalized losses and divide by total weight to keep in [0, 1]
+        total_loss = (loss_v_out + loss_efficiency + loss_volume + loss_components) / max(total_w, 1e-8)
 
         # Clamp final loss to [0, 1]
         total_loss = float(np.clip(total_loss, 0.0, 1.0))
@@ -225,7 +222,7 @@ class RewardFunctionNorm:
 
         mean = values.mean()
         std  = max(values.std(), 1e-8)
-        normalized = np.clip((values - mean) / std, -1.0, 1.0)
+        normalized = np.clip((values - mean) / std, -4.0, 4.0)
 
         return {name: float(normalized[i]) for i, name in enumerate(names)}
 
