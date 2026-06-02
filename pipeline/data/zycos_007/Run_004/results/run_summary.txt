@@ -1,0 +1,61 @@
+=== TRAINING SUMMARY: Run_004 ===
+Constraint Index: 14
+Batches Completed: 10 / 10
+Total Time Elapsed: 1387.60 sec (23.13 min)
+Average Time per Batch: 138.76 sec
+Average Time per Netlist: 11.56 sec
+
+--- TOPOLOGY YIELD (entire run) ---
+Valid:   12
+Invalid: 120
+Total candidates in history: 120
+Unique Topologies: 19
+Exact Duplicates:  101
+Uniqueness Rate:   15.8%
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.7893 (00_Phase_2_24V_to_5V_High_Current_Buck_g1_cand3_b9)
+  Batch 1 Best: 0.7172 (00_Phase_2_24V_to_5V_High_Current_Buck_g2_cand1_b1)
+  Batch 2 Best: 0.7879 (00_Phase_2_24V_to_5V_High_Current_Buck_g3_cand3_b2)
+  Batch 3 Best: 0.7879 (00_Phase_2_24V_to_5V_High_Current_Buck_g3_cand3_b2)
+  Batch 4 Best: 0.7879 (00_Phase_2_24V_to_5V_High_Current_Buck_g3_cand3_b2)
+  Batch 5 Best: 0.7879 (00_Phase_2_24V_to_5V_High_Current_Buck_g3_cand3_b2)
+  Batch 6 Best: 0.7879 (00_Phase_2_24V_to_5V_High_Current_Buck_g3_cand3_b2)
+  Batch 7 Best: 0.7893 (00_Phase_2_24V_to_5V_High_Current_Buck_g4_cand1_b7)
+  Batch 8 Best: 0.7893 (00_Phase_2_24V_to_5V_High_Current_Buck_g4_cand1_b7)
+  Batch 9 Best: 0.7893 (00_Phase_2_24V_to_5V_High_Current_Buck_g1_cand3_b9)
+  Batch 10 Best: 0.7893 (00_Phase_2_24V_to_5V_High_Current_Buck_g1_cand3_b9)
+
+--- BEST NETLIST METRICS ---
+Output Voltage: 5.3428 V
+Efficiency:     0.3207
+Total Volume:   10000.0000 cm^3
+
+=========================================
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-06-02T16:20:49
+* Constraint: Phase 2: 24V to 5V High Current (Buck)
+*   vin_min = 20
+*   vin_max = 28
+*   vout_target = 5
+*   efficiency_target = 0.89
+*   power_in = 120
+* Candidate: 3 of 12
+* Grouped name: g1_cand3
+*
+* 20V to 5V Buck, 120W
+Vin in 0 20
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.278
+Vgate gate 0 PULSE(0 12 0 1n 1n 8.33u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+
