@@ -1,0 +1,26 @@
+* OVERALL BEST CANDIDATE: 00_Phase_2_12V_to_72V_Custom_Boost_g1_cand1_b2
+* FITNESS SCORE: 0.9680
+*
+* Generated: 2026-06-02T21:06:26
+* Constraint: Phase 2: 12V to 72V Custom (Boost)
+*   vin_min = 10
+*   vin_max = 14
+*   vout_target = 72
+*   efficiency_target = 0.88
+*   power_in = 150
+* Candidate: 1 of 12
+* Grouped name: g1_cand1
+*
+* 12V to 72V Boost, D=1-72/12=800m, t_on=8u, Rload=72^2/150=34.56
+Vin in 0 12
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 34.56
+Vgate gate 0 PULSE(0 12 0 1n 1n 8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
