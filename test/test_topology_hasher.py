@@ -9,6 +9,16 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from pipeline.utility.topology_hasher import get_topological_hash
 
+# --- BASELINE NETLIST ---
+BASELINE_NETLIST = """* 12V to 5V Buck Converter
+Vin in 0 12
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 10
+"""
+
 def test_identical_netlists():
     netlist = """
     L1 in sw 47u
@@ -105,4 +115,40 @@ def test_formatting_variations():
     netlist_messy = "  r1 \t IN   OuT \t\t 10K  "
     
     assert get_topological_hash(netlist_neat) == get_topological_hash(netlist_messy), "Whitespace, tabs, and capitalization must not alter the hash"
+
+def test_hasher_spice_value_equivalency():
+    """Ensure the hasher understands that 47u and 47e-6 are physically identical."""
+    netlist_a = BASELINE_NETLIST
+    
+    # Change 47u to scientific notation, and 220u to millifarads
+    netlist_b = BASELINE_NETLIST.replace("47u", "47e-6").replace("220u", "0.22m")
+    
+    hash_a = get_topological_hash(netlist_a)
+    hash_b = get_topological_hash(netlist_b)
+    
+    assert hash_a == hash_b, "Hasher failed: It treated '47u' and '47e-6' as different circuits!"
+
+def test_hasher_mosfet_param_ordering():
+    """Ensure the hasher isn't fooled by the LLM swapping the order of MOSFET parameters."""
+    netlist_a = BASELINE_NETLIST
+    
+    # Swap 'W=1 L=1' to 'L=1 W=1'
+    netlist_b = BASELINE_NETLIST.replace("W=1 L=1", "L=1 W=1")
+    
+    hash_a = get_topological_hash(netlist_a)
+    hash_b = get_topological_hash(netlist_b)
+    
+    assert hash_a == hash_b, "Hasher failed: It treated 'W=1 L=1' and 'L=1 W=1' as different circuits!"
+
+def test_hasher_multi_gate_masking():
+    """Ensure the hasher masks ANY valid gate name (gate, gate_hi, gate1) universally."""
+    netlist_a = BASELINE_NETLIST
+    
+    # Rename 'gate' to 'gate_hi' everywhere in the circuit
+    netlist_b = BASELINE_NETLIST.replace(" gate ", " gate_hi ")
+    
+    hash_a = get_topological_hash(netlist_a)
+    hash_b = get_topological_hash(netlist_b)
+    
+    assert hash_a == hash_b, "Hasher failed: It treated 'gate' and 'gate_hi' as different structural nodes!"
 
