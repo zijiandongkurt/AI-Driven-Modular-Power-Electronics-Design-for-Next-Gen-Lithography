@@ -85,7 +85,10 @@ def add_batch_to_history(
         topo_hash = "unknown"
         if net_path.exists():
             net_text = net_path.read_text(encoding="utf-8")
-            topo_hash = get_topological_hash(net_text)
+            try:
+                topo_hash = get_topological_hash(net_text)
+            except (ValueError, Exception):
+                topo_hash = f"invalid_{netlist_id}"
 
         group_id = parse_group_id(netlist_id)
         parent = group_to_parent.get(group_id)
@@ -494,14 +497,18 @@ def run_single(
             print("⚠️ No candidate texts found in raw_output.txt to save.")
         # -----------------------------------------------------------------------------
 
-        run_eval_pipeline(
-            batch_id=current_batch_id,
-            val=val,
-            simulator=simulator,
-            reward_fn=reward_fn,
-            constraint=constraint,
-            weights=weights,
-        )
+        try:
+            run_eval_pipeline(
+                batch_id=current_batch_id,
+                val=val,
+                simulator=simulator,
+                reward_fn=reward_fn,
+                constraint=constraint,
+                weights=weights,
+            )
+        except Exception as e:
+            print(f"⚠️ Eval pipeline failed for batch {batch_idx}: {e}. Skipping.")
+            continue
 
         print("Running GRPO RL update...")
         # 🛡️ SAFETY NET 4: GRPO Update PyTorch/OOM Trap
@@ -536,33 +543,41 @@ def run_single(
             batch_id=current_batch_id,
         )
 
-        run_id = f"{zycos_name}/{run_folder_name}"
-        plot_softmax_probabilities(
-            run_id=run_id,
-            target_batch=batch_idx + 1,
-            temperature=SOFTMAX_TEMPERATURE,
-            top_k=TOP_K,
-            epsilon=EPSILON,
-        )
-        plot_cumulative_probabilities(
-            run_id=run_id,
-            target_batch=batch_idx + 1,
-            temperature=SOFTMAX_TEMPERATURE,
-            top_k=TOP_K,
-            epsilon=EPSILON,
-        )
+        try:
+            run_id = f"{zycos_name}/{run_folder_name}"
+            plot_softmax_probabilities(
+                run_id=run_id,
+                target_batch=batch_idx + 1,
+                temperature=SOFTMAX_TEMPERATURE,
+                top_k=TOP_K,
+                epsilon=EPSILON,
+            )
+            plot_cumulative_probabilities(
+                run_id=run_id,
+                target_batch=batch_idx + 1,
+                temperature=SOFTMAX_TEMPERATURE,
+                top_k=TOP_K,
+                epsilon=EPSILON,
+            )
+        except Exception as e:
+            print(f"⚠️ Probability plots failed for batch {batch_idx}: {e}")
 
         print(f"History size: {len(history)} evaluated netlists")
 
         if batch_idx < N_batch:
-            selected_parents = epsilon_greedy_topk_sample_parents(
-                history=history,
-                k=PARENTS_PER_BATCH,
-                top_k=TOP_K,
-                epsilon=EPSILON,
-                temperature=SOFTMAX_TEMPERATURE,
-                seed=RANDOM_SEED + batch_idx,
-            )
+            try:
+                selected_parents = epsilon_greedy_topk_sample_parents(
+                    history=history,
+                    k=PARENTS_PER_BATCH,
+                    top_k=TOP_K,
+                    epsilon=EPSILON,
+                    temperature=SOFTMAX_TEMPERATURE,
+                    seed=RANDOM_SEED + batch_idx,
+                )
+            except RuntimeError as e:
+                print(f"⚠️ Parent selection failed: {e}. Using best available from history.")
+                sorted_history = sorted(history, key=lambda x: x["fitness"], reverse=True)
+                selected_parents = sorted_history[:min(PARENTS_PER_BATCH, len(sorted_history))]
 
             print("Selected parents for next batch:")
             for p in selected_parents:
