@@ -1,0 +1,23 @@
+* Generated: 2026-05-30T00:12:44
+* Constraint: Step-Down 4: 208V/277V Phase to 3.3V MCU
+*   vin_min = 208
+*   vin_max = 277
+*   vout_target = 3.3
+*   efficiency_target = 0.91
+*   power_in = 100
+* Candidate: 7 of 8
+* Grouped name: g2_cand3
+*
+* 208V to 3.3V Buck Converter
+Vin in 0 250
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 10u
+C1 out 0 470u
+Rload out 0 1.088
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

@@ -1,0 +1,24 @@
+* Generated: 2026-05-12T18:04:39
+* Constraint: 12V to 5V step-down
+*   vin_min = 12
+*   vin_max = 100
+*   vout_target = 5
+*   efficiency_target = 0.9
+*   power_in = 100
+* Candidate: 1 of 1
+*
+* Non-Isolated DC/DC Converter Design
+Vin 1 0 DC 12
+Rload 2 0 DC 5
+M1 3 4 2 1 NMOS
+M2 5 6 4 1 NMOS
+Vgate1 7 4 PWL(0 0 5ns 1 10ns 0)
+Vgate2 8 6 PWL(0 0 5ns 1 10ns 0)
+Rbleed2 4 0 1MEG
+Rbleed3 6 0 1MEG
+
+C1 2 4 1u
+L1 2 4 0.01H
+
+.tran 1n 5m
+.end

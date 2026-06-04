@@ -1,0 +1,39 @@
+* Generated: 2026-05-12T17:05:06
+* Constraint: 12V to 5V step-down
+*   vin_min = 12
+*   vin_max = 100
+*   vout_target = 5
+*   efficiency_target = 0.9
+*   power_in = 100
+* Candidate: 1 of 4
+*
+* Non-isolated 12V to 5V step-down converter
+Vin in 0 12
+Rload out 0 5
+Rbleed(sw1) 0 1Meg
+M1 sw1 gate1 0 0 10 0 NMOS
+M2 sw2 gate2 0 0 10 0 NMOS
+Vgate gate 0 PULSE(0 12 0 1n 1n 10ns 200us)
+D1 out sw1 1k
+L1 in gate 0 10uH
+C1 out 0 100u
+
+.end To address the given constraints while aiming for a higher efficiency and meeting the required nodes, we'll design a simple non-isolated buck converter. The goal is to achieve a step-down conversion from 12V to 5V with a target efficiency of 90% and a power input of 100W. Here's the SPICE netlist:
+
+* Non-isolated 12V to 5V step-down converter
+Vin in 0 12
+Rload out 0 5
+Rbleed(sw1) 0 1Meg
+M1 sw1 gate1 0 0 10 0 NMOS
+M2 sw2 gate2 0 0 10 0 NMOS
+Vgate gate 0 PULSE(0 12 0 1n 1n 10ns 200us)
+D1 out sw1 1k
+L1 in gate 0 10uH
+C1 out 0 100u
+M3 sw2 0 out 0 0 10 0 NMOS
+M4 sw1 0 out 0 0 10 0 NMOS
+C2 in 0 100u
+L2 gate 0 10uH
+Rbleed(sw2) 0 1Meg
+
+.end

@@ -1,0 +1,22 @@
+* Generated: 2026-05-17T13:59:49
+* Constraint: Step-Down 2: Commercial Mains to 12V
+*   vin_min = 220
+*   vin_max = 380
+*   vout_target = 12
+*   efficiency_target = 0.92
+*   power_in = 300
+* Candidate: 1 of 2
+*
+* 220V to 380V Wide Range Boost Converter
+Vin in 0 380
+M1 in gate sw 0 NMOS W=1 L=1
+D1 sw out DIODE
+L1 sw 0 100u
+C1 out 0 470u
+Rload out 0 12.5
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.5u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.save V(*) I(*)
+.end

@@ -1,0 +1,79 @@
+=== MCTS INFERENCE SUMMARY: Bench_Base_004 ===
+Batches Completed: 15 / 15
+Total Time Elapsed: 1359.35 sec (22.66 min)
+Average Time per Batch: 90.62 sec
+Average Time per Netlist: 11.33 sec
+Netlists Generated per Batch: 8
+
+--- SIMULATION PARAMETERS ---
+Sampled States per Batch: 2
+Candidates per Prompt: 4
+MCTS Temperature: 0.05
+LLM Max Tokens: 2048
+
+--- TOPOLOGY YIELD ---
+Total Candidates Generated: 120
+Valid Topologies: 116
+Invalid Topologies: 4
+Validity Rate: 96.7%
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.6929 (00_Step_Down_4_208V_277V_Phase_to_3_3V_MCU_cand1_b1)
+  Batch 1 Best DB Score: 0.6929 (00_Step_Down_4_208V_277V_Phase_to_3_3V_MCU_cand1_b1)
+  Batch 2 Best DB Score: 0.6929 (00_Step_Down_4_208V_277V_Phase_to_3_3V_MCU_cand1_b1)
+  Batch 3 Best DB Score: 0.6929 (00_Step_Down_4_208V_277V_Phase_to_3_3V_MCU_cand1_b1)
+  Batch 4 Best DB Score: 0.6929 (00_Step_Down_4_208V_277V_Phase_to_3_3V_MCU_cand1_b1)
+  Batch 5 Best DB Score: 0.6929 (00_Step_Down_4_208V_277V_Phase_to_3_3V_MCU_cand1_b1)
+  Batch 6 Best DB Score: 0.6929 (00_Step_Down_4_208V_277V_Phase_to_3_3V_MCU_cand1_b1)
+  Batch 7 Best DB Score: 0.6929 (00_Step_Down_4_208V_277V_Phase_to_3_3V_MCU_cand1_b1)
+  Batch 8 Best DB Score: 0.6929 (00_Step_Down_4_208V_277V_Phase_to_3_3V_MCU_cand1_b1)
+  Batch 9 Best DB Score: 0.6929 (00_Step_Down_4_208V_277V_Phase_to_3_3V_MCU_cand1_b1)
+  Batch 10 Best DB Score: 0.6929 (00_Step_Down_4_208V_277V_Phase_to_3_3V_MCU_cand1_b1)
+  Batch 11 Best DB Score: 0.6929 (00_Step_Down_4_208V_277V_Phase_to_3_3V_MCU_cand1_b1)
+  Batch 12 Best DB Score: 0.6929 (00_Step_Down_4_208V_277V_Phase_to_3_3V_MCU_cand1_b1)
+  Batch 13 Best DB Score: 0.6929 (00_Step_Down_4_208V_277V_Phase_to_3_3V_MCU_cand1_b1)
+  Batch 14 Best DB Score: 0.6929 (00_Step_Down_4_208V_277V_Phase_to_3_3V_MCU_cand1_b1)
+  Batch 15 Best DB Score: 0.6929 (00_Step_Down_4_208V_277V_Phase_to_3_3V_MCU_cand1_b1)
+
+=========================================
+--- BEST NETLIST METRICS ---
+Output Voltage: 2.7480 V
+Efficiency:     0.0318
+Total Volume:   10000.0000 cm^3
+
+--- COMPONENT BREAKDOWN ---
+MOSFETs (M): 1
+Diodes (D): 1
+Inductors (L): 1
+Capacitors (C): 1
+Resistors (R): 1
+Voltage Sources (V): 2
+----------------------
+Total Components: 7
+
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-05-30T01:21:58
+* Constraint: Step-Down 4: 208V/277V Phase to 3.3V MCU
+*   vin_min = 208
+*   vin_max = 277
+*   vout_target = 3.3
+*   efficiency_target = 0.91
+*   power_in = 100
+* Candidate: 1 of 8
+*
+* 208V to 3.3V Buck Converter
+Vin in 0 208
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.278
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.save V(*) I(*)
+.end
+
+

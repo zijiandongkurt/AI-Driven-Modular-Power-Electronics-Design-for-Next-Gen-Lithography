@@ -1,0 +1,58 @@
+=== TRAINING SUMMARY: Run_010 ===
+Constraint Index: 17
+Batches Completed: 10 / 10
+Total Time Elapsed: 982.95 sec (16.38 min)
+Average Time per Batch: 98.29 sec
+Average Time per Netlist: 12.29 sec
+
+--- TOPOLOGY YIELD (entire run) ---
+Valid:   80
+Invalid: 0
+Total candidates in history: 80
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.9494 (00_Phase_1_12V_to_36V_E_Bike_Boost_exact_1_3_g2_cand1_b3)
+  Batch 1 Best: 0.8076 (00_Phase_1_12V_to_36V_E_Bike_Boost_exact_1_3_g1_cand2_b1)
+  Batch 2 Best: 0.8292 (00_Phase_1_12V_to_36V_E_Bike_Boost_exact_1_3_g1_cand3_b2)
+  Batch 3 Best: 0.9494 (00_Phase_1_12V_to_36V_E_Bike_Boost_exact_1_3_g2_cand1_b3)
+  Batch 4 Best: 0.9494 (00_Phase_1_12V_to_36V_E_Bike_Boost_exact_1_3_g2_cand1_b3)
+  Batch 5 Best: 0.9494 (00_Phase_1_12V_to_36V_E_Bike_Boost_exact_1_3_g2_cand1_b3)
+  Batch 6 Best: 0.9494 (00_Phase_1_12V_to_36V_E_Bike_Boost_exact_1_3_g2_cand1_b3)
+  Batch 7 Best: 0.9494 (00_Phase_1_12V_to_36V_E_Bike_Boost_exact_1_3_g2_cand1_b3)
+  Batch 8 Best: 0.9494 (00_Phase_1_12V_to_36V_E_Bike_Boost_exact_1_3_g2_cand1_b3)
+  Batch 9 Best: 0.9494 (00_Phase_1_12V_to_36V_E_Bike_Boost_exact_1_3_g2_cand1_b3)
+  Batch 10 Best: 0.9494 (00_Phase_1_12V_to_36V_E_Bike_Boost_exact_1_3_g2_cand1_b3)
+
+--- BEST NETLIST METRICS ---
+Output Voltage: 36.2910 V
+Efficiency:     0.7773
+Total Volume:   10000.0000 cm^3
+
+=========================================
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-05-31T22:23:28
+* Constraint: Phase 1: 12V to 36V E-Bike (Boost - exact 1:3)
+*   vin_min = 11
+*   vin_max = 14
+*   vout_target = 36
+*   efficiency_target = 0.82
+*   power_in = 45
+* Candidate: 5 of 8
+* Grouped name: g2_cand1
+*
+* 12V to 36V boost, D=1-11/36=690m
+Vin in 0 12
+L1 in sw 47u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 2.4
+Vgate gate 0 PULSE(0 12 0 1n 1n 6.9u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+

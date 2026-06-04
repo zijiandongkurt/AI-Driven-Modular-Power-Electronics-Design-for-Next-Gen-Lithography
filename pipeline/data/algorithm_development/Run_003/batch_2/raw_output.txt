@@ -1,0 +1,34 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 12V to 5V Buck Converter (Adjusted Parameters)
+Vin in 0 12
+M1 in gate sw 0 NMOS W=2 L=2
+D1 0 sw DIODE
+L1 sw out 50u
+C1 out 0 220u
+Rload out 0 0.278
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 10-14V to 5V Step-Down Converter
+Vin in 0 12
+M1 in gate sw 0 NMOS W=3 L=3
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 100u
+Rload out 0 0.5
+Vgate gate 0 PULSE(0 12 0 1n 1n 3.4u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end

@@ -1,0 +1,46 @@
+{
+    "active_constraints": {
+        "_comment": "Phase 1: Standard 12V to 5V Logic (Buck)",
+        "vin_min": 10,
+        "vin_max": 14,
+        "vout_target": 5,
+        "efficiency_target": 0.8,
+        "power_in": 15
+    },
+    "circuits": {
+        "Phase1_cons4_cand1_b2": {
+            "fitness_score": 0.8894494021917345,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 27.85319238613374,
+                "efficiency_loss": 2.657733007960572,
+                "volume_loss": 72.66436043857873,
+                "component_cost_loss": 4.0
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 3.3310724285897324,
+                "efficiency": 0.6671133496019714,
+                "total_volume_cm3": 36.33218021928936,
+                "total_components": 4
+            },
+            "grpo_reward": 1.0
+        },
+        "Phase1_cons4_cand2_b2": {
+            "fitness_score": 0.8787400378300101,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 32.29684212416013,
+                "efficiency_loss": 2.863429940397888,
+                "volume_loss": 75.50216752027158,
+                "component_cost_loss": 4.0
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 3.202867781042248,
+                "efficiency": 0.6568285029801056,
+                "total_volume_cm3": 37.75108376013579,
+                "total_components": 4
+            },
+            "grpo_reward": -1.0
+        }
+    }
+}

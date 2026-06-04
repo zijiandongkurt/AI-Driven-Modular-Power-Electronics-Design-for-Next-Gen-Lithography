@@ -11,7 +11,7 @@ from pathlib import Path
 
 LOSS_CAP = {
     "voltage_tracking_loss": 100.0,   # (5V - 0V)^2 * weight=10 = 250 worst case; cap lower
-    "efficiency_loss":        20.0,   # max penalty_efficiency=1.0 * weight=20
+    "efficiency_loss":        1.0,   # max penalty_efficiency=1.0 
     "volume_loss":           100.0,   # cap raw volume contribution
     "component_cost_loss":    10.0,   # max ~10 components * weight=1
 }
@@ -127,31 +127,27 @@ class RewardFunctionNorm:
             comp_weights.get('capacitor', 1.0) * count_capacitors
         )
 
-        # --- Apply top-level weights ---
-        loss_v_out      = weights.get('v_out', 1.0)           * penalty_v_out
-        loss_efficiency = weights.get('efficiency', 1.0)      * penalty_efficiency
-        loss_volume     = weights.get('volume', 1.0)          * penalty_volume
-        loss_components = weights.get('component_cost', 1.0)  * penalty_components
-
         # --- Normalize each term to [0, 1] using per-component caps ---
-        norm_v_out      = min(loss_v_out      / LOSS_CAP["voltage_tracking_loss"], 1.0)
-        norm_efficiency = min(loss_efficiency / LOSS_CAP["efficiency_loss"],       1.0)
-        norm_volume     = min(loss_volume     / LOSS_CAP["volume_loss"],           1.0)
-        norm_components = min(loss_components / LOSS_CAP["component_cost_loss"],   1.0)
+        norm_v_out      = min(penalty_v_out      / LOSS_CAP["voltage_tracking_loss"], 1.0)
+        norm_efficiency = min(penalty_efficiency / LOSS_CAP["efficiency_loss"],       1.0)
+        norm_volume     = min(penalty_volume     / LOSS_CAP["volume_loss"],           1.0)
+        norm_components = min(penalty_components / LOSS_CAP["component_cost_loss"],   1.0)
 
-        # --- Weighted sum of normalized terms → total in [0, 1] ---
+        # --- Apply top-level weights ---
+        loss_v_out      = weights.get('v_out', 1.0)           * norm_v_out
+        loss_efficiency = weights.get('efficiency', 1.0)      * norm_efficiency
+        loss_volume     = weights.get('volume', 1.0)          * norm_volume
+        loss_components = weights.get('component_cost', 1.0)  * norm_components
+        
+        # --- calculate total weight ---
         total_w = (
             weights.get('v_out', 1.0) +
             weights.get('efficiency', 1.0) +
             weights.get('volume', 1.0) +
             weights.get('component_cost', 1.0)
         )
-        total_loss = (
-            weights.get('v_out', 1.0)          * norm_v_out +
-            weights.get('efficiency', 1.0)     * norm_efficiency +
-            weights.get('volume', 1.0)         * norm_volume +
-            weights.get('component_cost', 1.0) * norm_components
-        ) / max(total_w, 1e-8)
+        # sum up normalized losses and divide by total weight to keep in [0, 1]
+        total_loss = (loss_v_out + loss_efficiency + loss_volume + loss_components) / max(total_w, 1e-8)
 
         # Clamp final loss to [0, 1]
         total_loss = float(np.clip(total_loss, 0.0, 1.0))
@@ -177,18 +173,33 @@ class RewardFunctionNorm:
         return total_loss, details
 
     def calculate_reward(self, row, constraints, weights):
-        """Convert loss into a reward in [0.5, 1.0].
-
-        Simulation rewards are always in [0.5, 1.0] so they strictly rank above
-        invalid topology rewards which are in [-1.0, -0.5]. This creates a 
-        large numerical gap (0.5 to -0.5) penalizing invalid structure.
-        """
+        """Convert loss into a reward in [0.5, 1.0]."""
         loss, details = self.calculate_loss(row, constraints, weights)
         
-        # loss is in [0, 1], where 0 is perfect and 1 is worst.
-        # Map loss=0 to reward=1.0, and loss=1 to reward=0.5
+        # Base reward mapping loss [0, 1] -> reward [1.0, 0.5]
         reward = 1.0 - (0.5 * loss)
         
+        # --- NEW: CONTINUOUS FATAL VOLTAGE PENALTY ---
+        v_out = details["raw_metrics"]["simulation_output_voltage"]
+        target = constraints.get('vout_target', 5.0)
+        
+        v_error = abs(v_out - target)
+        safe_margin = target * 0.50  # Start penalizing after 50% error (e.g., outside 4V-6V)
+        
+        if v_error > safe_margin:
+            # Calculate how far past the safe margin we are
+            excess_error = v_error - safe_margin
+            
+            # Exponential decay: The worse the voltage, the closer this gets to 0.0
+            # A factor of 0.15 means the reward drops sharply, but maintains a smooth curve.
+            decay_factor = np.exp(-0.15 * excess_error)
+            
+            # Squeeze the available reward space down toward the 0.50 floor
+            reward = 0.50 + ((reward - 0.50) * decay_factor)
+            
+            details["fatal_penalty_applied"] = True
+            details["voltage_decay_factor"] = float(decay_factor)
+
         return float(reward), details
 
     # ── Batch normalization for GRPO ─────────────────────────────────────
@@ -210,7 +221,7 @@ class RewardFunctionNorm:
 
         mean = values.mean()
         std  = max(values.std(), 1e-8)
-        normalized = np.clip((values - mean) / std, -1.0, 1.0)
+        normalized = np.clip((values - mean) / std, -4.0, 4.0)
 
         return {name: float(normalized[i]) for i, name in enumerate(names)}
 

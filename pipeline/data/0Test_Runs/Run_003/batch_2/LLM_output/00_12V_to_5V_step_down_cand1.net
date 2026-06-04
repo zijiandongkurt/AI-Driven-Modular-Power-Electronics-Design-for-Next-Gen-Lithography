@@ -1,0 +1,17 @@
+* Generated: 2026-05-12T18:15:20
+* Constraint: 12V to 5V step-down
+*   vin_min = 12
+*   vin_max = 100
+*   vout_target = 5
+*   efficiency_target = 0.9
+*   power_in = 100
+* Candidate: 1 of 1
+*
+* 00_12V_to_5V_step_down_cand1
+Vin 0 0 DC 12
+Rload 0 0 1k
+M1 1 2 3 4 NMOS Vgate 0 12 0 1n 1n 1us 2ms
+D1 3 0 0
+Rbleed3 3 0 1meg
+.tran 1n 5m
+.end

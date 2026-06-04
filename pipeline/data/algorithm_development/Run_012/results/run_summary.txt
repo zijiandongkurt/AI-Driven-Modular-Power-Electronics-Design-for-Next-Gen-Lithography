@@ -1,0 +1,83 @@
+=== RETROACTIVE INFERENCE SUMMARY: Run_012 ===
+Batches Completed: 20 / 20
+Total Time Elapsed: 23373.40 sec (389.56 min)
+Average Time per Batch: 1168.67 sec
+Average Time per Netlist: 146.08 sec
+
+--- SIMULATION PARAMETERS ---
+LLM Model: Qwen/Qwen2.5-3B-Instruct
+LLM Max Tokens: 2048
+Sampled States per Batch: 2
+Candidates per Prompt: 4
+MCTS Temperature: 0.3 
+MCTS Depth Alpha: 0.1 
+Reward Weights: {"v_out": 10.0, "efficiency": 20.0, "volume": 2.0, "component_cost": 1.0, "components": {"mosfet": 1.0, "diode": 1.0, "inductor": 1.0, "capacitor": 1.0}}
+
+--- TOPOLOGY YIELD ---
+Total Candidates Generated: 160
+Valid Topologies: 146
+Invalid Topologies: 14
+Validity Rate: 91.2%
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.9583 (Phase1_cons4_b2_cand6)
+  Batch 1 Best DB Score: 0.9441 (Phase1_cons4_b1_cand6)
+  Batch 2 Best DB Score: 0.9583 (Phase1_cons4_b2_cand6)
+  Batch 3 Best DB Score: 0.9583 (Phase1_cons4_b2_cand6)
+  Batch 4 Best DB Score: 0.9583 (Phase1_cons4_b2_cand6)
+  Batch 5 Best DB Score: 0.9583 (Phase1_cons4_b2_cand6)
+  Batch 6 Best DB Score: 0.9583 (Phase1_cons4_b2_cand6)
+  Batch 7 Best DB Score: 0.9583 (Phase1_cons4_b2_cand6)
+  Batch 8 Best DB Score: 0.9583 (Phase1_cons4_b2_cand6)
+  Batch 9 Best DB Score: 0.9583 (Phase1_cons4_b2_cand6)
+  Batch 10 Best DB Score: 0.9583 (Phase1_cons4_b2_cand6)
+  Batch 11 Best DB Score: 0.9583 (Phase1_cons4_b2_cand6)
+  Batch 12 Best DB Score: 0.9583 (Phase1_cons4_b2_cand6)
+  Batch 13 Best DB Score: 0.9583 (Phase1_cons4_b2_cand6)
+  Batch 14 Best DB Score: 0.9583 (Phase1_cons4_b2_cand6)
+  Batch 15 Best DB Score: 0.9583 (Phase1_cons4_b2_cand6)
+  Batch 16 Best DB Score: 0.9583 (Phase1_cons4_b2_cand6)
+  Batch 17 Best DB Score: 0.9583 (Phase1_cons4_b2_cand6)
+  Batch 18 Best DB Score: 0.9583 (Phase1_cons4_b2_cand6)
+  Batch 19 Best DB Score: 0.9583 (Phase1_cons4_b2_cand6)
+  Batch 20 Best DB Score: 0.9583 (Phase1_cons4_b2_cand6)
+
+--- BEST NETLIST METRICS ---
+Output Voltage: 5.0854 V
+Efficiency:     0.7297
+Total Volume:   23.4403 cm^3
+
+--- COMPONENT BREAKDOWN ---
+MOSFETs (M): 1
+Diodes (D): 1
+Inductors (L): 1
+Capacitors (C): 1
+Resistors (R): 1
+Voltage Sources (V): 2
+
+=========================================
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-05-23T18:22:04
+* Constraint: Phase 1: Standard 12V to 5V Logic (Buck)
+*   vin_min = 10
+*   vin_max = 14
+*   vout_target = 5
+*   efficiency_target = 0.8
+*   power_in = 15
+* Candidate: 6 of 8
+*
+* 10-14V to 5V Boost Converter meeting efficiency and power constraints
+Vin in 0 12
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 22u
+C1 out 0 100u
+Rload out 0 1.93
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.save V(*) I(*)
+.end
+

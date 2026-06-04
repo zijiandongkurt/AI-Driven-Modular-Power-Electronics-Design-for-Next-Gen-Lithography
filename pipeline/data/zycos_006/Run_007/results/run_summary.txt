@@ -1,0 +1,61 @@
+=== TRAINING SUMMARY: Run_007 ===
+Constraint Index: 11
+Batches Completed: 10 / 10
+Total Time Elapsed: 2406.39 sec (40.11 min)
+Average Time per Batch: 240.64 sec
+Average Time per Netlist: 31.25 sec
+
+--- TOPOLOGY YIELD (entire run) ---
+Valid:   80
+Invalid: 0
+Total candidates in history: 77
+
+Unique Topologies: 5
+Exact Duplicates:  72
+Uniqueness Rate:   6.5%
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.8279 (00_Phase_2_12V_to_48V_Audio_Amp_Boost_High_Pwr_g1_cand1_b2)
+  Batch 1 Best: 0.7591 (00_Phase_2_12V_to_48V_Audio_Amp_Boost_High_Pwr_g1_cand1_b1)
+  Batch 2 Best: 0.8279 (00_Phase_2_12V_to_48V_Audio_Amp_Boost_High_Pwr_g1_cand1_b2)
+  Batch 3 Best: 0.8279 (00_Phase_2_12V_to_48V_Audio_Amp_Boost_High_Pwr_g1_cand1_b2)
+  Batch 4 Best: 0.8279 (00_Phase_2_12V_to_48V_Audio_Amp_Boost_High_Pwr_g1_cand1_b2)
+  Batch 5 Best: 0.8279 (00_Phase_2_12V_to_48V_Audio_Amp_Boost_High_Pwr_g1_cand1_b2)
+  Batch 6 Best: 0.8279 (00_Phase_2_12V_to_48V_Audio_Amp_Boost_High_Pwr_g1_cand1_b2)
+  Batch 7 Best: 0.8279 (00_Phase_2_12V_to_48V_Audio_Amp_Boost_High_Pwr_g1_cand1_b2)
+  Batch 8 Best: 0.8279 (00_Phase_2_12V_to_48V_Audio_Amp_Boost_High_Pwr_g1_cand1_b2)
+  Batch 9 Best: 0.8279 (00_Phase_2_12V_to_48V_Audio_Amp_Boost_High_Pwr_g1_cand1_b2)
+  Batch 10 Best: 0.8279 (00_Phase_2_12V_to_48V_Audio_Amp_Boost_High_Pwr_g1_cand1_b2)
+
+--- BEST NETLIST METRICS ---
+Output Voltage: 37.9344 V
+Efficiency:     1.0000
+Total Volume:   24.0000 cm^3
+
+=========================================
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-06-01T01:48:23
+* Constraint: Phase 2: 12V to 48V Audio Amp (Boost - High Pwr)
+*   vin_min = 11
+*   vin_max = 15
+*   vout_target = 48
+*   efficiency_target = 0.9
+*   power_in = 150
+* Candidate: 1 of 8
+* Grouped name: g1_cand1
+*
+Vin in 0 15
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 3.2
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+

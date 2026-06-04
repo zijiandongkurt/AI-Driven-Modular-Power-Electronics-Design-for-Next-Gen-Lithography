@@ -8,24 +8,39 @@ class validator():
     def __init__(self):
         self.BASE_DIR  = Path(__file__).parent
         self.DATA_DIR  = self.BASE_DIR.parent / "data"
-        self.VALID_PREFIXES = set("VRICLDMQ")
+        self.VALID_PREFIXES = set("VRLCDM")
 
     # ── helpers ──────────────────────────────────────────────────────────────
 
     def _parseLines(self, netlist):
-        """Return component lines and directive lines separately, stripping comments."""
+        """Return component lines and directive lines separately, stripping comments and merging multiline statements."""
         component_lines = []
         directive_lines = []
+        
+        # Pre-Processing: Strip comments and merge '+' lines
+        merged_lines = []
         for raw in netlist.splitlines():
-            line = raw.strip()
+            # Strip inline comments (everything after ';')
+            line = raw.split(';')[0].strip()
+            
             if not line or line.startswith("*"):
                 continue
+                
+            if line.startswith("+"):
+                if merged_lines:
+                    merged_lines[-1] += " " + line[1:].strip()
+            else:
+                merged_lines.append(line)
+
+        # Categorize the cleaned lines
+        for line in merged_lines:
             if line.startswith("."):
                 directive_lines.append(line)
             else:
                 component_lines.append(line)
+                
         return component_lines, directive_lines
-
+    
     def _buildGraph(self, component_lines):
         """Build a NetworkX MultiGraph where nodes are SPICE nodes and edges are components.
         Each edge carries ref and prefix as attributes.
@@ -53,10 +68,7 @@ class validator():
         return G
 
     def _buildZeroImpedanceGraph(self, component_lines):
-        """Build a simple graph containing only zero-impedance edges:
-        voltage sources and zero-ohm resistors.
-        Used for short circuit path detection.
-        """
+        """Build a multi-graph containing only zero-impedance edges."""
         G = nx.MultiGraph()
         for line in component_lines:
             parts = line.split()
@@ -64,11 +76,12 @@ class validator():
                 continue
             ref = parts[0].upper()
             node_a, node_b = parts[1].lower(), parts[2].lower()
-            # zero-ohm resistor
+            
             if ref[0] == "R" and len(parts) >= 4 and parts[3] in {"0", "0.0"}:
                 G.add_edge(node_a, node_b, ref=ref, prefix="R")
-            # voltage sources except Vin (the supply) — Vin is intentional, not a short
-            if ref[0] == "V" and ref != "VIN":
+                
+            # Allow ALL voltage sources (including VIN) to be evaluated for loops
+            if ref[0] == "V":
                 G.add_edge(node_a, node_b, ref=ref, prefix="V")
         return G
 
@@ -122,8 +135,8 @@ class validator():
                     raw_text = f"* {net_path.stem}\n" + raw_text
                 # Inject .save to ensure all currents and voltages are in .raw output
                 if ".save" not in raw_text.lower():
-                    #raw_text = raw_text.replace(".end", ".save V(*) I(*)\n.end") #LTSPICE
-                    raw_text = raw_text.replace(".end", ".probe V(*) I(*)\n.end") #NGSPICE
+                    raw_text = raw_text.replace(".end", ".save V(*) I(*)\n.end") #LTSPICE
+                    #raw_text = raw_text.replace(".end", ".probe V(*) I(*)\n.end") #NGSPICE
                 net_path.write_text(raw_text)
 
             results[net_path.name]     = (passed, checklist)
@@ -320,25 +333,39 @@ class validator():
         )
 
     def _checkGatePerMosfet(self, netlist):
-        """Each MOSFET gate node must be driven by a Vgate source."""
+        """Each MOSFET gate node must be driven by a Vgate, AND every Vgate must drive a MOSFET."""
         component_lines, _ = self._parseLines(netlist)
         gate_nodes   = set()
         driven_nodes = set()
         for line in component_lines:
             parts = line.split()
+            if len(parts) < 3: continue
+            
             ref = parts[0].upper()
             if ref[0] == "M" and len(parts) >= 5:
-                gate_nodes.add(parts[2].lower())  # drain gate source bulk — standard LTspice
+                gate_nodes.add(parts[2].lower())  # Drain Gate Source Bulk
             if re.match(r"VGATE(_HI|_LO)?\d*$", ref, re.IGNORECASE):
                 driven_nodes.add(parts[1].lower())
-        return gate_nodes.issubset(driven_nodes)
+                
+        # The sets must be exactly identical. No missing drives, no zombie drives.
+        return gate_nodes == driven_nodes
 
     def _checkConnectedGraph(self, netlist):
-        """All nodes must form a single connected graph — no isolated islands."""
+        """All nodes must form a single connected graph, and no nodes can be dangling dead-ends."""
         component_lines, _ = self._parseLines(netlist)
         G = self._buildGraph(component_lines)
-        return nx.is_connected(G)
-
+        
+        # 1. No isolated islands
+        if not nx.is_connected(G):
+            return False
+            
+        # 2. No dangling open circuits (nodes with only 1 connection)
+        for node, degree in G.degree():
+            if degree < 2:
+                return False
+                
+        return True
+    
     def _checkFloatingNodes(self, netlist):
         """Any node connected only to reactive/switch elements needs an Rbleed."""
         component_lines, _ = self._parseLines(netlist)
@@ -360,10 +387,16 @@ class validator():
         component_lines, _ = self._parseLines(netlist)
         G = self._buildGraph(component_lines)
         try:
-            return (
-                nx.has_path(G, "in", "out") and
-                nx.has_path(G, "out", "0")
-            )
+            # 1. Output must have a return path to ground
+            if not nx.has_path(G, "out", "0"):
+                return False
+                
+            # 2. Input must reach output THROUGH components, not by backtracking through ground
+            G_no_gnd = G.copy()
+            if "0" in G_no_gnd:
+                G_no_gnd.remove_node("0")
+                
+            return nx.has_path(G_no_gnd, "in", "out")
         except nx.NodeNotFound:
             return False
 
@@ -403,22 +436,18 @@ class validator():
         return True
 
     def _checkSingularVoltageCap(self, netlist):
-        """A voltage source directly in parallel with a capacitor (no series R between them)
-        causes a singular matrix — LTspice cannot solve the initial conditions.
-        Detected by finding a V and C that share exactly the same two nodes.
-        """
         component_lines, _ = self._parseLines(netlist)
-
-        # collect node pairs per prefix
         v_pairs = set()
         c_pairs = set()
         for line in component_lines:
             parts = line.split()
             if len(parts) < 3:
                 continue
-            ref    = parts[0].upper()
-            pair   = frozenset([parts[1].lower(), parts[2].lower()])
-            if ref[0] == "V" and ref != "VIN":
+            ref = parts[0].upper()
+            pair = frozenset([parts[1].lower(), parts[2].lower()])
+            
+            # Catch ALL voltage sources
+            if ref[0] == "V":
                 v_pairs.add(pair)
             if ref[0] == "C":
                 c_pairs.add(pair)
@@ -426,12 +455,12 @@ class validator():
         return len(v_pairs & c_pairs) == 0
 
     def _checkShortInputToGnd(self, netlist):
-        """A zero-impedance path must not exist from 'in' to '0' —
-        this would short the input supply.
-        Detected by BFS on the zero-impedance subgraph.
-        """
         component_lines, _ = self._parseLines(netlist)
         G_zero = self._buildZeroImpedanceGraph(component_lines)
+
+        # Remove the intended power supply so it doesn't flag itself as a short circuit
+        edges_to_remove = [(u, v, k) for u, v, k, d in G_zero.edges(data=True, keys=True) if d.get("ref") == "VIN"]
+        G_zero.remove_edges_from(edges_to_remove)
 
         if "in" not in G_zero.nodes or "0" not in G_zero.nodes:
             return True
@@ -440,36 +469,40 @@ class validator():
     def _checkKvlVoltageLoop(self, netlist):
         """Two or more voltage sources forming a closed loop violates KVL —
         LTspice will fail with a singular matrix.
-        Detected by checking if any cycle exists in the zero-impedance subgraph
-        that contains at least two voltage source edges.
         """
         component_lines, _ = self._parseLines(netlist)
         G_zero = self._buildZeroImpedanceGraph(component_lines)
 
-        # convert to simple graph for cycle detection
+        # 1. Detect 2-Node Cycles (Parallel Voltage Sources)
+        # G_zero is a MultiGraph. We check if multiple V sources exist between the exact same two nodes.
+        for u, v in set(G_zero.edges(keys=False)):
+            if G_zero.number_of_edges(u, v) >= 2:
+                # Count how many of these parallel edges are voltage sources
+                v_count = sum(1 for attrs in G_zero[u][v].values() if attrs.get("prefix") == "V")
+                if v_count >= 2:
+                    return False
+
+        # 2. Detect 3+ Node Cycles (Large KVL Loops)
         G_simple = nx.Graph(G_zero)
         for cycle in nx.cycle_basis(G_simple):
-            # collect all edges in this cycle
             cycle_edges = list(zip(cycle, cycle[1:] + cycle[:1]))
             v_count = 0
             for a, b in cycle_edges:
                 edge_data = G_zero.get_edge_data(a, b) or G_zero.get_edge_data(b, a)
                 if edge_data:
-                    for _, attrs in edge_data.items():
-                        if attrs.get("prefix") == "V":
-                            v_count += 1
+                    # If ANY of the parallel edges in this segment is a V, count it
+                    if any(attrs.get("prefix") == "V" for attrs in edge_data.values()):
+                        v_count += 1
             if v_count >= 2:
                 return False
+                
         return True
 
     def _checkSingularCapLoop(self, netlist):
-        """A loop where every branch is a capacitor causes a singular matrix at t=0
-        because initial conditions are undefined.
-        Detected by cycle detection on a capacitor-only subgraph.
-        """
         component_lines, _ = self._parseLines(netlist)
 
-        G_cap = nx.Graph()
+        # MUST use MultiGraph to detect parallel capacitors
+        G_cap = nx.MultiGraph()
         for line in component_lines:
             parts = line.split()
             if len(parts) < 3:
@@ -477,7 +510,9 @@ class validator():
             if parts[0][0].upper() == "C":
                 G_cap.add_edge(parts[1].lower(), parts[2].lower())
 
-        return len(nx.cycle_basis(G_cap)) == 0
+        # Mathematical cycle detection for MultiGraphs: Cycles = Edges - Nodes + Connected Components
+        num_cycles = G_cap.number_of_edges() - G_cap.number_of_nodes() + nx.number_connected_components(G_cap)
+        return num_cycles == 0
 
 # validator = validator()
 # validation_results = validator.validate(batchID="batch_2")

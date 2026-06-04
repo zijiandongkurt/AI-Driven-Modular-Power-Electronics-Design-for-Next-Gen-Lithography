@@ -1,0 +1,113 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+Vin in 0 8
+L1 in sw 220u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 1VinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVin
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+Vin in 0 9V, D=Vin/Vout=110m, t_on=11u, T=10u
+Vin in 0 8
+L1 in sw 220u
+M1 sw gate 0 0 NMOS W=1L=1
+D1 sw out DIODE
+C1 out Vin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=VinVin=Vin
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+Vin in 0 9V, D=Vin/Vout=110m, t_on=11u, T=10u
+Vin in 0 8
+L1 in sw 220u
+M1 sw gate 0 0 NMOS W=1L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 6
+Vgate gate 0 PULSE(012V<<Vin/Dead-time D=110m,t_on=11u,T=10uVin=8VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=Vin/VVin=Vin,D=
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+Vin in 0 8
+L1 in sw 220u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 1VinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVinVin
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+Vin in 0 9V, D=Vin/Vout=110m, t_on=11u, T=10u
+Vin in 0 8
+L1 in sw 220u
+M1 sw gate 0 0 NMOS W=1L=1
+D1 sw out DIODE
+C1 out Vin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9VVin=9
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+Vin in 0 8
+L1 in sw 220u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 6
+Vgate gate VVin PULSE(0 12V, 0, 1n, 1n, 5.8u, 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran VVin 10m
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+Vin in 0 8
+L1 in sw 220u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 6
+Vgate gate VVin PULSE(0 12V, 0, 1n, 1n, 9.17u, 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran VVin=Vin=8V 1u 10m
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+Vin in 0 8
+L1 in sw 220u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 6
+Vgate gate VVin PULSE(0 12V, 0, 1n, 1n, 9.17u, 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran VVin=Vin=8V 1u 10m
+.end

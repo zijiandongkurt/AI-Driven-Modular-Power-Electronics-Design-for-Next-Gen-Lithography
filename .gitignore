@@ -1,11 +1,19 @@
 .venv/
+venv/
 __pycache__/
 *.pyc
 .idea/
+.vscode/
+.DS_Store
 *.log
 *.raw
-.venv/
-.vscode/
-.csv
-.raw
-venv/
+*.csv
+logs/
+
+.gradio/
+
+# Model checkpoints are large — kept out of git
+checkpoints/
+
+# Generated netlists are numerous but not useful to track
+pipeline/data/**/LLM_output/

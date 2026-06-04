@@ -1,0 +1,35 @@
+{
+    "n_runs": 10,
+    "n_batch": 10,
+    "sft_lora_path": "checkpoints/sft/sft_002/epoch-2",
+    "seed_prompts": 4,
+    "parents_per_batch": 4,
+    "outputs_per_parent": 3,
+    "top_k": 9,
+    "epsilon": 0.3,
+    "softmax_temperature": 0.05,
+    "random_seed": 44,
+    "max_tokens": 1536,
+    "constraint_path": "pipeline/data/datasets/constraints_easy.json",
+    "rl_config": {
+        "max_length": 1536,
+        "max_prompt_length": 1024,
+        "max_completion_length": 1024,
+        "learning_rate": 1e-5,
+        "save_every": 1,
+        "lora_r": 8,
+        "lora_alpha": 16
+    },
+    "weights": {
+        "v_out": 20.0,
+        "efficiency": 10.0,
+        "volume": 2.0,
+        "component_cost": 1.0,
+        "components": {
+            "mosfet": 1.0,
+            "diode": 1.0,
+            "inductor": 1.0,
+            "capacitor": 1.0
+        }
+    }
+}

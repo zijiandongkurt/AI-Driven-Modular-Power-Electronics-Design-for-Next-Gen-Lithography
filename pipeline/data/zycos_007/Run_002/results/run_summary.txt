@@ -1,0 +1,61 @@
+=== TRAINING SUMMARY: Run_002 ===
+Constraint Index: 9
+Batches Completed: 10 / 10
+Total Time Elapsed: 1723.18 sec (28.72 min)
+Average Time per Batch: 172.32 sec
+Average Time per Netlist: 14.73 sec
+
+--- TOPOLOGY YIELD (entire run) ---
+Valid:   12
+Invalid: 117
+Total candidates in history: 117
+Unique Topologies: 33
+Exact Duplicates:  84
+Uniqueness Rate:   28.2%
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.8834 (00_Phase_2_12V_to_72V_Custom_Boost_g4_cand3_b2)
+  Batch 1 Best: 0.6084 (00_Phase_2_12V_to_72V_Custom_Boost_g2_cand3_b1)
+  Batch 2 Best: 0.8834 (00_Phase_2_12V_to_72V_Custom_Boost_g4_cand3_b2)
+  Batch 3 Best: 0.8834 (00_Phase_2_12V_to_72V_Custom_Boost_g4_cand3_b2)
+  Batch 4 Best: 0.8834 (00_Phase_2_12V_to_72V_Custom_Boost_g4_cand3_b2)
+  Batch 5 Best: 0.8834 (00_Phase_2_12V_to_72V_Custom_Boost_g4_cand3_b2)
+  Batch 6 Best: 0.8834 (00_Phase_2_12V_to_72V_Custom_Boost_g4_cand3_b2)
+  Batch 7 Best: 0.8834 (00_Phase_2_12V_to_72V_Custom_Boost_g4_cand3_b2)
+  Batch 8 Best: 0.8834 (00_Phase_2_12V_to_72V_Custom_Boost_g4_cand3_b2)
+  Batch 9 Best: 0.8834 (00_Phase_2_12V_to_72V_Custom_Boost_g4_cand3_b2)
+  Batch 10 Best: 0.8834 (00_Phase_2_12V_to_72V_Custom_Boost_g4_cand3_b2)
+
+--- BEST NETLIST METRICS ---
+Output Voltage: 74.5412 V
+Efficiency:     1.0000
+Total Volume:   20.8800 cm^3
+
+=========================================
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-06-02T15:12:22
+* Constraint: Phase 2: 12V to 72V Custom (Boost)
+*   vin_min = 10
+*   vin_max = 14
+*   vout_target = 72
+*   efficiency_target = 0.88
+*   power_in = 150
+* Candidate: 12 of 12
+* Grouped name: g4_cand3
+*
+* 12V to 72V Boost, D=1-72/12=800m, t_on=8u, Rload=72^2/150=34.56
+Vin in 0 12
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 34.56
+Vgate gate 0 PULSE(0 12 0 1n 1n 8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+
