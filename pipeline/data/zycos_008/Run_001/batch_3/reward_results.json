@@ -1,0 +1,180 @@
+{
+    "active_constraints": {
+        "_comment": "Phase 1: 5V to 9V Pedal Power (Boost)",
+        "vin_min": 4.5,
+        "vin_max": 5.5,
+        "vout_target": 9,
+        "efficiency_target": 0.77,
+        "power_in": 10
+    },
+    "circuits": {
+        "00_Phase_1_5V_to_9V_Pedal_Power_Boost_g4_cand1_b3": {
+            "fitness_score": -0.96,
+            "source": "validation_penalty",
+            "grpo_reward": -1.8727505207061768
+        },
+        "00_Phase_1_5V_to_9V_Pedal_Power_Boost_g3_cand2_b3": {
+            "fitness_score": -0.61,
+            "source": "validation_penalty",
+            "grpo_reward": -1.4265660047531128
+        },
+        "00_Phase_1_5V_to_9V_Pedal_Power_Boost_g3_cand1_b3": {
+            "fitness_score": -0.955,
+            "source": "validation_penalty",
+            "grpo_reward": -1.8663763999938965
+        },
+        "00_Phase_1_5V_to_9V_Pedal_Power_Boost_g1_cand1_b3": {
+            "fitness_score": 0.9800158088600746,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.017510348974550678,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.9014462662605303,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 9.295891441026525,
+                "efficiency": 0.7808011372992609,
+                "total_volume_cm3": 45.07231331302651,
+                "total_components": 4
+            },
+            "grpo_reward": 0.6004061102867126
+        },
+        "00_Phase_1_5V_to_9V_Pedal_Power_Boost_g1_cand2_b3": {
+            "fitness_score": 0.9797086358749413,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.01757920548315519,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.9216508267707223,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 9.29647264193476,
+                "efficiency": 0.7807846145088201,
+                "total_volume_cm3": 46.08254133853612,
+                "total_components": 4
+            },
+            "grpo_reward": 0.6000145077705383
+        },
+        "00_Phase_1_5V_to_9V_Pedal_Power_Boost_g1_cand3_b3": {
+            "fitness_score": 0.9756234059230464,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.6624795140070233,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.5463756950719115,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 7.180000667572893,
+                "efficiency": 0.8386383564702233,
+                "total_volume_cm3": 27.318784753595576,
+                "total_components": 4
+            },
+            "grpo_reward": 0.5948066711425781
+        },
+        "00_Phase_1_5V_to_9V_Pedal_Power_Boost_g2_cand1_b3": {
+            "fitness_score": 0.967147572615901,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.9619816490528538,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.8062785582976782,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 6.806849698432807,
+                "efficiency": 0.7950477755102332,
+                "total_volume_cm3": 40.31392791488391,
+                "total_components": 4
+            },
+            "grpo_reward": 0.5840015411376953
+        },
+        "00_Phase_1_5V_to_9V_Pedal_Power_Boost_g2_cand2_b3": {
+            "fitness_score": 0.9386832927640978,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 1.7473211140957723,
+                "efficiency_loss": 0.7353870744966329,
+                "volume_loss": 1.1641944889771425,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 6.0442250473896255,
+                "efficiency": 0.6964612925503367,
+                "total_volume_cm3": 58.20972444885712,
+                "total_components": 4
+            },
+            "grpo_reward": 0.54771488904953
+        },
+        "00_Phase_1_5V_to_9V_Pedal_Power_Boost_g2_cand3_b3": {
+            "fitness_score": 0.9386832927640978,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 1.7473211140957723,
+                "efficiency_loss": 0.7353870744966329,
+                "volume_loss": 1.1641944889771425,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 6.0442250473896255,
+                "efficiency": 0.6964612925503367,
+                "total_volume_cm3": 58.20972444885712,
+                "total_components": 4
+            },
+            "grpo_reward": 0.54771488904953
+        },
+        "00_Phase_1_5V_to_9V_Pedal_Power_Boost_g3_cand3_b3": {
+            "fitness_score": 0.9023687349620103,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 3.981305766656689,
+                "efficiency_loss": 1.1064058392144926,
+                "volume_loss": 0.7559518866361375,
+                "component_cost_loss": 0.6
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.538326677883796,
+                "efficiency": 0.6593594160785508,
+                "total_volume_cm3": 37.79759433180688,
+                "total_components": 6
+            },
+            "grpo_reward": 0.5014206767082214
+        },
+        "00_Phase_1_5V_to_9V_Pedal_Power_Boost_g4_cand2_b3": {
+            "fitness_score": 0.9756234059230464,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.6624795140070233,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.5463756950719115,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 7.180000667572893,
+                "efficiency": 0.8386383564702233,
+                "total_volume_cm3": 27.318784753595576,
+                "total_components": 4
+            },
+            "grpo_reward": 0.5948066711425781
+        },
+        "00_Phase_1_5V_to_9V_Pedal_Power_Boost_g4_cand3_b3": {
+            "fitness_score": 0.9756234059230464,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.6624795140070233,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.5463756950719115,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 7.180000667572893,
+                "efficiency": 0.8386383564702233,
+                "total_volume_cm3": 27.318784753595576,
+                "total_components": 4
+            },
+            "grpo_reward": 0.5948066711425781
+        }
+    }
+}

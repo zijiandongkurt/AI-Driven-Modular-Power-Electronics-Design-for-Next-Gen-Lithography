@@ -1,0 +1,218 @@
+{
+    "active_constraints": {
+        "_comment": "Phase 1: 14V Alternator to 5V (Buck)",
+        "vin_min": 12,
+        "vin_max": 16,
+        "vout_target": 5,
+        "efficiency_target": 0.79,
+        "power_in": 20
+    },
+    "circuits": {
+        "00_Phase_1_14V_Alternator_to_5V_Buck_g1_cand1_b6": {
+            "fitness_score": 0.9338522916190466,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.09266462702318645,
+                "efficiency_loss": 2.649710861740582,
+                "volume_loss": 1.2233732643791604,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.319321562618638,
+                "efficiency": 0.5250289138259419,
+                "total_volume_cm3": 61.16866321895802,
+                "total_components": 4
+            },
+            "grpo_reward": 0.3269580602645874
+        },
+        "00_Phase_1_14V_Alternator_to_5V_Buck_g1_cand2_b6": {
+            "fitness_score": 0.9214085819804888,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.7451289087962012,
+                "efficiency_loss": 3.2345941888245733,
+                "volume_loss": 0.807310491666962,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 3.069807122596033,
+                "efficiency": 0.4665405811175427,
+                "total_volume_cm3": 40.3655245833481,
+                "total_components": 4
+            },
+            "grpo_reward": -0.06304417550563812
+        },
+        "00_Phase_1_14V_Alternator_to_5V_Buck_g1_cand3_b6": {
+            "fitness_score": 0.8197955439164406,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 2.756755672884454,
+                "efficiency_loss": 4.034010731762191,
+                "volume_loss": 0.4921604025317097,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 1.2873488765543473,
+                "efficiency": 0.386598926823781,
+                "total_volume_cm3": 24.608020126585483,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.8336866484420316,
+            "grpo_reward": -3.247727632522583
+        },
+        "00_Phase_1_14V_Alternator_to_5V_Buck_g2_cand1_b6": {
+            "fitness_score": 0.930445310911566,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 1.014327890627919,
+                "efficiency_loss": 2.3955561038624062,
+                "volume_loss": 0.7807254853463209,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 2.747969926235532,
+                "efficiency": 0.5504443896137594,
+                "total_volume_cm3": 39.036274267316045,
+                "total_components": 4
+            },
+            "grpo_reward": 0.2201782464981079
+        },
+        "00_Phase_1_14V_Alternator_to_5V_Buck_g2_cand2_b6": {
+            "fitness_score": 0.9454623071060403,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.7675921022887142,
+                "efficiency_loss": 1.8104774644734478,
+                "volume_loss": 0.6214181642391808,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 3.040928660961125,
+                "efficiency": 0.6089522535526553,
+                "total_volume_cm3": 31.07090821195904,
+                "total_components": 4
+            },
+            "grpo_reward": 0.6908295154571533
+        },
+        "00_Phase_1_14V_Alternator_to_5V_Buck_g2_cand3_b6": {
+            "fitness_score": 0.9461312131222606,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.7672111229621272,
+                "efficiency_loss": 1.8091529497336178,
+                "volume_loss": 0.5789758612350596,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 3.041414894672525,
+                "efficiency": 0.6090847050266383,
+                "total_volume_cm3": 28.94879306175298,
+                "total_components": 4
+            },
+            "grpo_reward": 0.7117950320243835
+        },
+        "00_Phase_1_14V_Alternator_to_5V_Buck_g3_cand1_b6": {
+            "fitness_score": 0.9303458143812013,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.02142471045431037,
+                "efficiency_loss": 2.606736990850387,
+                "volume_loss": 1.5690145495360102,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.672702654652452,
+                "efficiency": 0.5293263009149614,
+                "total_volume_cm3": 78.45072747680051,
+                "total_components": 4
+            },
+            "grpo_reward": 0.2170604169368744
+        },
+        "00_Phase_1_14V_Alternator_to_5V_Buck_g3_cand2_b6": {
+            "fitness_score": 0.9308136428403606,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 1.0141172658738924,
+                "efficiency_loss": 2.3999559220080444,
+                "volume_loss": 0.7522263846542587,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 2.748203754917097,
+                "efficiency": 0.5500044077991956,
+                "total_volume_cm3": 37.61131923271294,
+                "total_components": 4
+            },
+            "grpo_reward": 0.23172302544116974
+        },
+        "00_Phase_1_14V_Alternator_to_5V_Buck_g3_cand3_b6": {
+            "fitness_score": 0.9303458143812013,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.02142471045431037,
+                "efficiency_loss": 2.606736990850387,
+                "volume_loss": 1.5690145495360102,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.672702654652452,
+                "efficiency": 0.5293263009149614,
+                "total_volume_cm3": 78.45072747680051,
+                "total_components": 4
+            },
+            "grpo_reward": 0.2170604169368744
+        },
+        "00_Phase_1_14V_Alternator_to_5V_Buck_g4_cand1_b6": {
+            "fitness_score": 0.9308136428403606,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 1.0141172658738924,
+                "efficiency_loss": 2.3999559220080444,
+                "volume_loss": 0.7522263846542587,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 2.748203754917097,
+                "efficiency": 0.5500044077991956,
+                "total_volume_cm3": 37.61131923271294,
+                "total_components": 4
+            },
+            "grpo_reward": 0.23172302544116974
+        },
+        "00_Phase_1_14V_Alternator_to_5V_Buck_g4_cand2_b6": {
+            "fitness_score": 0.9308136428403606,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 1.0141172658738924,
+                "efficiency_loss": 2.3999559220080444,
+                "volume_loss": 0.7522263846542587,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 2.748203754917097,
+                "efficiency": 0.5500044077991956,
+                "total_volume_cm3": 37.61131923271294,
+                "total_components": 4
+            },
+            "grpo_reward": 0.23172302544116974
+        },
+        "00_Phase_1_14V_Alternator_to_5V_Buck_g4_cand3_b6": {
+            "fitness_score": 0.9308136428403606,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 1.0141172658738924,
+                "efficiency_loss": 2.3999559220080444,
+                "volume_loss": 0.7522263846542587,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 2.748203754917097,
+                "efficiency": 0.5500044077991956,
+                "total_volume_cm3": 37.61131923271294,
+                "total_components": 4
+            },
+            "grpo_reward": 0.23172302544116974
+        }
+    }
+}

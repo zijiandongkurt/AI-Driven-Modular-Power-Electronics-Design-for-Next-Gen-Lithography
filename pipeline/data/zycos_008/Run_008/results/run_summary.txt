@@ -1,0 +1,61 @@
+=== TRAINING SUMMARY: Run_008 ===
+Constraint Index: 4
+Batches Completed: 10 / 10
+Total Time Elapsed: 1476.85 sec (24.61 min)
+Average Time per Batch: 147.68 sec
+Average Time per Netlist: 12.73 sec
+
+--- TOPOLOGY YIELD (entire run) ---
+Valid:   12
+Invalid: 116
+Total candidates in history: 116
+Unique Topologies: 16
+Exact Duplicates:  100
+Uniqueness Rate:   13.8%
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.9270 (00_Phase_1_15V_Rail_to_5V_Buck_g2_cand1_b4)
+  Batch 1 Best: 0.9064 (00_Phase_1_15V_Rail_to_5V_Buck_g2_cand2_b1)
+  Batch 2 Best: 0.9064 (00_Phase_1_15V_Rail_to_5V_Buck_g2_cand2_b1)
+  Batch 3 Best: 0.9256 (00_Phase_1_15V_Rail_to_5V_Buck_g4_cand1_b3)
+  Batch 4 Best: 0.9270 (00_Phase_1_15V_Rail_to_5V_Buck_g2_cand1_b4)
+  Batch 5 Best: 0.9270 (00_Phase_1_15V_Rail_to_5V_Buck_g2_cand1_b4)
+  Batch 6 Best: 0.9270 (00_Phase_1_15V_Rail_to_5V_Buck_g2_cand1_b4)
+  Batch 7 Best: 0.9270 (00_Phase_1_15V_Rail_to_5V_Buck_g2_cand1_b4)
+  Batch 8 Best: 0.9270 (00_Phase_1_15V_Rail_to_5V_Buck_g2_cand1_b4)
+  Batch 9 Best: 0.9270 (00_Phase_1_15V_Rail_to_5V_Buck_g2_cand1_b4)
+  Batch 10 Best: 0.9270 (00_Phase_1_15V_Rail_to_5V_Buck_g2_cand1_b4)
+
+--- BEST NETLIST METRICS ---
+Output Voltage: 3.0698 V
+Efficiency:     0.4976
+Total Volume:   37.4790 cm^3
+
+=========================================
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-06-04T17:15:46
+* Constraint: Phase 1: 15V Rail to 5V (Buck)
+*   vin_min = 13
+*   vin_max = 17
+*   vout_target = 5
+*   efficiency_target = 0.79
+*   power_in = 20
+* Candidate: 4 of 12
+* Grouped name: g2_cand1
+*
+* 15V to 5V Buck Converter
+Vin in 0 15
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.5
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+

@@ -1,0 +1,220 @@
+{
+    "active_constraints": {
+        "_comment": "Phase 1: 12V to 36V E-Bike (Boost - exact 1:3)",
+        "vin_min": 11,
+        "vin_max": 14,
+        "vout_target": 36,
+        "efficiency_target": 0.82,
+        "power_in": 45
+    },
+    "circuits": {
+        "00_Phase_1_12V_to_36V_E_Bike_Boost_exact_1_3_g1_cand1_b6": {
+            "fitness_score": 0.6758048089875128,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.9968826068241589,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 25.886859148067536,
+                "efficiency": 0.9058932078955804,
+                "total_volume_cm3": 49.84413034120794,
+                "total_components": 4
+            },
+            "grpo_reward": -0.19691219925880432
+        },
+        "00_Phase_1_12V_to_36V_E_Bike_Boost_exact_1_3_g1_cand2_b6": {
+            "fitness_score": 0.6758048089875128,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.9968826068241589,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 25.886859148067536,
+                "efficiency": 0.9058932078955804,
+                "total_volume_cm3": 49.84413034120794,
+                "total_components": 4
+            },
+            "grpo_reward": -0.19691219925880432
+        },
+        "00_Phase_1_12V_to_36V_E_Bike_Boost_exact_1_3_g1_cand3_b6": {
+            "fitness_score": 0.676102966580999,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.9772042056540685,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 25.88444426713708,
+                "efficiency": 0.905853376701307,
+                "total_volume_cm3": 48.86021028270343,
+                "total_components": 4
+            },
+            "grpo_reward": -0.1942066252231598
+        },
+        "00_Phase_1_12V_to_36V_E_Bike_Boost_exact_1_3_g2_cand1_b6": {
+            "fitness_score": 0.9491771942177392,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 2.5167051816292165,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.4376,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 32.4526734139431,
+                "efficiency": 1.0,
+                "total_volume_cm3": 21.88,
+                "total_components": 4
+            },
+            "grpo_reward": 2.283379077911377
+        },
+        "00_Phase_1_12V_to_36V_E_Bike_Boost_exact_1_3_g2_cand2_b6": {
+            "fitness_score": 0.6126070512924979,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.6074653292361302,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 14.810129692354328,
+                "efficiency": 0.9221802625462968,
+                "total_volume_cm3": 30.37326646180651,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.6197243192819952,
+            "grpo_reward": -0.770301342010498
+        },
+        "00_Phase_1_12V_to_36V_E_Bike_Boost_exact_1_3_g2_cand3_b6": {
+            "fitness_score": 0.5919354859632564,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 4.532257926425079,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 24.09784376751525,
+                "efficiency": 0.366774207357492,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": -0.9578530192375183
+        },
+        "00_Phase_1_12V_to_36V_E_Bike_Boost_exact_1_3_g3_cand1_b6": {
+            "fitness_score": 0.5435252124530763,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 4.25149111126977,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 12.713465768017446,
+                "efficiency": 0.394850888873023,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.4524942899587873,
+            "grpo_reward": -1.3970767259597778
+        },
+        "00_Phase_1_12V_to_36V_E_Bike_Boost_exact_1_3_g3_cand2_b6": {
+            "fitness_score": 0.6980649943084255,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 16.70256681375006,
+                "efficiency_loss": 0.8251435618938574,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 26.861464336735875,
+                "efficiency": 0.7374856438106142,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": 0.005053135100752115
+        },
+        "00_Phase_1_12V_to_36V_E_Bike_Boost_exact_1_3_g3_cand3_b6": {
+            "fitness_score": 0.8936309808329246,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 6.182755265026981,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.4376,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 30.43998414344573,
+                "efficiency": 1.0,
+                "total_volume_cm3": 21.88,
+                "total_components": 4
+            },
+            "grpo_reward": 1.7794115543365479
+        },
+        "00_Phase_1_12V_to_36V_E_Bike_Boost_exact_1_3_g4_cand1_b6": {
+            "fitness_score": 0.6845818181818182,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.41759999999999997,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 19.365481042502427,
+                "efficiency": 1.0,
+                "total_volume_cm3": 20.88,
+                "total_components": 4
+            },
+            "grpo_reward": -0.1172788143157959
+        },
+        "00_Phase_1_12V_to_36V_E_Bike_Boost_exact_1_3_g4_cand2_b6": {
+            "fitness_score": 0.6842787878787879,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.4376,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 19.118763417130275,
+                "efficiency": 1.0,
+                "total_volume_cm3": 21.88,
+                "total_components": 4
+            },
+            "grpo_reward": -0.12002818286418915
+        },
+        "00_Phase_1_12V_to_36V_E_Bike_Boost_exact_1_3_g4_cand3_b6": {
+            "fitness_score": 0.6845818181818182,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.41759999999999997,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 19.365481042502427,
+                "efficiency": 1.0,
+                "total_volume_cm3": 20.88,
+                "total_components": 4
+            },
+            "grpo_reward": -0.1172788143157959
+        }
+    }
+}

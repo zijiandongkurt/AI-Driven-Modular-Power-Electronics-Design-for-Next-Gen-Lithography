@@ -1,0 +1,283 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 5V to 9V Boost
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.9
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 5V to 9V SEPIC
+Vin in 0 5
+L1 in sw1 22u
+M1 sw1 gate 0 0 NMOS W=1 L=1
+C1 sw1 sw2 22u
+L2 sw2 0 47u
+D1 sw2 out DIODE
+C2 out 0 100u
+Rload out 0 0.9
+Rbleed sw1 0 1Meg
+Rbleed1 sw2 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+* 5V to 9V Boost
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.9
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 5V to 9V Boost
+Vin in 0 5
+L1 in sw 47u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.9
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+* 5V to 9V Boost
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 0.9
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+* 5V to 9V Boost
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 0.9
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+* 4.5V to 9V Boost Converter
+Vin in 0 4.5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 0.625
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 4.5V to 9V Boost Converter
+Vin in 0 4.5
+L1 in sw 47u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 0.625
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+* 4.5V to 9V Boost Converter
+Vin in 0 4.5
+L1 in sw 47u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 0.625
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+* 5V to 9V Boost
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.826
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 5V to 9V Boost
+Vin in 0 5
+L1 in sw 47u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 0.826
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+ 14:20:34
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:21:16
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:22:15
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:22:57
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:23:28
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:23:59
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:24:30
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:25:12
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:25:33
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:26:04
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:26:36
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:27:18
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:27:39
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:28:10
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:28:31
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:29:03
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:29:24
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:29:45
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:30:17
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:30:38
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:31:19
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:31:39
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:32:10
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:32:31
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:33:03
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:33:24
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:33:45
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:34:17
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:34:38
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:35:09
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:35:30
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:36:02
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:36:23
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:36:44
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:37:15
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:37:36
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:38:07
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:38:28
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:38:59
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:39:20
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:39:51
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:40:12
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14:40:33
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST

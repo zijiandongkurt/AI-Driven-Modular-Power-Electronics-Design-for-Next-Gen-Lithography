@@ -1,0 +1,61 @@
+=== TRAINING SUMMARY: Run_005 ===
+Constraint Index: 5
+Batches Completed: 10 / 10
+Total Time Elapsed: 1488.89 sec (24.81 min)
+Average Time per Batch: 148.89 sec
+Average Time per Netlist: 12.41 sec
+
+--- TOPOLOGY YIELD (entire run) ---
+Valid:   11
+Invalid: 121
+Total candidates in history: 120
+Unique Topologies: 26
+Exact Duplicates:  94
+Uniqueness Rate:   21.7%
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.9827 (00_Phase_1_5V_USB_to_12V_Sensor_Boost_g1_cand3_b2)
+  Batch 1 Best: 0.9826 (00_Phase_1_5V_USB_to_12V_Sensor_Boost_g1_cand2_b1)
+  Batch 2 Best: 0.9827 (00_Phase_1_5V_USB_to_12V_Sensor_Boost_g1_cand3_b2)
+  Batch 3 Best: 0.9827 (00_Phase_1_5V_USB_to_12V_Sensor_Boost_g1_cand3_b2)
+  Batch 4 Best: 0.9827 (00_Phase_1_5V_USB_to_12V_Sensor_Boost_g1_cand3_b2)
+  Batch 5 Best: 0.9827 (00_Phase_1_5V_USB_to_12V_Sensor_Boost_g1_cand3_b2)
+  Batch 6 Best: 0.9827 (00_Phase_1_5V_USB_to_12V_Sensor_Boost_g1_cand3_b2)
+  Batch 7 Best: 0.9827 (00_Phase_1_5V_USB_to_12V_Sensor_Boost_g1_cand3_b2)
+  Batch 8 Best: 0.9827 (00_Phase_1_5V_USB_to_12V_Sensor_Boost_g1_cand3_b2)
+  Batch 9 Best: 0.9827 (00_Phase_1_5V_USB_to_12V_Sensor_Boost_g1_cand3_b2)
+  Batch 10 Best: 0.9827 (00_Phase_1_5V_USB_to_12V_Sensor_Boost_g1_cand3_b2)
+
+--- BEST NETLIST METRICS ---
+Output Voltage: 10.7511 V
+Efficiency:     0.9025
+Total Volume:   21.4170 cm^3
+
+=========================================
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-06-04T15:56:47
+* Constraint: Phase 1: 5V USB to 12V Sensor (Boost)
+*   vin_min = 4.5
+*   vin_max = 5.5
+*   vout_target = 12
+*   efficiency_target = 0.78
+*   power_in = 10
+* Candidate: 3 of 12
+* Grouped name: g1_cand3
+*
+* 5V to 12V Boost Converter
+Vin in 0 5
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.save V(*) I(*)
+.end
+
+
