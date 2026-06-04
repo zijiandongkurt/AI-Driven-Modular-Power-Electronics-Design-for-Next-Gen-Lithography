@@ -354,7 +354,10 @@ class validator():
         """All nodes must form a single connected graph, and no nodes can be dangling dead-ends."""
         component_lines, _ = self._parseLines(netlist)
         G = self._buildGraph(component_lines)
-        
+
+        if len(G.nodes) == 0:
+            return False
+
         # 1. No isolated islands
         if not nx.is_connected(G):
             return False

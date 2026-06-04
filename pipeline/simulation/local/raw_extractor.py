@@ -204,7 +204,7 @@ class RawExtractor:
         # Write results CSV
         import pandas as pd
         results_path.parent.mkdir(parents=True, exist_ok=True)
-        pd.DataFrame(all_rows).to_csv(results_path, index=False)
+        pd.DataFrame(all_rows).to_csv(results_path, index=False, lineterminator='\n')
         print(f"Saved {len(all_rows)} result(s) -> {results_path}")
 
         # Clean up .raw files

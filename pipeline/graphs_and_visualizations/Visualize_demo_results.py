@@ -95,32 +95,34 @@ def plot_run_results(run_dir):
                 batch_total = len(reward_data.get('circuits', {}))
                 total_cands_per_batch.append(batch_total)
                 cumulative_total += batch_total
-                
+
                 if target_voltage is None:
                     ac = reward_data.get('active_constraints', {})
                     target_voltage = ac.get('vout_target')
                     target_efficiency = ac.get('efficiency_target')
-                
+
                 for cid, cdata in reward_data.get('circuits', {}).items():
                     metrics = cdata.get('raw_metrics', {}).copy()
                     metrics['fitness'] = cdata.get('fitness_score')
-                    
+
                     if metrics['fitness'] is not None:
                         # --- NEW: Check Uniqueness before plotting ---
                         net_path = os.path.join(llm_out_dir, f"{cid}.net")
                         if os.path.exists(net_path):
                             net_text = open(net_path, "r", encoding="utf-8").read()
                             t_hash = get_topological_hash(net_text)
-                            
+
                             if t_hash not in global_seen_hashes:
                                 global_seen_hashes.add(t_hash)
                                 new_cands[cid] = metrics
                                 cumulative_db[cid] = metrics
                                 b_fit_batch.append(metrics['fitness'])
-                                
+
                                 # Check if it was valid for the bar chart
                                 if val_data.get(cid, {}).get("passed", False):
                                     batch_unique_valid += 1
+        else:
+            total_cands_per_batch.append(0)
 
         val_count = sum(1 for v in val_data.values() if v.get('passed', False))
         valid_counts.append(val_count)
