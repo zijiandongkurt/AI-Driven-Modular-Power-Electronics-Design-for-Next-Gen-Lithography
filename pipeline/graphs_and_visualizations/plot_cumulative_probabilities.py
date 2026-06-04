@@ -54,8 +54,10 @@ def plot_cumulative_probabilities(run_id: str, target_batch: int, temperature: f
                 net_file = llm_out_dir / f"{cand_id}.net"
                 if net_file.exists():
                     net_text = net_file.read_text(encoding="utf-8")
-                    t_hash = get_topological_hash(net_text)
-                    
+                    try:
+                        t_hash = get_topological_hash(net_text)
+                    except (ValueError, Exception):
+                        t_hash = f"invalid_{cand_id}"
                     if t_hash not in seen_hashes:
                         seen_hashes.add(t_hash)
                         records[cand_id] = {"fitness": fitness}
