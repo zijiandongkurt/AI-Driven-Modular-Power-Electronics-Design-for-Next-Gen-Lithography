@@ -49,7 +49,11 @@ def get_topological_hash(netlist_text: str) -> str:
     
     for raw in raw_lines:
         line = raw.split(';')[0].strip()
-        if not line or line.startswith('*') or line.startswith('.'):
+        if not line or line.startswith('*'):
+            continue
+        if line.lower().startswith('.end'):
+            break  # SPICE ignores everything after .end; so do we
+        if line.startswith('.'):
             continue
         if line.startswith('+'):
             if merged_lines:
@@ -70,7 +74,8 @@ def get_topological_hash(netlist_text: str) -> str:
         comp_type = parts[0][0]
         
         if comp_type not in allowed_prefixes:
-            raise ValueError(f"CRITICAL: Validator leaked an illegal component into the Hasher: '{comp_type.upper()}' from line: '{line}'")
+            print(f"[topology_hasher] WARNING: skipping unrecognised line: '{line[:80]}'")
+            continue
         
         # Intelligently extract pins and mathematically normalize values
         if comp_type == 'm': 

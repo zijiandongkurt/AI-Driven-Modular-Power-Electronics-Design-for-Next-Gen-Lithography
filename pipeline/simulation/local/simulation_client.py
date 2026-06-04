@@ -25,6 +25,9 @@ from raw_extractor import RawExtractor
 # simulation/local/ → simulation/ → pipeline/ → repo root
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 CONFIG    = json.loads((REPO_ROOT / "simulation_config.json").read_text())
+_profile  = CONFIG.get("active_profile")
+if _profile and _profile in CONFIG.get("profiles", {}):
+    CONFIG.update(CONFIG["profiles"][_profile])
 
 SNELLIUS_HOST   = CONFIG["snellius_host"]
 SNELLIUS_USER   = CONFIG["snellius_user"]

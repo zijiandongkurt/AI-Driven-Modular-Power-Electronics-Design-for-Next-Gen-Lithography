@@ -466,7 +466,7 @@ def run_single(
         if raw_file.exists():
             text = raw_file.read_text(encoding="utf-8")
             blocks = re.split(r"={10,}\n\s*CANDIDATE \d+\s*\n={10,}\n", text)
-            candidate_texts = [b.strip() for b in blocks[1:] if b.strip()]
+            candidate_texts = [llm.engine._clean(b.strip()) for b in blocks[1:] if b.strip()]
             
         if candidate_texts:
             custom_names = []

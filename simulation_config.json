@@ -1,9 +1,20 @@
 {
     "snellius_host": "snellius.surf.nl",
     "snellius_user": "akumas",
-    "ssh_key_path": "~/.ssh/snellius_key",
     "snellius_repo": "AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography",
-    "ltspice_exe": "C:\\Users\\Pc\\AppData\\Local\\Programs\\ADI\\LTspice\\LTspice.exe",
     "parallel_sims": 4,
-    "poll_interval_s": 3
+    "poll_interval_s": 3,
+
+    "active_profile": "laptop",
+
+    "profiles": {
+        "laptop": {
+            "ssh_key_path": "~/.ssh/snellius_key",
+            "ltspice_exe": "C:\\Users\\ataka\\AppData\\Local\\Programs\\ADI\\LTspice\\LTspice.exe"
+        },
+        "pc": {
+            "ssh_key_path": "~/.ssh/snellius_key",
+            "ltspice_exe": "C:\\Users\\Pc\\AppData\\Local\\Programs\\ADI\\LTspice\\LTspice.exe"
+        }
+    }
 }

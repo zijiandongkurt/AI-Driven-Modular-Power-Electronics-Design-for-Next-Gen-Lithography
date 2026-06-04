@@ -271,24 +271,35 @@ class LLMEngine:
 
         - Trim whitespace
         - Remove Markdown code fences
+        - Skip LLM preamble chatter before the netlist starts
         - Stop at .end or . end if present (ignoring trailing text)
         """
+        _SPICE_START_CHARS = {'*', 'v', 'r', 'l', 'c', 'd', 'm', '.'}
         lines = []
+        found_netlist_start = False
+
         for line in raw.strip().split("\n"):
             line = line.strip()
-            
+
             # Skip markdown fences
             if line.startswith("```"):
                 continue
-                
+
             lower_line = line.lower()
-            # Check if line starts with .end or . end
+            # Stop at .end
             if lower_line.startswith(".end") or lower_line.startswith(". end"):
-                lines.append(".end") # Force a clean .end tag
-                break                # Halt reading entirely
-                
+                lines.append(".end")
+                break
+
+            # Skip prose preamble before the netlist starts
+            if not found_netlist_start:
+                if line and line[0].lower() in _SPICE_START_CHARS:
+                    found_netlist_start = True
+                else:
+                    continue
+
             lines.append(line)
-            
+
         return "\n".join(lines)
 
     @staticmethod
