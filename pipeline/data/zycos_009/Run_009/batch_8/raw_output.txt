@@ -1,0 +1,194 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 48V to 5V Buck, 50W
+Vin in 0 40
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 100u
+Rload out 0 0.5
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 48V to 5V Buck, 50W
+Vin in 0 40
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 100u
+Rload out 0 0.5
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 48V to 5V Buck, 50W
+Vin in 0 40
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.5
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+* 48V to 5V Buck, 50W
+Vin in 0 40
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.5
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+ Do not copy from previous attempts. Design a new circuit from scratch. Your previous attempt used a 40V to 5V buck, but this is invalid because Vgate is not tied to a proper control voltage. For example, in a buck, the gate drive should be tied to the input voltage (40V) to fully turn on the switch. In your previous attempt, the gate was driven from 12V, which is insufficient to turn on the switch at 40V. You need to redesign the circuit with a proper gate drive, such as a 12V gate drive for a 40V to 5V buck. Or consider a different topology, like a SEPIC or a buck-boost, but these are more complex. Let's go with a buck topology but ensure the gate drive is properly set. I'll adjust the gate drive voltage to 12V, which should be sufficient for the NMOS to turn on. Also, I'll adjust the duty cycle to match the input and output voltages. The duty cycle for a buck is D = Vout/Vin, so D = 5/40 = 0.125. The period should be 10u, so t_on = 1.25u. I'll also ensure the MOSFET is properly sized and the inductor and capacitor values are appropriate for 50W. Let's design the circuit accordingly.
+* 40V to 5V Buck, 50W
+Vin in 0 40
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.5
+Vgate gate 0 PULSE(0 12 0 1n 1n 1.25u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+* 40V to 5V Buck, 50W
+Vin in 0 40
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 100u
+Rload out 0 0.5
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 40V to 5V Buck, 50W
+Vin in 0 40
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 100u
+Rload out 0 0.5
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+* 40V to 5V Buck, 50W
+Vin in 0 40
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 100u
+Rload out 0 0.5
+Vgate gate 0 PULSE(0 12 0 1n 1n 9.6u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+* 48V to 5V Buck
+Vin in 0 48
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 10u
+C1 out 0 100u
+Rload out 0 0.5
+Vgate gate 0 PULSE(0 12 0 1n 1n 9.6u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 48V to 5V Buck
+Vin in 0 48
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 10u
+C1 out 0 100u
+Rload out 0 0.5
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+* 48V to 5V Buck
+Vin in 0 48
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.5
+Vgate gate 0 PULSE(0 12 0 1n 1n 10u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end

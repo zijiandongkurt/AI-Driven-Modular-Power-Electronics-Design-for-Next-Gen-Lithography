@@ -1,0 +1,30 @@
+* OVERALL BEST CANDIDATE: 00_Phase_2_80V_to_9V_Specialized_Buck_g2_cand3_b9
+* FITNESS SCORE: 0.9816
+*
+* Generated: 2026-06-04T23:04:25
+* Constraint: Phase 2: 80V to 9V Specialized (Buck)
+*   vin_min = 70
+*   vin_max = 90
+*   vout_target = 9
+*   efficiency_target = 0.86
+*   power_in = 80
+* Candidate: 6 of 12
+* Grouped name: g2_cand3
+*
+* 80V to 9V SEPIC
+Vin in 0 80
+L1 in sw1 47u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+C1 sw1 sw2 22u
+L2 sw2 0 22u
+D1 sw2 out DIODE
+C2 out 0 100u
+Rload out 0 1.01
+Rbleed sw1 0 1Meg
+Rbleed1 sw2 0 1Meg
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 1.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.save V(*) I(*)
+.end

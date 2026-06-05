@@ -1,0 +1,26 @@
+* OVERALL BEST CANDIDATE: 00_Phase_2_Exact_1_10_Limit_Boost_g2_cand3_b9
+* FITNESS SCORE: 0.5467
+*
+* Generated: 2026-06-05T02:40:34
+* Constraint: Phase 2: Exact 1:10 Limit (Boost)
+*   vin_min = 4.5
+*   vin_max = 5.5
+*   vout_target = 50
+*   efficiency_target = 0.85
+*   power_in = 75
+* Candidate: 6 of 12
+* Grouped name: g2_cand3
+*
+* 5V to 50V Boost, 75W
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 33.333
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

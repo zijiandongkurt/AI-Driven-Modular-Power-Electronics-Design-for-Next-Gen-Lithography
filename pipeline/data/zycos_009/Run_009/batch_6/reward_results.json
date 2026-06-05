@@ -1,0 +1,192 @@
+{
+    "active_constraints": {
+        "_comment": "Phase 2: 48V Telecom to 5V (Buck - 9.6:1)",
+        "vin_min": 40,
+        "vin_max": 56,
+        "vout_target": 5,
+        "efficiency_target": 0.86,
+        "power_in": 50
+    },
+    "circuits": {
+        "00_Phase_2_48V_Telecom_to_5V_Buck_9_6_1_g1_cand1_b6": {
+            "fitness_score": -0.61,
+            "source": "validation_penalty",
+            "grpo_reward": -1.9919679164886475
+        },
+        "00_Phase_2_48V_Telecom_to_5V_Buck_9_6_1_g1_cand2_b6": {
+            "fitness_score": -0.89,
+            "source": "validation_penalty",
+            "grpo_reward": -2.459594964981079
+        },
+        "00_Phase_2_48V_Telecom_to_5V_Buck_9_6_1_g1_cand3_b6": {
+            "fitness_score": 0.8599715307265986,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.09677779747497088,
+                "efficiency_loss": 6.745101174569523,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.304378704053093,
+                "efficiency": 0.1854898825430476,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": 0.46302685141563416
+        },
+        "00_Phase_2_48V_Telecom_to_5V_Buck_9_6_1_g2_cand1_b6": {
+            "fitness_score": 0.849335597472031,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.7500568721187659,
+                "efficiency_loss": 6.793793694727187,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 6.936565093301495,
+                "efficiency": 0.1806206305272813,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": 0.4452638626098633
+        },
+        "00_Phase_2_48V_Telecom_to_5V_Buck_9_6_1_g2_cand2_b6": {
+            "fitness_score": 0.849335597472031,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.7500568721187659,
+                "efficiency_loss": 6.793793694727187,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 6.936565093301495,
+                "efficiency": 0.1806206305272813,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": 0.4452638626098633
+        },
+        "00_Phase_2_48V_Telecom_to_5V_Buck_9_6_1_g2_cand3_b6": {
+            "fitness_score": 0.8493827546432076,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.7675937450889914,
+                "efficiency_loss": 6.7731444484593055,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 3.040926564560441,
+                "efficiency": 0.1826855551540695,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": 0.4453426003456116
+        },
+        "00_Phase_2_48V_Telecom_to_5V_Buck_9_6_1_g3_cand1_b6": {
+            "fitness_score": 0.8429851553783494,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 1.0143188336733497,
+                "efficiency_loss": 6.948660911355587,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 2.747979980469368,
+                "efficiency": 0.1651339088644413,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": 0.4346579611301422
+        },
+        "00_Phase_2_48V_Telecom_to_5V_Buck_9_6_1_g3_cand2_b6": {
+            "fitness_score": 0.8429851553783494,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 1.0143188336733497,
+                "efficiency_loss": 6.948660911355587,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 2.747979980469368,
+                "efficiency": 0.1651339088644413,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": 0.4346579611301422
+        },
+        "00_Phase_2_48V_Telecom_to_5V_Buck_9_6_1_g3_cand3_b6": {
+            "fitness_score": 0.8539087139596633,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.2124663363363112,
+                "efficiency_loss": 7.029558542325914,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 6.030694756793473,
+                "efficiency": 0.1570441457674087,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": 0.4529013931751251
+        },
+        "00_Phase_2_48V_Telecom_to_5V_Buck_9_6_1_g4_cand1_b6": {
+            "fitness_score": 0.8447786167051615,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.7496534769629453,
+                "efficiency_loss": 7.094957820496397,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 6.9360442621011344,
+                "efficiency": 0.1505042179503603,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": 0.43765318393707275
+        },
+        "00_Phase_2_48V_Telecom_to_5V_Buck_9_6_1_g4_cand2_b6": {
+            "fitness_score": 0.8552728150711524,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.09664499607246768,
+                "efficiency_loss": 7.055349209231476,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.304856144123867,
+                "efficiency": 0.1544650790768523,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": 0.4551795721054077
+        },
+        "00_Phase_2_48V_Telecom_to_5V_Buck_9_6_1_g4_cand3_b6": {
+            "fitness_score": 0.8447561978723406,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.766775140147179,
+                "efficiency_loss": 7.079315800278341,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 3.0419714760157617,
+                "efficiency": 0.1520684199721659,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": 0.4376157522201538
+        }
+    }
+}

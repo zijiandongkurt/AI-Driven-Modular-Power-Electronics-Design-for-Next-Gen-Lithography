@@ -1,0 +1,220 @@
+{
+    "active_constraints": {
+        "_comment": "Phase 2: 12V to 60V Motor Drive (Boost)",
+        "vin_min": 11,
+        "vin_max": 14,
+        "vout_target": 60,
+        "efficiency_target": 0.88,
+        "power_in": 120
+    },
+    "circuits": {
+        "00_Phase_2_12V_to_60V_Motor_Drive_Boost_g1_cand1_b10": {
+            "fitness_score": 0.5148184030412017,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.42098467808522394,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 13.187032699584956,
+                "efficiency": 0.9419309143182342,
+                "total_volume_cm3": 21.049233904261197,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.08030325727232515,
+            "grpo_reward": -2.205893039703369
+        },
+        "00_Phase_2_12V_to_60V_Motor_Drive_Boost_g1_cand2_b10": {
+            "fitness_score": 0.6842787878787879,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.4376,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 42.47855447784914,
+                "efficiency": 1.0,
+                "total_volume_cm3": 21.88,
+                "total_components": 4
+            },
+            "grpo_reward": 0.44583967328071594
+        },
+        "00_Phase_2_12V_to_60V_Motor_Drive_Boost_g1_cand3_b10": {
+            "fitness_score": 0.6842787878787879,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.4376,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 36.30518592135386,
+                "efficiency": 1.0,
+                "total_volume_cm3": 21.88,
+                "total_components": 4
+            },
+            "grpo_reward": 0.44583967328071594
+        },
+        "00_Phase_2_12V_to_60V_Motor_Drive_Boost_g2_cand1_b10": {
+            "fitness_score": 0.6845818181818182,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.41759999999999997,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 37.04801407649789,
+                "efficiency": 1.0,
+                "total_volume_cm3": 20.88,
+                "total_components": 4
+            },
+            "grpo_reward": 0.45058149099349976
+        },
+        "00_Phase_2_12V_to_60V_Motor_Drive_Boost_g2_cand2_b10": {
+            "fitness_score": 0.5109853216656252,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.42045439923603856,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 11.191343307495115,
+                "efficiency": 0.932611892101514,
+                "total_volume_cm3": 21.02271996180193,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.059528594390728766,
+            "grpo_reward": -2.265873908996582
+        },
+        "00_Phase_2_12V_to_60V_Motor_Drive_Boost_g2_cand3_b10": {
+            "fitness_score": 0.6845818181818182,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.41759999999999997,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 37.04801407649789,
+                "efficiency": 1.0,
+                "total_volume_cm3": 20.88,
+                "total_components": 4
+            },
+            "grpo_reward": 0.45058149099349976
+        },
+        "00_Phase_2_12V_to_60V_Motor_Drive_Boost_g3_cand1_b10": {
+            "fitness_score": 0.6845818181818182,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.41759999999999997,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 35.207147873679695,
+                "efficiency": 1.0,
+                "total_volume_cm3": 20.88,
+                "total_components": 4
+            },
+            "grpo_reward": 0.45058149099349976
+        },
+        "00_Phase_2_12V_to_60V_Motor_Drive_Boost_g3_cand2_b10": {
+            "fitness_score": 0.6845818181818182,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.41759999999999997,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 35.207147873679695,
+                "efficiency": 1.0,
+                "total_volume_cm3": 20.88,
+                "total_components": 4
+            },
+            "grpo_reward": 0.45058149099349976
+        },
+        "00_Phase_2_12V_to_60V_Motor_Drive_Boost_g3_cand3_b10": {
+            "fitness_score": 0.6836363636363636,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.48,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 39.05453734219632,
+                "efficiency": 1.0,
+                "total_volume_cm3": 24.0,
+                "total_components": 4
+            },
+            "grpo_reward": 0.43578702211380005
+        },
+        "00_Phase_2_12V_to_60V_Motor_Drive_Boost_g4_cand1_b10": {
+            "fitness_score": 0.6843737982384259,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.43132931626388715,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 45.78877513611005,
+                "efficiency": 0.936362267591697,
+                "total_volume_cm3": 21.56646581319436,
+                "total_components": 4
+            },
+            "grpo_reward": 0.4473263919353485
+        },
+        "00_Phase_2_12V_to_60V_Motor_Drive_Boost_g4_cand2_b10": {
+            "fitness_score": 0.6843737982384259,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.43132931626388715,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 45.78877513611005,
+                "efficiency": 0.936362267591697,
+                "total_volume_cm3": 21.56646581319436,
+                "total_components": 4
+            },
+            "grpo_reward": 0.4473263919353485
+        },
+        "00_Phase_2_12V_to_60V_Motor_Drive_Boost_g4_cand3_b10": {
+            "fitness_score": 0.6843737982384259,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.43132931626388715,
+                "component_cost_loss": 0.4
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 45.78877513611005,
+                "efficiency": 0.936362267591697,
+                "total_volume_cm3": 21.56646581319436,
+                "total_components": 4
+            },
+            "grpo_reward": 0.4473263919353485
+        }
+    }
+}

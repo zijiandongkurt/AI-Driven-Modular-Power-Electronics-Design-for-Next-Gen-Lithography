@@ -1,0 +1,270 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 50V to 12V Buck-Mode SEPIC
+Vin in 0 50
+L1 in sw1 22u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+C1 sw1 sw2 22u
+L2 sw2 0 22u
+M2 sw2 gate2 0 0 NMOS W=1 L=1
+D1 sw2 out DIODE
+C2 out 0 100u
+Rload out 0 0.144
+Rbleed sw1 0 1Meg
+Rbleed1 sw2 0 1Meg
+Vgate gate1 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+Vgate1 gate2 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 50V to 12V Buck-Mode SEPIC
+Vin in 0 50
+L1 in sw1 22u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+C1 sw1 sw2 22u
+L2 sw2 0 22u
+M2 sw2 gate2 0 0 NMOS W=1 L=1
+D1 sw2 out DIODE
+C2 out 0 100u
+Rload out 0 1.44
+Rbleed sw1 0 1Meg
+Rbleed1 sw2 0 1Meg
+Vgate  gate1 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+Vgate1 gate2 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+* 70V to 12V SEPIC
+Vin in 0 70
+L1 in sw1 10u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+C1 sw1 sw2 47u
+L2 sw2 0 10u
+D1 sw2 out DIODE
+C2 out 0 100u
+Rload out 0 1.44
+Rbleed sw1 0 1Meg
+Rbleed1 sw2 0 1Meg
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 50V to 12V Buck-Mode SEPIC
+Vin in 0 60
+L1 in sw1 100u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+C1 sw1 sw2 22u
+L2 sw2 0 100u
+D1 sw2 out DIODE
+C2 out 0 100u
+Rload out 0 1.44
+Rbleed sw1 0 1Meg
+Rbleed1 sw2 0 1Meg
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+* 50V to 12V Buck-Mode SEPIC
+Vin in 0 50
+L1 in sw1 100u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+C1 sw1 sw2 22u
+L2 sw2 0 100u
+M2 sw2 gate2 0 0 NMOS W=1 L=1
+D1 sw2 out DIODE
+C2 out 0 220u
+Rload out 0 0.144
+Rbleed sw1 0 1Meg
+Rbleed1 sw2 0 1Meg
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+* 50V to 12V SEPIC, 100W
+Vin in 0 50
+L1 in sw1 47u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+C1 sw1 sw2 47u
+L2 sw2 0 47u
+M2 sw2 gate2 0 0 NMOS W=1 L=1
+D1 sw2 out DIODE
+C2 out 0 100u
+Rload out 0 1.44
+Rbleed sw1 0 1Meg
+Rbleed1 sw2 0 1Meg
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+* 70V to 12V SEPIC, 100W
+Vin in 0 70
+L1 in sw1 100u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+C1 sw1 sw2 22u
+L2 sw2 0 100u
+D1 sw2 out DIODE
+C2 out 0 100u
+Rload out 0 1.44
+Rbleed sw1 0 1Meg
+Rbleed1 sw2 0 1Meg
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 50V to 12V SEPIC, 100W
+Vin in 0 50
+L1 in sw1 22u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+C1 sw1 sw2 47u
+L2 sw2 0 22u
+M2 sw2 gate2 0 0 NMOS W=1 L=1
+D1 sw2 out DIODE
+C2 out 0 100u
+Rload out 0 1.44
+Rbleed sw1 0 1Meg
+Rbleed1 sw2 0 1Meg
+Vgate  gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate1 gate2 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+* 50V to 12V Buck-Mode SEPIC
+Vin in 0 50
+L1 in sw1 22u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+C1 sw1 sw2 22u
+L2 sw2 0 22u
+M2 sw2 gate2 0 0 NMOS W=1 L=1
+D1 sw2 out DIODE
+C2 out 0 100u
+Rload out 0 1.44
+Rbleed sw1 0 1Meg
+Rbleed1 sw2 0 1Meg
+Vgate  gate1 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+Vgate2 gate2 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+* 50V to 12V Buck-Mode SEPIC
+Vin in 0 50
+L1 in sw1 22u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+C1 sw1 sw2 47u
+L2 sw2 0 22u
+M2 sw2 gate2 0 0 NMOS W=1 L=1
+D1 sw2 out DIODE
+C2 out 0 100u
+Rload out 0 1.44
+Rbleed sw1 0 1Meg
+Rbleed1 sw2 0 1Meg
+Vgate gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate1 gate2 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 50V to 12V Buck-Mode SEPIC
+Vin in 0 50
+L1 in sw1 47u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+C1 sw1 sw2 22u
+L2 sw2 0 47u
+M2 sw2 gate2 0 0 NMOS W=1 L=1
+D1 sw2 out DIODE
+C2 out 0 100u
+Rload out 0 1.44
+Rbleed sw1 0 1Meg
+Rbleed1 sw2 0 1Meg
+Vgate  gate1 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+Vgate1 gate2 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+* 50V to 12V SEPIC
+Vin in 0 50
+L1 in sw1 22u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+C1 sw1 sw2 47u
+L2 sw2 0 22u
+M2 sw2 gate2 0 0 NMOS W=1 L=1
+D1 sw2 out DIODE
+C2 out 0 100u
+Rload out 0 1.44
+Rbleed sw1 0 1Meg
+Rbleed1 sw2 0 1Meg
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+Vgate2 gate2 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end

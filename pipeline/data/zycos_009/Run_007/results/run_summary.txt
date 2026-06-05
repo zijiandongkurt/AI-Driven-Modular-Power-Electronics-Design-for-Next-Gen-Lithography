@@ -1,0 +1,61 @@
+=== TRAINING SUMMARY: Run_007 ===
+Constraint Index: 18
+Batches Completed: 10 / 10
+Total Time Elapsed: 1438.36 sec (23.97 min)
+Average Time per Batch: 143.84 sec
+Average Time per Netlist: 13.20 sec
+
+--- TOPOLOGY YIELD (entire run) ---
+Valid:   12
+Invalid: 109
+Total candidates in history: 109
+Unique Topologies: 9
+Exact Duplicates:  100
+Uniqueness Rate:   8.3%
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.8572 (00_Phase_2_Exact_10_1_Limit_Buck_g4_cand2_b5)
+  Batch 1 Best: 0.8529 (00_Phase_2_Exact_10_1_Limit_Buck_g4_cand3_b1)
+  Batch 2 Best: 0.8552 (00_Phase_2_Exact_10_1_Limit_Buck_g2_cand3_b2)
+  Batch 3 Best: 0.8552 (00_Phase_2_Exact_10_1_Limit_Buck_g2_cand3_b2)
+  Batch 4 Best: 0.8552 (00_Phase_2_Exact_10_1_Limit_Buck_g2_cand3_b2)
+  Batch 5 Best: 0.8572 (00_Phase_2_Exact_10_1_Limit_Buck_g4_cand2_b5)
+  Batch 6 Best: 0.8572 (00_Phase_2_Exact_10_1_Limit_Buck_g4_cand2_b5)
+  Batch 7 Best: 0.8572 (00_Phase_2_Exact_10_1_Limit_Buck_g4_cand2_b5)
+  Batch 8 Best: 0.8572 (00_Phase_2_Exact_10_1_Limit_Buck_g4_cand2_b5)
+  Batch 9 Best: 0.8572 (00_Phase_2_Exact_10_1_Limit_Buck_g4_cand2_b5)
+  Batch 10 Best: 0.8572 (00_Phase_2_Exact_10_1_Limit_Buck_g4_cand2_b5)
+
+--- BEST NETLIST METRICS ---
+Output Voltage: 4.1870 V
+Efficiency:     0.1607
+Total Volume:   10000.0000 cm^3
+
+=========================================
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-06-05T01:13:11
+* Constraint: Phase 2: Exact 10:1 Limit (Buck)
+*   vin_min = 45
+*   vin_max = 55
+*   vout_target = 5
+*   efficiency_target = 0.85
+*   power_in = 75
+* Candidate: 11 of 12
+* Grouped name: g4_cand2
+*
+* 45V to 5V Buck, 75W
+Vin in 0 45
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 470u
+Rload out 0 0.333
+Vgate gate 0 PULSE(0 12 0 1n 1n 11.666u 20u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+

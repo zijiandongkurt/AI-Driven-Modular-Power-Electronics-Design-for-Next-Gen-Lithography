@@ -1,0 +1,61 @@
+=== TRAINING SUMMARY: Run_003 ===
+Constraint Index: 17
+Batches Completed: 10 / 10
+Total Time Elapsed: 1853.39 sec (30.89 min)
+Average Time per Batch: 185.34 sec
+Average Time per Netlist: 15.57 sec
+
+--- TOPOLOGY YIELD (entire run) ---
+Valid:   12
+Invalid: 119
+Total candidates in history: 119
+Unique Topologies: 20
+Exact Duplicates:  99
+Uniqueness Rate:   16.8%
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.5999 (00_Phase_2_9V_to_80V_Specialized_Boost_g1_cand3_b10)
+  Batch 1 Best: 0.5758 (00_Phase_2_9V_to_80V_Specialized_Boost_g4_cand1_b1)
+  Batch 2 Best: 0.5758 (00_Phase_2_9V_to_80V_Specialized_Boost_g4_cand1_b1)
+  Batch 3 Best: 0.5758 (00_Phase_2_9V_to_80V_Specialized_Boost_g4_cand1_b1)
+  Batch 4 Best: 0.5758 (00_Phase_2_9V_to_80V_Specialized_Boost_g4_cand1_b1)
+  Batch 5 Best: 0.5815 (00_Phase_2_9V_to_80V_Specialized_Boost_g2_cand1_b5)
+  Batch 6 Best: 0.5815 (00_Phase_2_9V_to_80V_Specialized_Boost_g2_cand1_b5)
+  Batch 7 Best: 0.5815 (00_Phase_2_9V_to_80V_Specialized_Boost_g2_cand1_b5)
+  Batch 8 Best: 0.5815 (00_Phase_2_9V_to_80V_Specialized_Boost_g2_cand1_b5)
+  Batch 9 Best: 0.5815 (00_Phase_2_9V_to_80V_Specialized_Boost_g2_cand1_b5)
+  Batch 10 Best: 0.5999 (00_Phase_2_9V_to_80V_Specialized_Boost_g1_cand3_b10)
+
+--- BEST NETLIST METRICS ---
+Output Voltage: 35.9166 V
+Efficiency:     1.0000
+Total Volume:   21.8800 cm^3
+
+=========================================
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-06-04T23:37:39
+* Constraint: Phase 2: 9V to 80V Specialized (Boost)
+*   vin_min = 8
+*   vin_max = 10
+*   vout_target = 80
+*   efficiency_target = 0.86
+*   power_in = 80
+* Candidate: 3 of 12
+* Grouped name: g1_cand3
+*
+* 8V to 80V Boost, 80W
+Vin in 0 8
+L1 in sw 47u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 80
+Vgate gate 0 PULSE(0 12 0 1n 1n 6.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+
