@@ -117,7 +117,7 @@ def save_history(history: List[Dict], run_folder_path: Path) -> None:
     with path.open("w", encoding="utf-8") as f:
         json.dump(history, f, indent=2)
 
-def generate_global_training_summary(zycos_path: Path, current_run_idx: int, total_runs: int):
+def generate_global_training_summary(zycos_path: Path, current_run_idx: int, total_runs: int, config: Dict = None):
     """
     Scans all completed runs in the current zycos folder and generates a live-updating
     master summary file tracking global progress, aggregate yields, and the best overall fitness.
@@ -173,6 +173,12 @@ def generate_global_training_summary(zycos_path: Path, current_run_idx: int, tot
     global_validity = (total_valid / total_netlists * 100) if total_netlists > 0 else 0
     runs_remaining = total_runs - current_run_idx
 
+    config_text = ""
+    if config:
+        config_text = "\n--- TRAINING HYPERPARAMETERS ---\n"
+        config_text += json.dumps(config, indent=2)
+        config_text += "\n"
+
     master_text = f"""=== GLOBAL TRAINING RUN SUMMARY: {zycos_path.name} ===
 Progress: {current_run_idx} / {total_runs} Runs Completed ({runs_remaining} remaining)
 
@@ -192,7 +198,7 @@ Global Validity Rate: {global_validity:.2f}%
 Best Overall Score: {global_best_fit:.4f}
 Best Candidate: {global_best_cand}
 Found in: {global_best_run} (Constraint: {global_best_constraint})
-==================================================
+{config_text}==================================================
 """
     out_path = zycos_path / "training_run_summary.txt"
     out_path.write_text(master_text, encoding="utf-8")
@@ -673,8 +679,7 @@ def main():
             data_dir=data_dir,
             config=config,
         )
-        
-    generate_global_training_summary(zycos_path, local_run_idx + 1, len(constraint_indices))
+        generate_global_training_summary(zycos_path, local_run_idx + 1, len(constraint_indices), config)
 
     print(f"\n=== {zycos_name} complete — {len(constraint_indices)} runs finished ===")
 
