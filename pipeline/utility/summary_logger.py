@@ -171,19 +171,22 @@ class SummaryLogger:
 
         data_root = Path("pipeline") / "data"
 
-        # Valid / invalid count for the current batch
-        val_path = data_root / batch_id / "validation_results.json"
-        # Valid / invalid count for the ENTIRE run (calculated from history)
-        n_valid = sum(1 for cand in history if cand.get("is_valid", False))
-        n_invalid = len(history) - n_valid
-        if val_path.exists():
-            with val_path.open(encoding="utf-8") as f:
-                val_data = json.load(f)
-            for v in val_data.values():
-                if v.get("passed", False):
-                    n_valid += 1
-                else:
-                    n_invalid += 1
+        # --- FIX: Calculate true Valid / Invalid counts for the ENTIRE run ---
+        # Scan all validation_results.json files generated so far in this run
+        n_valid = 0
+        n_invalid = 0
+        for val_path in self.run_folder_path.glob("batch_*/validation_results.json"):
+            try:
+                with val_path.open(encoding="utf-8") as f:
+                    val_data = json.load(f)
+                for v in val_data.values():
+                    if v.get("passed", False):
+                        n_valid += 1
+                    else:
+                        n_invalid += 1
+            except Exception as e:
+                print(f"Warning: Could not read {val_path.name} for summary stats: {e}")
+        # ---------------------------------------------------------------------
 
         # Raw metrics and netlist text for the global best candidate
         best_batch_dir = data_root / best_entry.get("batch_id", batch_id)
