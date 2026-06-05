@@ -5,13 +5,13 @@ import numpy as np
 from pathlib import Path
 import json
 import sys
-from pathlib import Path
 
 # Add the parent directory (project root) to the Python path
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.append(str(PROJECT_ROOT))
 
 from run_inference import run_inference
+from pipeline.utility.topology_hasher import get_topological_hash
 
 # Import all plotting modules from the new visualizations directory
 try:
@@ -24,13 +24,14 @@ except ImportError as e:
     print(f"Warning: Plotting modules not found. Plotting disabled. Error: {e}")
 
 def extract_metrics(run_folder: str) -> dict:
-    """Parses the run summary and champion JSON to extract fitness and physical metrics."""
-    summary_path = Path(run_folder) / "run_summary.txt"
-    champ_path = Path(run_folder) / "champion_metrics.json"
+    """Parses the run summary, champion JSON, and netlist files to extract all metrics."""
+    folder_path = Path(run_folder)
+    summary_path = folder_path / "run_summary.txt"
+    champ_path = folder_path / "champion_metrics.json"
     
     metrics = {
-        "fitness": 0.0, "auc": 0.0, "validity": 0.0, "learning_curve": [], 
-        "v_error_pct": None, "efficiency": None, 
+        "fitness": 0.0, "auc": 0.0, "validity": 0.0, "duplicate_rate": 0.0, 
+        "learning_curve": [], "v_error_pct": None, "efficiency": None, 
         "volume": None, "components": None, "target_power": None
     }
     
@@ -48,6 +49,25 @@ def extract_metrics(run_folder: str) -> dict:
         
         norm_scores = [0.0 if s < 0.5 else (s - 0.5) * 2.0 for s in raw_scores]
         metrics["auc"] = np.trapz(norm_scores) if len(norm_scores) > 1 else 0.0
+
+    # Calculate Duplicate Rate using the WL Graph Hasher
+    netlist_files = [f for f in folder_path.rglob("*.net") if f.name != "best_topology.net"]
+    unique_hashes = set()
+    total_netlists = 0
+    
+    for net_file in netlist_files:
+        try:
+            net_text = net_file.read_text(encoding="utf-8")
+            topo_hash = get_topological_hash(net_text)
+            unique_hashes.add(topo_hash)
+            total_netlists += 1
+        except Exception:
+            continue
+            
+    if total_netlists > 0:
+        metrics["duplicate_rate"] = (1.0 - (len(unique_hashes) / total_netlists)) * 100.0
+    else:
+        metrics["duplicate_rate"] = 0.0
 
     # Extract Physical Trade-off Data
     if champ_path.exists():
@@ -79,8 +99,16 @@ def main():
 
     TRIALS_PER_TASK = config["trials_per_task"]
     base_config     = config["base_config"]
-    models          = config["models"]
     tasks           = config["tasks"]
+
+    # --- HARDCODED 5 MODELS FOR CURRICULUM BENCHMARKING ---
+    models = {
+        "Baseline": None, # Indicates base LLM with no LoRA adapter
+        "sft": "checkpoints/sft_model", # TODO: Verify your SFT path name
+        "trained_easy": "checkpoints/zycos_008/grpo-lora/final",
+        "trained_medium": "checkpoints/zycos_009/grpo-lora/final",
+        "trained_hard": "checkpoints/zycos_010/grpo-lora/final"
+    }
 
     master_results = {model: {task["label"]: [] for task in tasks} for model in models.keys()}
 
@@ -100,22 +128,24 @@ def main():
                     metrics = extract_metrics(output_folder)
                     master_results[model_name][task['label']].append(metrics)
                 except Exception as e:
-                    master_results[model_name][task['label']].append({"fitness": 0.0, "auc": 0.0, "validity": 0.0})
+                    print(f"Error evaluating {model_name} on {task['label']}: {e}")
+                    master_results[model_name][task['label']].append({"fitness": 0.0, "auc": 0.0, "validity": 0.0, "duplicate_rate": 0.0})
 
     # --- FINAL MULTI-METRIC REPORT ---
-    report_text = f"\n\n{'='*100}\n"
+    report_text = f"\n\n{'='*120}\n"
     report_text += f"🏆 COMPREHENSIVE BENCHMARK RESULTS (Mean ± StdDev) 🏆\n"
-    report_text += f"{'='*100}\n"
+    report_text += f"{'='*120}\n"
     
     header = f"{'Task (Constraint)':<22} | {'Metric':<14} | " + " | ".join([f"{m:<18}" for m in models.keys()])
     report_text += header + "\n"
-    report_text += "-" * 100 + "\n"
+    report_text += "-" * 120 + "\n"
 
     for task in tasks:
         task_lbl = task['label']
         report_text += f"{task_lbl:<22} | \n"
         
-        for metric_name, key in [("Max Fitness", "fitness"), ("AUC (Speed)", "auc"), ("Validity %", "validity")]:
+        # Added Duplicate Rate to the output table metrics
+        for metric_name, key in [("Max Fitness", "fitness"), ("AUC (Speed)", "auc"), ("Validity %", "validity"), ("Duplicate %", "duplicate_rate")]:
             row = f"{'':<22} | {metric_name:<14} | "
             for model_name in models.keys():
                 trial_data = master_results[model_name][task_lbl]
@@ -126,7 +156,7 @@ def main():
                 else:
                     row += f"{'ERR':<18} | "
             report_text += row + "\n"
-        report_text += "-" * 100 + "\n"
+        report_text += "-" * 120 + "\n"
 
     # 1. Print to console
     print(report_text)
