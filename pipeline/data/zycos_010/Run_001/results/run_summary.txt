@@ -1,0 +1,61 @@
+=== TRAINING SUMMARY: Run_001 ===
+Constraint Index: 8
+Batches Completed: 10 / 10
+Total Time Elapsed: 2037.27 sec (33.95 min)
+Average Time per Batch: 203.73 sec
+Average Time per Netlist: 17.72 sec
+
+--- TOPOLOGY YIELD (entire run) ---
+Valid:   112
+Invalid: 8
+Total candidates in history: 115
+Unique Topologies: 27
+Exact Duplicates:  88
+Uniqueness Rate:   23.5%
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.6171 (00_Phase_3_300V_to_15V_Servo_Rail_Buck_g3_cand2_b8)
+  Batch 1 Best: 0.5107 (00_Phase_3_300V_to_15V_Servo_Rail_Buck_g2_cand2_b1)
+  Batch 2 Best: 0.5107 (00_Phase_3_300V_to_15V_Servo_Rail_Buck_g2_cand2_b1)
+  Batch 3 Best: 0.5107 (00_Phase_3_300V_to_15V_Servo_Rail_Buck_g2_cand2_b1)
+  Batch 4 Best: 0.5110 (00_Phase_3_300V_to_15V_Servo_Rail_Buck_g3_cand3_b4)
+  Batch 5 Best: 0.5110 (00_Phase_3_300V_to_15V_Servo_Rail_Buck_g3_cand3_b4)
+  Batch 6 Best: 0.5110 (00_Phase_3_300V_to_15V_Servo_Rail_Buck_g3_cand3_b4)
+  Batch 7 Best: 0.5635 (00_Phase_3_300V_to_15V_Servo_Rail_Buck_g4_cand1_b7)
+  Batch 8 Best: 0.6171 (00_Phase_3_300V_to_15V_Servo_Rail_Buck_g3_cand2_b8)
+  Batch 9 Best: 0.6171 (00_Phase_3_300V_to_15V_Servo_Rail_Buck_g3_cand2_b8)
+  Batch 10 Best: 0.6171 (00_Phase_3_300V_to_15V_Servo_Rail_Buck_g3_cand2_b8)
+
+--- BEST NETLIST METRICS ---
+Output Voltage: 6.9756 V
+Efficiency:     0.0272
+Total Volume:   10000.0000 cm^3
+
+=========================================
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-06-05T17:02:59
+* Constraint: Phase 3: 300V to 15V Servo Rail (Buck)
+*   vin_min = 280
+*   vin_max = 320
+*   vout_target = 15
+*   efficiency_target = 0.93
+*   power_in = 350
+* Candidate: 8 of 12
+* Grouped name: g3_cand2
+*
+* 280V to 15V Buck, 350W
+Vin in 0 280
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 100u
+Rload out 0 0.643
+Vgate gate 0 PULSE(0 12 0 1n 1n 9.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+

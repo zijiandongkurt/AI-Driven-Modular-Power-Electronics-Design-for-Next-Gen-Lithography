@@ -1,0 +1,170 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 15V to 230V 2-phase boost, 400W
+Vin in 0 15
+L1 in sw1 22u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+D1 sw1 out DIODE
+L2 in sw2 22u
+M2 sw2 gate2 0 0 NMOS W=1 L=1
+D2 sw2 out DIODE
+C1 out 0 100u
+Rload out 0 132
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 9.35u 10u)
+Vgate2 gate2 0 PULSE(0 12 5u 1n 1n 9.35u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 15V to 230V 2-phase boost, 400W
+Vin in 0 15
+L1 in sw1 22u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+D1 sw1 out DIODE
+L2 in sw2 22u
+M2 sw2 gate2 0 0 NMOS W=1 L=1
+D2 sw2 out DIODE
+C1 out 0 100u
+Rload out 0 132
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 9.35u 10u)
+Vgate2 gate2 0 PULSE(0 12 5u 1n 1n 9.35u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+* 15V to 230V 2-phase boost, 400W
+Vin in 0 15
+L1 in sw1 22u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+D1 sw1 out DIODE
+L2 in sw2 22u
+M2 sw2 gate2 0 0 NMOS W=1 L=1
+D2 sw2 out DIODE
+C1 out 0 100u
+Rload out 0 132
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 9.35u 10u)
+Vgate2 gate2 0 PULSE(0 12 5u 1n 1n 9.35u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+ The previous netlist is shown above. Do not repeat it. Try a different approach. This is your second attempt. You are not meeting the required constraints. The target is 230V, but the actual output was 51.7V. You must change the circuit topology, timing, or component values to get a higher output voltage. You can increase the inductor value, increase the switching frequency, or change the topology to a 2-stage boost. You may also need to increase the size of the MOSFET or diode. Try a different configuration.
+* 15V to 230V Boost, 400W
+Vin in 0 15
+L1 in sw 15u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 132
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+ Let's try a higher inductor value and adjust the gate timing for a higher duty cycle.
+* 12V to 230V boost, 400W
+Vin in 0 12
+L1 in sw 50u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 132
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 12V to 230V Boost, 400W
+Vin in 0 12
+L1 in sw 47u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 132
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+ Do not re-use same netlist.
+* 12V to 230V boost, 400W
+Vin in 0 12
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 132
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

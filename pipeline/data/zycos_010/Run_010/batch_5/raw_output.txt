@@ -1,0 +1,208 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 3.3V to 277V Boost, 200W
+Vin in 0 3.3
+L1 in sw1 100u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+D1 sw1 out DIODE
+C1 out 0 100u
+Rload out 0 380
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 3.3V to 277V Boost, 200W
+Vin in 0 3.3
+L1 in sw1 100u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+D1 sw1 out DIODE
+C1 out 0 100u
+Rload out 0 380
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+* 3.3V to 277V Boost, 200W
+Vin in 0 3.3
+L1 in sw1 100u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+D1 sw1 out DIODE
+C1 out 0 100u
+Rload out 0 380
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+ For Boost, L1 is in series with Vin, M1 is low-side switch.
+* 3.3V to 277V Boost, 200W
+Vin in 0 3.3
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 380
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+ Try using a different switching configuration, like a SEPIC or Cuk, or a different duty cycle. You can also change the inductor value or the switching frequency. The previous netlist used a boost topology with L1 in sw 47u, M1 sw gate 0 0 NMOS W=1 L=1, D1 sw out DIODE, C1 out 0 220u, Rload out 0 380, Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u). You must change something.
+* 3.3V to 277V Boost, 200W
+Vin in 0 3.3
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 380
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+ This is not acceptable. The input is 3.3V to 277V, which is a 84x boost. You need a longer L1, higher Rload, and different gate timing.
+
+* 3.3V to 277V Boost, 200W
+Vin in 0 3.3
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 380
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+ For a boost, try a smaller inductor, longer on-time, or larger L1 for higher voltage.
+* 3.3V to 277V boost, 200W
+Vin in 0 3.3
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 380
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+ This is not a valid change. Try again.
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+* 3.3V to 277V boost, 200W
+Vin in 0 3.3
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 380
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+* 3.3V to 277V Boost, 200W
+Vin in 0 3.3
+L1 in sw1 22u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+D1 sw1 out DIODE
+C1 out 0 100u
+Rload out 0 380
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 3.3V to 277V Boost, 200W
+Vin in 0 3.3
+L1 in sw1 22u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+D1 sw1 out DIODE
+C1 out 0 100u
+Rload out 0 380
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+* 3.3V to 277V Boost, 200W
+Vin in 0 3.3
+L1 in sw1 22u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+D1 sw1 out DIODE
+C1 out 0 100u
+Rload out 0 380
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

@@ -1,0 +1,62 @@
+=== TRAINING SUMMARY: Run_007 ===
+Constraint Index: 5
+Batches Completed: 10 / 10
+Total Time Elapsed: 2470.36 sec (41.17 min)
+Average Time per Batch: 247.04 sec
+Average Time per Netlist: 20.76 sec
+
+--- TOPOLOGY YIELD (entire run) ---
+Valid:   83
+Invalid: 37
+Total candidates in history: 119
+Unique Topologies: 35
+Exact Duplicates:  84
+Uniqueness Rate:   29.4%
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.5000 (00_Phase_3_24V_Industrial_to_400V_Bus_Boost_g2_cand2_b9)
+  Batch 1 Best: 0.5000 (00_Phase_3_24V_Industrial_to_400V_Bus_Boost_g2_cand2_b1)
+  Batch 2 Best: 0.5000 (00_Phase_3_24V_Industrial_to_400V_Bus_Boost_g2_cand2_b1)
+  Batch 3 Best: 0.5000 (00_Phase_3_24V_Industrial_to_400V_Bus_Boost_g2_cand2_b1)
+  Batch 4 Best: 0.5000 (00_Phase_3_24V_Industrial_to_400V_Bus_Boost_g2_cand2_b1)
+  Batch 5 Best: 0.5000 (00_Phase_3_24V_Industrial_to_400V_Bus_Boost_g2_cand2_b1)
+  Batch 6 Best: 0.5000 (00_Phase_3_24V_Industrial_to_400V_Bus_Boost_g2_cand2_b1)
+  Batch 7 Best: 0.5000 (00_Phase_3_24V_Industrial_to_400V_Bus_Boost_g2_cand2_b1)
+  Batch 8 Best: 0.5000 (00_Phase_3_24V_Industrial_to_400V_Bus_Boost_g2_cand2_b1)
+  Batch 9 Best: 0.5000 (00_Phase_3_24V_Industrial_to_400V_Bus_Boost_g2_cand2_b9)
+  Batch 10 Best: 0.5000 (00_Phase_3_24V_Industrial_to_400V_Bus_Boost_g2_cand2_b9)
+
+--- BEST NETLIST METRICS ---
+Output Voltage: 98.3023 V
+Efficiency:     0.3638
+Total Volume:   386.2297 cm^3
+
+=========================================
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-06-05T21:32:07
+* Constraint: Phase 3: 24V Industrial to 400V Bus (Boost)
+*   vin_min = 20
+*   vin_max = 28
+*   vout_target = 400
+*   efficiency_target = 0.94
+*   power_in = 500
+* Candidate: 5 of 12
+* Grouped name: g2_cand2
+*
+* 28V to 400V Boost, 500W
+Vin in 0 28
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 320
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Rbleed sw 0 1Meg
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+

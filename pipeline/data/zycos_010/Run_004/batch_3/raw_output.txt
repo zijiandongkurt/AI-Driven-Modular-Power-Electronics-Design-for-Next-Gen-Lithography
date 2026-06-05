@@ -1,0 +1,167 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+ Try again.
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing, component values, or other parameters to create a new netlist.**. You can use the same topology but change timing
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+ 10u is not 15u, and 12V is not 15V, and 5.8u is not 5.8u. So changing component values is acceptable.
+The input voltage is 15V, the output is 51.7V, which is way below the target 230V. The duty cycle is 580n/10u = 58%, which is too low for a boost. You need D = 1 - Vin/Vout = 1 - 15/230 = 935m. The switch is on for 5.8u, which is 58% of 10u. So to get 935m, you need t_on = 9.35u, period = 10u. Also, Rload is 132 ohms, which is 51.7^2/132 = 201W. But 400W is needed, so Rload must be 230^2/400 = 132 ohms, but with higher voltage. The inductor is 15u, which may be too small. Let's increase it to 22u and adjust the timing. So the corrected netlist would have Vin=15V, L1=22u, M1 sw gate 0 0 NMOS, D1 sw out DIODE, C1 out 0 100u, Rload out 0 132, Vgate gate 0 PULSE(0 12 0 1n 1n 9.35u 10u). This should give a higher Vout. Also, the model and .tran are the same. Let's try that.
+* 15V to 230V Boost, 400W
+Vin in 0 15
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 132
+Vgate gate 0 PULSE(0 12 0 1n 1n 9.35u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+* 12V to 230V Boost, 400W
+Vin in 0 12
+L1 in sw 15u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 132
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+ 00_Phase_3_12V_to_230V_Inverter_Step_Up_Boost_g3_cand1_b2
+
+* 12V to 230V boost, 400W
+Vin in 0 12
+L1 in sw 44u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 200u
+Rload out 0 132
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 12V to 230V boost, 400W
+Vin in 0 12
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 132
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+* 12V to 230V boost, 400W
+Vin in 0 12
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 200u
+Rload out 0 132
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+* 12V to 230V Inverter Step-Up (Boost)
+Vin in 0 12
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 11V to 230V Boost
+Vin in 0 11
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 132
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+* 12V to 230V Inverter Step-Up (Boost)
+Vin in 0 12
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end

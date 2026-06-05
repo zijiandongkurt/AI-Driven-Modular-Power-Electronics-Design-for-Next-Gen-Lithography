@@ -1,0 +1,253 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 360V to 24V interleaved 2-phase buck, 500W
+Vin in 0 360
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 100u
+L2 sw2 out 100u
+C1 out 0 220u
+Rload out 0 1.15
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 360V to 24V interleaved 2-phase buck, 500W
+Vin in 0 360
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 100u
+L2 sw2 out 100u
+C1 out 0 470u
+Rload out 0 1.15
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+* 360V to 24V interleaved 2-phase buck, 500W
+Vin in 0 360
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 220u
+L2 sw2 out 220u
+C1 out 0 100u
+Rload out 0 1.15
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+ 100u inductors are too small for 360V to 24V buck. You need 10x larger inductors, ~1mH. 1.15-ohm load is 500W at 24V, but that's only 500/500=1A. 100u inductors can only handle 500/100u=5A, but you need much lower current for higher voltage. 100u is 10x too small for 360V to 24V buck. You need 1mH inductors. 5.8u on-time is 580n for 10u period = 58% duty cycle. For 360V to 24V, duty cycle should be 24/360=67m, not 58%. 67m duty requires 670n on-time, not 5.8u. Your gate pulse is 5.8u on for 10u period, which is 58% duty cycle. This is 58/67=870m times larger than needed. That's why your output is 4.56V instead of 24V. You need 670n on-time. 5.8u is 5800n, which is 8.7x too long. Fix that, and increase inductor to 1mH. Also, Rload is 1.15 for 24V/1.15=20.8A, which is 500W. That's correct. 20.8A for 100u inductor would be 20.8/100u=208000 rad/s, which is 33kHz. But your gate is 100kHz. That's not matching. Need 1mH inductor for 20.8A, which is 20.8/1mH=20.8/0.001=20800 rad/s, which is 33kHz. Your gate is 100kHz. Doesn't match. Need to adjust.
+.tran 10n 1m
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 670n 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 670n 10u)
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 1m
+L2 sw2 out 1m
+C1 out 0 470u
+Rload out 0 1.15
+Vin in 0 360
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+ Try a 2-phase interleaved buck, 180-deg phase shift, 100V to 24V. D=240m, t_on=2.4u, Rload=1.15. M1 and M2 are low-side switches. L1 and L2 are input-side inductors. D1 and D2 are free-wheeling diodes. C1 is output capacitor. Vgate1 and Vgate2 are 180-deg phase-shifted. Vin=100V. Rload=1.15. L1 and L2 are 100u. D1 and D2 are 0/100V. M1 and M2 are low-side switches. Vgate1 is 0->12V, t_on=2.4u, period=10u. Vgate2 is 0->12V, t_on=2.4u, period=10u, delay=5u.
+* 100V to 24V Interleaved 2-Phase Buck, 500W
+Vin in 0 100
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 100u
+L2 sw2 out 100u
+C1 out 0 470u
+Rload out 0 1.15
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 2.4u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 2.4u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+* 360V to 24V 3-Phase Buck, 500W
+Vin in 0 360
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+M3 in gate3 sw3 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+D3 0 sw3 DIODE
+L1 sw1 out 47u
+L2 sw2 out 47u
+L3 sw3 out 47u
+C1 out 0 100u
+Rload out 0 1.15
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 3.27u 1n 1n 5.8u 10u)
+Vgate3 gate3 0 PULSE(0 12 6.54u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 360V to 24V 3-Phase Buck, 500W
+Vin in 0 360
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+M3 in gate3 sw3 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+D3 0 sw3 DIODE
+L1 sw1 out 100u
+L2 sw2 out 100u
+L3 sw3 out 100u
+C1 out 0 470u
+Rload out 0 1.15
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 3.33u 1n 1n 5.8u 10u)
+Vgate3 gate3 0 PULSE(0 12 6.66u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+* 400V to 24V 2-Phase Buck, 500W
+Vin in 0 400
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 220u
+L2 sw2 out 220u
+C1 out 0 100u
+Rload out 0 1.15
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+* 360V to 24V 3-Phase Buck
+Vin in 0 360
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 100u
+Rload out 0 1.15
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 400V to 24V 3-Phase Buck
+Vin in 0 360
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+M3 in gate3 sw3 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+D3 0 sw3 DIODE
+L1 sw1 out 47u
+L2 sw2 out 47u
+L3 sw3 out 47u
+C1 out 0 220u
+Rload out 0 1.15
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+Vgate2 gate2 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate3 gate3 0 PULSE(0 12 0 1n 1n 7.5u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+* 400V to 24V Buck, 500W
+Vin in 0 400
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 1.15
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

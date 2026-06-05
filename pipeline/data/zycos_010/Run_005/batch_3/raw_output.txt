@@ -1,0 +1,231 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+ For a buck, try a larger inductor or longer t_on. For a boost, try a smaller inductor or shorter t_on. For a SEPIC, change the L1-M1-C1 and L2-M2-C2 timing. For a Cuk, change the L1-M1-C1 and L2-M2-C2 timing. For a 2-phase interleaved, change both gate timings. For a 3-phase, change all three gate timings. For a SEPIC or Cuk, make sure Vgate is not 0V for more than 10% of the time. For a boost, M1 is sw->0, D1 is sw->out. For a buck, M1 is in->sw, D1 is 0->sw. For a SEPIC, M1 is in->sw1, D1 is sw1<->sw2, L2 is sw2->0, M2 is sw2->0, C2 is sw2<->out. For a Cuk, L1 is in->sw1, M1 is sw1->0, C1 is sw1<->sw2, L2 is sw2->0, M2 is sw2->0, C2 is sw2<->out. For a 2-phase interleaved, M1 is in->sw1, M2 is in->sw2, D1 is 0->sw1, D2 is 0->sw2, L1 is sw1->out, L2 is sw2->out. For a 3-phase, M1 is in->sw1, M2 is in->sw2, M3 is in->sw3, D1 is 0->sw1, D2 is 0->sw2, D3 is 0->sw3, L1 is sw1->out, L2 is sw2->out, L3 is sw3->out.
+* 200V to 5V async buck, 200W
+Vin in 0 200
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.125
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+ This is the second time this has happened.
+* 220V to 5V async buck, 200W
+Vin in 0 200
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.125
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+ Try a different approach. You might consider:
+- Increasing Rload to reduce current
+- Changing switching frequency
+- Adjusting duty cycle
+- Trying a different topological approach
+- Adding a sync rectifier (M2) for lower Rds_on
+* 200V to 5V async buck, 200W
+Vin in 0 200
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 10u
+C1 out 0 100u
+Rload out 0 0.125
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+ No credit for repeating the same failed design.
+* 200V to 5V async buck, 200W
+Vin in 0 200
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 10u
+C1 out 0 100u
+Rload out 0 0.125
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+ Try a different approach. For 200V to 5V buck, consider:
+- L1 on input side (200V to sw), M1 is low-side switch
+- D1 across sw->0, Rload from out->0
+- C1 from out->0, Rload=Vout^2/P
+- Vgate is 12V pulse to drive M1
+- Rbleed on sw node
+- t_on for 100kHz: 5u for T=10u
+Vin in 0 200
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw 0 DIODE
+L1 in sw 10u
+C1 out 0 100u
+Rload out 0 0.125
+Rbleed sw 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 5u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+ Try a 100V to 5V synchronous buck. W=1, L=1, Rload=0.125, Vin=100, D=48m, t_on=480n, Rbleed=1Meg. Use Vgate as 0->12V, 480n on, 10u period.
+* 200V to 5V sync buck, 200W
+Vin in 0 200
+M1 in gate sw 0 NMOS W=1 L=1
+M2 sw gate2 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 220u
+C1 out 0 100u
+Rload out 0 0.125
+Rbleed sw 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+ For a 200V to 5V buck, the duty cycle is D = 5/200 = 0.025, not 58u/10u = 0.58. Your pulse timing was inverted. Fix this.
+* 200V to 5V interleaved 2-phase buck, 200W
+Vin in 0 200
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 220u
+L2 sw2 out 220u
+C1 out 0 100u
+Rload out 0 0.125
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 250n 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 250n 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+ Try a different approach. Let's try a 200V to 5V interleaved 2-phase buck, 200W with modified component values.
+* 200V to 5V interleaved 2-phase buck, 200W
+Vin in 0 200
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 22u
+L2 sw2 out 22u
+C1 out 0 100u
+Rload out 0 0.125
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+* 200V to 5V async buck, 200W
+Vin in 0 200
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.125
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 200V to 5V async buck, 200W
+Vin in 0 200
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.125
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+* 200V to 5V async buck, 200W
+Vin in 0 200
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.125
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

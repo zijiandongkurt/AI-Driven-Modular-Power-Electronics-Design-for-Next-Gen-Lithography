@@ -1,0 +1,183 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 20V to 400V boost, 500W
+Vin in 0 20
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 320
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 20V to 400V Boost, 500W
+Vin in 0 20
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 320
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+ 500W at 20V to 400V requires a 20:1 boost, 500W/24V=20.8A. L1 needs to handle 20.8A, 22u is 458mOhm. D1 needs to handle 1A, 100u is 160mOhm. 10u is 208mOhm. Rload=400^2/500=320. Vgate is 5.8u on, 10u period, 580mV, 10u period is 100kHz. D=5.8u/10u=580m, which is 580m/20V=29m, which is 2.9% on time. 580m/20V=29m, which is 2.9% on time. 20V to 400V is 20:1 boost, 500W/24V=20.8A. L1 needs to handle 20.8A, 22u is 458mOhm. D1 needs to handle 1A, 100u is 160mOhm. 10u is 208mOhm. Rload=400^2/500=320. Vgate is 5.8u on, 10u period, 580mV, 10u period is 100kHz. D=5.8u/10u=580m, which is 580m/20V=29m, which is 2.9% on time. 580m/20V=29m, which is 2.9% on time. 20V to 400V is 20:1 boost, 500W/24V=20.8A. L1 needs to handle 20.8A, 22u is 458mOhm. D1 needs to handle 1A, 100u is 160mOhm. 10u is 208mOhm. Rload=400^2/500=320. Vgate is 5.8u on, 10u period, 580mV, 10u period is 100kHz. D=5.8u/10u=580m, which is 580m/20V=29m, which is 2.9% on time. 580m/20V=29m, which is 2.9% on time. 20V to 400V is 20:1 boost, 500W/24V=20.8A. L1 needs to handle 20.8A, 22u is 458mOhm. D1 needs to handle 1A, 100u is 160mOhm. 10u is 208mOhm. Rload=400^2/500=320. Vgate is 5.8u on, 10u period, 580mV, 10u period is 100kHz. D=5.8u/10u=580m, which is 580m/20V=29m, which is 2.9% on time. 580m/20V=29m, which is 2.9% on time. 20V to 400V is 20:1 boost, 500W/24V=20.8A. L1 needs to handle 20.8A, 22u is 458mOhm. D1 needs to handle 1A, 100u is 160mOhm. 10u is 208mOhm. Rload=400^2/500=320. Vgate is 5.8u on, 10u period, 580mV, 10u period is 100kHz. D=5.8u/10u=580m, which is 580m/20V=29m, which is 2.9% on time. 580m/20V=29m, which is 2.9% on time. 20V to 400V is 20:1 boost, 500W/24V=20.8A. L1 needs to handle 20.8A, 22u is 458mOhm. D1 needs to handle 1A, 100u is 160mOhm. 10u is 208mOhm. Rload=400^2/500=320. Vgate is 5.8u on, 10u period, 580mV, 10u period is 100kHz. D=5.8u/10u=580m, which is 580m/20V=29m, which is 2.9% on time. 580m/20V=29m, which is 2.9% on time. 20V to 400V is 20:1 boost, 500W/24V=20.8A. L1 needs to handle 20.8A, 22u is 458mOhm. D1 needs to handle 1A, 100u is 160mOhm. 10u is 208mOhm. Rload=400^2/500=320. Vgate is 5.8u on, 10u period, 580mV, 10u period is 100kHz. D=5.8u/10u=580m, which is 580m/20V=29m, which is 2.9% on time. 580m/20V=29m, which is 2.9% on time. 20V to 400V is 20:1 boost, 500W/24V=20.8A. L1 needs to
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 20V to 400V Boost, 500W
+Vin in 0 20
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 320
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+* 20V to 400V Boost, 500W
+Vin in 0 20
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 320
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+* 20V to 400V Boost, 500W
+Vin in 0 20
+L1 in sw 44u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 320
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+**Top**
+
+
+* 20V to 400V Boost, 500W
+Vin in 0 20
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 320
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+ 0.5000
+
+* 20V to 400V Boost, 500W
+Vin in 0 20
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 320
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+ Your previous attempt: L1 in sw 100u, M1 sw gate 0 0 NMOS, D1 sw out DIODE, Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u). Your new netlist must change these parameters or the topology.
+* 24V to 400V boost, 500W
+Vin in 0 24
+L1 in sw 25u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 320
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 20V to 400V boost, 500W
+Vin in 0 20
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 320
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+

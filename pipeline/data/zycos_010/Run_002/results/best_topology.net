@@ -1,0 +1,26 @@
+* OVERALL BEST CANDIDATE: 00_Phase_3_Wide_Input_9_36V_to_220V_Boost_g2_cand2_b5
+* FITNESS SCORE: 0.6809
+*
+* Generated: 2026-06-05T17:26:16
+* Constraint: Phase 3: Wide Input 9-36V to 220V (Boost)
+*   vin_min = 9
+*   vin_max = 36
+*   vout_target = 220
+*   efficiency_target = 0.93
+*   power_in = 300
+* Candidate: 5 of 12
+* Grouped name: g2_cand2
+*
+* 36V to 220V Boost, 300W
+Vin in 0 36
+L1 in sw 44u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 161
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

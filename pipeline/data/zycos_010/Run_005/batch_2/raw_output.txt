@@ -1,0 +1,162 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 220V to 5V Buck, 200W
+Vin in 0 200
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 100u
+Rload out 0 0.125
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+* 200V to 5V async buck, 200W
+Vin in 0 200
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 100u
+Rload out 0 0.125
+Vgate gate 0 PULSE(0 12 0 1n 1n 5u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 10m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 200V to 5V async buck, 200W
+Vin in 0 200
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 10u
+C1 out 0 100u
+Rload out 0 0.125
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+ The only way to fix this is to change the netlist. This is not a minor issue — it is a violation of the rules. You are allowed to change only one of these: Vin, Rload, inductor/capacitor sizing, or Vgate pulse timing. Do not copy previous values. Your new circuit must be different in one of these ways. This is a mandatory rule to avoid infinite loops. Let me try again. I need to make sure the new netlist is different. Let me check the previous attempt. The previous netlist was a buck converter with Vin=200V, Rload=0.125 ohms. I need to change one of these: Vin, Rload, L1, C1, or Vgate parameters. Let me change the duty cycle by adjusting the Vgate pulse timing. I'll also adjust the inductor and capacitor values to match the new timing. Let me calculate the correct values. The input voltage is still 200V, output is 5V. The duty cycle D = Vout/(Vin+Vsat) ≈ 5/200 = 0.025. T_on = 0.025*10u = 250n. I'll use L1=10u, C1=100u. Rload=0.125 ohms. Vgate gate 0 PULSE(0 12 0 1n 1n 250n 10u). Let me check the component values. D1 is still 0 sw DIODE. M1 is in gate sw 0 NMOS. L1 sw out 10u. C1 out 0 100u. Rload out 0 0.125. Vgate gate 0 PULSE(0 12 0 1n 1n 250n 10u). That should be a different netlist than the previous one. Let me make sure I'm not copying the same values. The previous Vgate was 5.8u, now it's 250n. L1 is 10u instead of 47u. C1 is 100u instead of 220u. Rload is 0.125. That's a different configuration. I'll write the new netlist with these changes.
+* 200V to 5V async buck, 200W
+Vin in 0 200
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 10u
+C1 out 0 100u
+Rload out 0 0.125
+Vgate gate 0 PULSE(0 12 0 1n 1n 250n 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+ Let's try a different approach.
+
+* 200V to 5V async buck, 200W
+Vin in 0 200
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 10u
+C1 out 0 470u
+Rload out 0 0.125
+Vgate gate 0 PULSE(0 12 0 1n 1n 5u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+ Let's try a different approach.
+* 220V to 5V async buck, 200W
+Vin in 0 200
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.125
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+ Try again.
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+ Do not repeat the same netlist.
+
+* 200V to 5V async buck, 200W
+Vin in 0 200
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.125
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

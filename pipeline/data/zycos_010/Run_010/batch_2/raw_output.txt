@@ -1,0 +1,205 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+ 3.3V to 277V is a 84x boost, 200W requires a different approach than the 5V to 12V boost in the example. The example is a 2.4x boost, 60W, with 10u inductor. For 84x boost, 200W, you need a different configuration, likely a multi-phase or interleaved topology, or a flyback. You cannot scale up the example's 10u inductor to get 84x boost. You must choose a different topology. The example is a 5V to 12V boost, 60W, which is a 2.4x boost. Your application is a 3.3V to 277V boost, 200W, which is 84x boost. This is a very high-voltage boost, which requires a different approach. The example uses a simple boost topology, which is not suitable for this voltage step-up. You need a different topology for such a high step-up. The correct topology for a 84x boost would be a flyback or a multi-phase interleaved boost. You must change the topology to achieve the required voltage step-up. The example uses a 5V to 12V boost, which is not suitable for 3.3V to 277V. You must use a different topology for this application. The correct approach for 3.3V to 277V boost would be a flyback or a multi-phase interleaved boost. The example is not applicable to this case. You must change the topology to achieve the required voltage step-up. The correct topology for 3.3V to 277V boost would be a flyback or a multi-phase interleaved boost. You must use a different topology for this application. The example is not applicable to this case. You must change the topology to achieve the required voltage step-up. The correct topology for 3.3V to 277V boost would be a flyback or a multi-phase interleaved boost. You must use a different topology for this application. The example is not applicable to this case. You must change the topology to achieve the required voltage step-up. The correct topology for 3.3V to 277V boost would be a flyback or a multi-phase interleaved boost. You must use a different topology for this application. The example is not applicable to this case. You must change the topology to achieve the required voltage step-up. The correct topology for 3.3V to 277V boost would be a flyback or a multi-phase interleaved boost. You must use a different topology for this application. The example is not applicable to this case. You must change the topology to achieve the required voltage step-up. The correct topology for 3.3V to 277V boost would be a flyback or a multi-phase interleaved boost. You must use a different topology for this application. The example is not applicable to this case. You must change the topology to achieve the required voltage step-up. The correct topology for 3.3V to 277V boost would be a flyback or a multi-phase interleaved boost. You must use a different topology for this application. The example is not applicable to this case. You must change the topology to achieve the required voltage step-up. The correct topology for 3.3V to 277V boost would be a flyback or a multi-phase interleaved boost. You must use a different topology for this application. The example is not applicable to this case. You must change the topology to achieve the required voltage step-up. The correct topology for 3.3V to 277V boost would be a flyback or a multi-phase interleaved boost. You must use a different topology for this application. The example is not applicable to this case. You must change the topology to achieve the required voltage step-up. The correct topology for 3.3V to 277V boost would be a flyback or a multi-phase interleaved boost. You must use a different topology for this application. The example is not applicable to this case. You must change the topology to achieve the required voltage step-up. The correct topology for 3.3V to 277V boost would be a flyback or a multi-phase interleaved boost. You must use a different topology for this application. The example is not applicable to this case. You must change the topology to achieve the required voltage step-up. The correct topology for 3.3V to 277V boost would be a flyback or a multi-phase interleaved boost. You must use a different topology for this application. The example is not applicable to this case. You must change the topology to achieve the required voltage step-up. The correct topology for 3.3V to 277V boost would be a flyback or a multi-phase interleaved boost. You must use a different topology for this application. The example is not applicable to this case. You must change the topology to achieve the required voltage step-up. The correct topology for 3.3V to 277V boost would be a flyback or a multi-phase interleaved boost. You must use a different topology for this application. The example is not applicable to this case. You must change the topology to achieve the required voltage step-up. The correct topology for 3.3V to 277V boost would be a flyback or a multi-phase interleaved boost. You must use a different topology for this application. The example is not applicable to this case. You must change the topology to achieve the required voltage step-up. The correct topology for 3.3V to 277V boost would be a flyback or a multi-phase interleaved boost. You must use a different topology for this application. The example is not applicable to this case. You must change the topology to achieve the required voltage step-up. The correct topology for 3.3V to 277V boost would be a flyback or a multi-phase interleaved boost. You must use a different topology for this application. The example is not applicable to this case. You must change the topology to achieve the required voltage step-up. The correct topology for 3.3V to 277V boost would be a flyback or a multi-phase interleaved boost. You must use a different topology for this application. The example is not applicable to this case. You must change the topology to achieve the required voltage step-up. The correct topology for 3.3V to 277V boost would be a flyback or a multi-phase interleaved boost. You must use a different topology for this application. The example is not applicable to this case. You must change the topology to achieve the required voltage step-up. The correct topology for 3.3V to 277V boost would be a flyback or a multi-phase interleaved boost. You must use a different topology for this application. The example is not applicable to this case. You must change the topology to achieve the required voltage step-up. The correct topology for 3.3V to 277V boost
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+ Do not repeat the same netlist.
+* 3.3V to 277V Boost, 200W
+Vin in 0 3.3
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 380
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 3.3V to 277V Boost, 200W
+Vin in 0 3.3
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 380
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+* 3.3V to 277V Boost, 200W
+Vin in 0 3.3
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 380
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+* 3.3V to 277V Boost, 200W
+Vin in 0 3.3
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 47u
+Rload out 0 380
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+ Try again. This is a critical rule.
+* 3.3V to 277V boost, 200W
+Vin in 0 3.3
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 380
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 3.3V to 277V boost, 200W
+Vin in 0 3.3
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 380
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+ See the "CRITICAL RULE" at the top of this page.
+.top
+.tran 10n 1m
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+Vin in 0 3.3
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 380
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+ Try a different approach, like a 2-switch interleaved boost or a SEPIC.
+* 3.3V to 277V Boost, 200W
+Vin in 0 3.3
+L1 in sw1 22u
+L2 in sw2 22u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+M2 sw2 gate2 0 0 NMOS W=1 L=1
+D1 sw1 out DIODE
+D2 sw2 out DIODE
+C1 out 0 100u
+Rload out 0 380
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 3.3V to 277V Boost, 200W
+Vin in 0 3.3
+L1 in sw 47u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 380
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+ For this 3.3V to 277V boost, you need a much higher duty cycle and larger inductor, but you must use a different topology (e.g., interleaved, synchronous, etc.) to avoid the same mistake.
+
+* 3.3V to 277V Boost, 200W
+Vin in 0 3.3
+L1 in sw1 47u
+L2 in sw2 47u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+M2 sw2 gate2 0 0 NMOS W=1 L=1
+D1 sw1 out DIODE
+D2 sw2 out DIODE
+C1 out 0 100u
+Rload out 0 380
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

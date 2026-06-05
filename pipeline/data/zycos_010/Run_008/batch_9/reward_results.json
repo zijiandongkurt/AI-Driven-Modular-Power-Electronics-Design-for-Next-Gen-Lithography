@@ -1,0 +1,198 @@
+{
+    "active_constraints": {
+        "_comment": "Phase 3: Commercial Mains to 12V (Buck)",
+        "vin_min": 220,
+        "vin_max": 380,
+        "vout_target": 12,
+        "efficiency_target": 0.92,
+        "power_in": 300
+    },
+    "circuits": {
+        "00_Phase_3_Commercial_Mains_to_12V_Buck_g1_cand2_b9": {
+            "fitness_score": -0.89,
+            "source": "validation_penalty",
+            "grpo_reward": -1.7318166494369507
+        },
+        "00_Phase_3_Commercial_Mains_to_12V_Buck_g2_cand2_b9": {
+            "fitness_score": -0.89,
+            "source": "validation_penalty",
+            "grpo_reward": -1.7318166494369507
+        },
+        "00_Phase_3_Commercial_Mains_to_12V_Buck_g4_cand1_b9": {
+            "fitness_score": -0.89,
+            "source": "validation_penalty",
+            "grpo_reward": -1.7318166494369507
+        },
+        "00_Phase_3_Commercial_Mains_to_12V_Buck_g1_cand1_b9": {
+            "fitness_score": 0.6368113578003747,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 10.573802223856443,
+                "efficiency_loss": 8.829485666789466,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.034999999999999996
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.728892029457806,
+                "efficiency": 0.0370514333210533,
+                "total_volume_cm3": 10000.0,
+                "total_components": 7
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.8264084008907213,
+            "grpo_reward": 0.5944769978523254
+        },
+        "00_Phase_3_Commercial_Mains_to_12V_Buck_g1_cand3_b9": {
+            "fitness_score": 0.6133061864692836,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 11.81726782484355,
+                "efficiency_loss": 8.85879411276449,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.313236108464255,
+                "efficiency": 0.034120588723551,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.776456558108086,
+            "grpo_reward": 0.5586637854576111
+        },
+        "00_Phase_3_Commercial_Mains_to_12V_Buck_g2_cand1_b9": {
+            "fitness_score": 0.636000387282436,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 10.613618141814099,
+                "efficiency_loss": 8.830908839470263,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.034999999999999996
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.715215122663505,
+                "efficiency": 0.0369091160529738,
+                "total_volume_cm3": 10000.0,
+                "total_components": 7
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.8247147321949628,
+            "grpo_reward": 0.5932413339614868
+        },
+        "00_Phase_3_Commercial_Mains_to_12V_Buck_g2_cand3_b9": {
+            "fitness_score": 0.6368113578003747,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 10.573802223856443,
+                "efficiency_loss": 8.829485666789466,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.034999999999999996
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.728892029457806,
+                "efficiency": 0.0370514333210533,
+                "total_volume_cm3": 10000.0,
+                "total_components": 7
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.8264084008907213,
+            "grpo_reward": 0.5944769978523254
+        },
+        "00_Phase_3_Commercial_Mains_to_12V_Buck_g3_cand1_b9": {
+            "fitness_score": 0.6110393656275458,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 11.94207819591101,
+                "efficiency_loss": 8.865281594963811,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.272750102426151,
+                "efficiency": 0.0334718405036188,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.7717555033409278,
+            "grpo_reward": 0.5552099347114563
+        },
+        "00_Phase_3_Commercial_Mains_to_12V_Buck_g3_cand2_b9": {
+            "fitness_score": 0.6110393656275458,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 11.94207819591101,
+                "efficiency_loss": 8.865281594963811,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.272750102426151,
+                "efficiency": 0.0334718405036188,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.7717555033409278,
+            "grpo_reward": 0.5552099347114563
+        },
+        "00_Phase_3_Commercial_Mains_to_12V_Buck_g3_cand3_b9": {
+            "fitness_score": 0.6110393656275458,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 11.94207819591101,
+                "efficiency_loss": 8.865281594963811,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.272750102426151,
+                "efficiency": 0.0334718405036188,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.7717555033409278,
+            "grpo_reward": 0.5552099347114563
+        },
+        "00_Phase_3_Commercial_Mains_to_12V_Buck_g4_cand2_b9": {
+            "fitness_score": 0.6368113578003747,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 10.573802223856443,
+                "efficiency_loss": 8.829485666789466,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.034999999999999996
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.728892029457806,
+                "efficiency": 0.0370514333210533,
+                "total_volume_cm3": 10000.0,
+                "total_components": 7
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.8264084008907213,
+            "grpo_reward": 0.5944769978523254
+        },
+        "00_Phase_3_Commercial_Mains_to_12V_Buck_g4_cand3_b9": {
+            "fitness_score": 0.6368157882520631,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 10.573572152710524,
+                "efficiency_loss": 8.82949801117398,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.034999999999999996
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.728971134457475,
+                "efficiency": 0.037050198882602,
+                "total_volume_cm3": 10000.0,
+                "total_components": 7
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.8264182069043409,
+            "grpo_reward": 0.5944836735725403
+        }
+    }
+}

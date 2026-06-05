@@ -1,0 +1,69 @@
+=== TRAINING SUMMARY: Run_006 ===
+Constraint Index: 4
+Batches Completed: 10 / 10
+Total Time Elapsed: 3538.07 sec (58.97 min)
+Average Time per Batch: 353.81 sec
+Average Time per Netlist: 30.24 sec
+
+--- TOPOLOGY YIELD (entire run) ---
+Valid:   95
+Invalid: 25
+Total candidates in history: 117
+Unique Topologies: 45
+Exact Duplicates:  72
+Uniqueness Rate:   38.5%
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.5108 (00_Phase_3_400V_3_Phase_DC_to_24V_Buck_g2_cand3_b4)
+  Batch 1 Best: 0.5048 (00_Phase_3_400V_3_Phase_DC_to_24V_Buck_g2_cand1_b1)
+  Batch 2 Best: 0.5058 (00_Phase_3_400V_3_Phase_DC_to_24V_Buck_g1_cand3_b2)
+  Batch 3 Best: 0.5095 (00_Phase_3_400V_3_Phase_DC_to_24V_Buck_g2_cand2_b3)
+  Batch 4 Best: 0.5108 (00_Phase_3_400V_3_Phase_DC_to_24V_Buck_g2_cand3_b4)
+  Batch 5 Best: 0.5108 (00_Phase_3_400V_3_Phase_DC_to_24V_Buck_g2_cand3_b4)
+  Batch 6 Best: 0.5108 (00_Phase_3_400V_3_Phase_DC_to_24V_Buck_g2_cand3_b4)
+  Batch 7 Best: 0.5108 (00_Phase_3_400V_3_Phase_DC_to_24V_Buck_g2_cand3_b4)
+  Batch 8 Best: 0.5108 (00_Phase_3_400V_3_Phase_DC_to_24V_Buck_g2_cand3_b4)
+  Batch 9 Best: 0.5108 (00_Phase_3_400V_3_Phase_DC_to_24V_Buck_g2_cand3_b4)
+  Batch 10 Best: 0.5108 (00_Phase_3_400V_3_Phase_DC_to_24V_Buck_g2_cand3_b4)
+
+--- BEST NETLIST METRICS ---
+Output Voltage: 5.6035 V
+Efficiency:     0.1208
+Total Volume:   10000.0000 cm^3
+
+=========================================
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-06-05T20:14:57
+* Constraint: Phase 3: 400V 3-Phase DC to 24V (Buck)
+*   vin_min = 360
+*   vin_max = 440
+*   vout_target = 24
+*   efficiency_target = 0.94
+*   power_in = 500
+* Candidate: 6 of 12
+* Grouped name: g2_cand3
+*
+* 360V to 24V 3-Phase Buck, 500W
+Vin in 0 360
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+M3 in gate3 sw3 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+D3 0 sw3 DIODE
+L1 sw1 out 220u
+L2 sw2 out 220u
+L3 sw3 out 220u
+C1 out 0 470u
+Rload out 0 1.15
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 3.27u 1n 1n 5.8u 10u)
+Vgate3 gate3 0 PULSE(0 12 6.54u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+

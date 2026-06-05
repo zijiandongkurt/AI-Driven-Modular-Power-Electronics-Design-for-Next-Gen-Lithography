@@ -1,0 +1,65 @@
+=== TRAINING SUMMARY: Run_008 ===
+Constraint Index: 0
+Batches Completed: 10 / 10
+Total Time Elapsed: 2913.22 sec (48.55 min)
+Average Time per Batch: 291.32 sec
+Average Time per Netlist: 25.11 sec
+
+--- TOPOLOGY YIELD (entire run) ---
+Valid:   99
+Invalid: 21
+Total candidates in history: 116
+Unique Topologies: 30
+Exact Duplicates:  86
+Uniqueness Rate:   25.9%
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.6714 (00_Phase_3_Commercial_Mains_to_12V_Buck_g3_cand2_b6)
+  Batch 1 Best: 0.6368 (00_Phase_3_Commercial_Mains_to_12V_Buck_g1_cand1_b1)
+  Batch 2 Best: 0.6369 (00_Phase_3_Commercial_Mains_to_12V_Buck_g3_cand1_b2)
+  Batch 3 Best: 0.6369 (00_Phase_3_Commercial_Mains_to_12V_Buck_g3_cand1_b2)
+  Batch 4 Best: 0.6369 (00_Phase_3_Commercial_Mains_to_12V_Buck_g3_cand1_b2)
+  Batch 5 Best: 0.6369 (00_Phase_3_Commercial_Mains_to_12V_Buck_g3_cand1_b2)
+  Batch 6 Best: 0.6714 (00_Phase_3_Commercial_Mains_to_12V_Buck_g3_cand2_b6)
+  Batch 7 Best: 0.6714 (00_Phase_3_Commercial_Mains_to_12V_Buck_g3_cand2_b6)
+  Batch 8 Best: 0.6714 (00_Phase_3_Commercial_Mains_to_12V_Buck_g3_cand2_b6)
+  Batch 9 Best: 0.6714 (00_Phase_3_Commercial_Mains_to_12V_Buck_g3_cand2_b6)
+  Batch 10 Best: 0.6714 (00_Phase_3_Commercial_Mains_to_12V_Buck_g3_cand2_b6)
+
+--- BEST NETLIST METRICS ---
+Output Voltage: 5.2957 V
+Efficiency:     0.0382
+Total Volume:   10000.0000 cm^3
+
+=========================================
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-06-05T22:06:44
+* Constraint: Phase 3: Commercial Mains to 12V (Buck)
+*   vin_min = 220
+*   vin_max = 380
+*   vout_target = 12
+*   efficiency_target = 0.92
+*   power_in = 300
+* Candidate: 8 of 12
+* Grouped name: g3_cand2
+*
+* 250V to 12V interleaved 2-phase buck, 300W
+Vin in 0 250
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 220u
+L2 sw2 out 220u
+C1 out 0 470u
+Rload out 0 0.48
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+

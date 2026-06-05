@@ -1,0 +1,187 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 15V to 230V 2-phase boost, 400W
+Vin in 0 15
+L1 in sw1 10u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+D1 sw1 out DIODE
+L2 in sw2 10u
+M2 sw2 gate2 0 0 NMOS W=1 L=1
+D2 sw2 out DIODE
+C1 out 0 100u
+Rload out 0 132
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.55u 10u)
+Vgate2 gate2 0 PULSE(0 12 5u 1n 1n 5.55u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+* 12V to 230V Boost, 400W
+Vin in 0 15
+L1 in sw1 22u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+D1 sw1 out DIODE
+C1 out 0 100u
+Rload out 0 132
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 9.35u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+ See the feedback above.
+* 12V to 230V Boost, 400W
+Vin in 0 12
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 132
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+ Try a different approach. Maybe a different topology like interleaved or use a transformer. But since it's non-isolated, maybe a SEPIC or CUK instead of boost? But the target is higher than Vin, so boost is needed. Let's fix the boost design. The previous had too low duty cycle. Need D=1-15/230=0.935, t_on=9.35u, T=10u. Also increase L1 for lower ripple. Let's try 100u, Rload=230^2/400=132.25. Vgate should be 12V, t_on=9.35u, T=10u. Let's check if this works.]
+* 15V to 230V boost, 400W
+Vin in 0 15
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 132
+Vgate gate 0 PULSE(0 12 0 1n 1n 9.35u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+* 12V to 230V Boost, 400W
+Vin in 0 12
+L1 in sw 15u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 132
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+ Try again. 5V to 230V boost is not a valid topology for 12V to 230V.
+* 12V to 230V Boost, 400W
+Vin in 0 12
+L1 in sw 15u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 132
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+ Try again.
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+ This is not a valid attempt.
+* 12V to 230V Boost, 400W
+Vin in 0 12
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 132
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 12V to 230V Boost, 400W
+Vin in 0 12
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 132
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+ Let's try a different approach. Let's go with a 15V to 230V boost, 400W, 100kHz.
+
+Vin in 0 15
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 132
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

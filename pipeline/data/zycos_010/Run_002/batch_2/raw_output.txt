@@ -1,0 +1,239 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 12V to 220V Boost, 300W
+Vin in 0 12
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 161
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 12V to 220V Boost, 300W
+Vin in 0 12
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 161
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+* 9V to 220V Boost, 300W
+Vin in 0 9
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 161
+Vgate gate 0 PULSE(0 12 0 1n 1n 10u 20u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 9V to 220V boost, 300W
+Vin in 0 9
+L1 in sw 47u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 161
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+* 12V to 220V Boost, 300W
+Vin in 0 12
+L1 in sw 47u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 161
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+* 9-36V to 220V Boost, 300W
+Vin in 0 9
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 161
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+* 36V to 220V Boost, 300W
+Vin in 0 36
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 161
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 9V to 220V Boost, 300W
+Vin in 0 9
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 161
+Vgate gate 0 PULSE(0 12 0 1n 1n 11.6u 20u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+* 9-36V to 220V Boost, 300W
+Vin in 0 9
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 161
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+ You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You are not allowed to repeat the same design.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 9V to 220V boost, 300W
+Vin in 0 9
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 161
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+* 36V to 220V boost, 300W
+Vin in 0 36
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 161
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end

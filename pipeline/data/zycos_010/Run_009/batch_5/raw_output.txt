@@ -1,0 +1,206 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 12V to 380V Boost, 400W
+Vin in 0 14
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 361
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 12V to 380V Boost, 400W
+Vin in 0 14
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 361
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+* 12V to 380V Boost, 400W
+Vin in 0 14
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 361
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+  Your output is invalid and will be rejected.
+* 12V to 380V Boost, 400W
+Vin in 0 12
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 361
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+ Try again.
+* 14V to 380V Boost, 400W
+Vin in 0 14
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 361
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+ Please try again.
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+ 2nd duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 3rd duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 4th duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 5th duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 6th duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 7th duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 8th duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 9th duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 10th duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 11th duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 12th duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 13th duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 14th duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 15th duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 16th duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 17th duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 18th duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 19th duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 20th duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 21st duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 22nd duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 23rd duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 24th duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 25th duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. 26th duplicate of 00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b2
+
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+ 380V Boost: 12V to 380V
+Vin in 0 12
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 361
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 12V to 380V Boost, 400W
+Vin in 0 12
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 361
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+

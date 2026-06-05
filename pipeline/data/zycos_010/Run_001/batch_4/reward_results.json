@@ -1,0 +1,226 @@
+{
+    "active_constraints": {
+        "_comment": "Phase 3: 300V to 15V Servo Rail (Buck)",
+        "vin_min": 280,
+        "vin_max": 320,
+        "vout_target": 15,
+        "efficiency_target": 0.93,
+        "power_in": 350
+    },
+    "circuits": {
+        "00_Phase_3_300V_to_15V_Servo_Rail_Buck_g4_cand2_b4": {
+            "fitness_score": -0.52,
+            "source": "validation_penalty",
+            "grpo_reward": -3.3166041374206543
+        },
+        "00_Phase_3_300V_to_15V_Servo_Rail_Buck_g1_cand1_b4": {
+            "fitness_score": 0.5081262301693044,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 9.029638182767144,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 3.1494963690646376,
+                "efficiency": 0.0270361817232857,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.5207029545502526,
+            "grpo_reward": 0.2960521876811981
+        },
+        "00_Phase_3_300V_to_15V_Servo_Rail_Buck_g1_cand2_b4": {
+            "fitness_score": 0.509970244535728,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 9.024312336357994,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.477484305452952,
+                "efficiency": 0.0275687663642007,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.6354782879863046,
+            "grpo_reward": 0.3025316298007965
+        },
+        "00_Phase_3_300V_to_15V_Servo_Rail_Buck_g1_cand3_b4": {
+            "fitness_score": 0.509970244535728,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 9.024312336357994,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.477484305452952,
+                "efficiency": 0.0275687663642007,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.6354782879863046,
+            "grpo_reward": 0.3025316298007965
+        },
+        "00_Phase_3_300V_to_15V_Servo_Rail_Buck_g2_cand1_b4": {
+            "fitness_score": 0.5099720123960577,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 9.0245270315071,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.480089649795226,
+                "efficiency": 0.02754729684929,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.6357266824839696,
+            "grpo_reward": 0.3025379180908203
+        },
+        "00_Phase_3_300V_to_15V_Servo_Rail_Buck_g2_cand2_b4": {
+            "fitness_score": 0.5081295945039944,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 9.029467556721377,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 3.151118861145908,
+                "efficiency": 0.0270532443278624,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.5208296954354009,
+            "grpo_reward": 0.2960638999938965
+        },
+        "00_Phase_3_300V_to_15V_Servo_Rail_Buck_g2_cand3_b4": {
+            "fitness_score": 0.5107101656076847,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 8.999819442727075,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.034999999999999996
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.892106310498384,
+                "efficiency": 0.0300180557272925,
+                "total_volume_cm3": 10000.0,
+                "total_components": 7
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.6762556774105146,
+            "grpo_reward": 0.3051316440105438
+        },
+        "00_Phase_3_300V_to_15V_Servo_Rail_Buck_g3_cand1_b4": {
+            "fitness_score": 0.5088049375590954,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 9.003212909632525,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 3.510447587254765,
+                "efficiency": 0.0296787090367475,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.5496723739836115,
+            "grpo_reward": 0.29843688011169434
+        },
+        "00_Phase_3_300V_to_15V_Servo_Rail_Buck_g3_cand2_b4": {
+            "fitness_score": 0.5107101059173387,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 8.999821293098472,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.034999999999999996
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.892081306803628,
+                "efficiency": 0.0300178706901528,
+                "total_volume_cm3": 10000.0,
+                "total_components": 7
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.6762531410816907,
+            "grpo_reward": 0.3051314353942871
+        },
+        "00_Phase_3_300V_to_15V_Servo_Rail_Buck_g3_cand3_b4": {
+            "fitness_score": 0.5109969982816347,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 8.978986864992493,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.837045650469684,
+                "efficiency": 0.0321013135007508,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.6706934160701503,
+            "grpo_reward": 0.3061394691467285
+        },
+        "00_Phase_3_300V_to_15V_Servo_Rail_Buck_g4_cand1_b4": {
+            "fitness_score": 0.5105742557391093,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 9.008945686883274,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.034999999999999996
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.867169124785564,
+                "efficiency": 0.0291054313116726,
+                "total_volume_cm3": 10000.0,
+                "total_components": 7
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.6737308155631053,
+            "grpo_reward": 0.3046541213989258
+        },
+        "00_Phase_3_300V_to_15V_Servo_Rail_Buck_g4_cand3_b4": {
+            "fitness_score": 0.5085082470485721,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 9.007401798749981,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.034999999999999996
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 3.407703591716877,
+                "efficiency": 0.0292598201250018,
+                "total_volume_cm3": 10000.0,
+                "total_components": 7
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.5412659879075596,
+            "grpo_reward": 0.2973944842815399
+        }
+    }
+}

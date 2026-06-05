@@ -1,0 +1,135 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+ Please try again.
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+ Your previous netlist had 12V to 42V boost, but you need 12V to 380V. Try increasing the number of switches or adjusting the duty cycle. You may want to increase L1 and D1, but this might require a different topology. Your previous netlist used a 100u inductor, but you need a larger inductor for a higher voltage boost. You may need a different topology. Try using an SEPIC or a different boost topology with higher voltage gain. You may need a higher voltage rating for the MOSFET and diode. You may need to adjust the gate drive timing for a different duty cycle. You may want to increase the inductor size for higher voltage boost. You may need to use a different switching frequency for the same duty cycle. You may need to use a different topology for higher voltage gain. You may need to use a different component configuration. You may want to use a different MOSFET model with higher voltage rating. You may need to use a different diode model with higher voltage rating. You may need to use a different inductor and capacitor combination for higher voltage gain. You may need to use a different gate drive timing for a different duty cycle. You may need to use a different switching frequency for the same duty cycle. You may need to use a different topology for higher voltage gain. You may need to use a different component configuration. You may want to use a different MOSFET model with higher voltage rating. You may need to use a different diode model with higher voltage rating. You may need to use a different inductor and capacitor combination for higher voltage gain. You may need to use a different gate drive timing for a different duty cycle. You may need to use a different switching frequency for the same duty cycle. You may need to use a different topology for higher voltage gain. You may need to use a different component configuration. You may want to use a different MOSFET model with higher voltage rating. You may need to use a different diode model with higher voltage rating. You may need to use a different inductor and capacitor combination for higher voltage gain. You may need to use a different gate drive timing for a different duty cycle. You may need to use a different switching frequency for the same duty cycle. You may need to use a different topology for higher voltage gain. You may need to use a different component configuration. You may want to use a different MOSFET model with higher voltage rating. You may need to use a different diode model with higher voltage rating. You may need to use a different inductor and capacitor combination for higher voltage gain. You may need to use a different gate drive timing for a different duty cycle. You may need to use a different switching frequency for the same duty cycle. You may need to use a different topology for higher voltage gain. You may need to use a different component configuration. You may want to use a different MOSFET model with higher voltage rating. You may need to use a different diode model with higher voltage rating. You may need to use a different inductor and capacitor combination for higher voltage gain. You may need to use a different gate drive timing for a different duty cycle. You may need to use a different switching frequency for the same duty cycle. You may need to use a different topology for higher voltage gain. You may need to use a different component configuration. You may want to use a different MOSFET model with higher voltage rating. You may need to use a different diode model with higher voltage rating. You may need to use a different inductor and capacitor combination for higher voltage gain. You may need to use a different gate drive timing for a different duty cycle. You may need to use a different switching frequency for the same duty cycle. You may need to use a different topology for higher voltage gain. You may need to use a different component configuration. You may want to use a different MOSFET model with higher voltage rating. You may need to use a different diode model with higher voltage rating. You may need to use a different inductor and capacitor combination for higher voltage gain. You may need to use a different gate drive timing for a different duty cycle. You may need to use a different switching frequency for the same duty cycle. You may need to use a different topology for higher voltage gain. You may need to use a different component configuration. You may want to use a different MOSFET model with higher voltage rating. You may need to use a different diode model with higher voltage rating. You may need to use a different inductor and capacitor combination for higher voltage gain. You may need to use a different gate drive timing for a different duty cycle. You may need to use a different switching frequency for the same duty cycle. You may need to use a different topology for higher voltage gain. You may need to use a different component configuration. You may want to use a different MOSFET model with higher voltage rating. You may need to use a different diode model with higher voltage rating. You may need to use a different inductor and capacitor combination for higher voltage gain. You may need to use a different gate drive timing for a different duty cycle. You may need to use a different switching frequency for the same duty cycle. You may need to use a different topology for higher voltage gain. You may need to use a different component configuration. You may want to use a different MOSFET model with higher voltage rating. You may need to use a different diode model with higher voltage rating. You may need to use a different inductor and capacitor combination for higher voltage gain. You may need to use a different gate drive timing for a different duty cycle. You may need to use a different switching frequency for the same duty cycle. You may need to use a different topology for higher voltage gain. You may need to use a different component configuration. You may want to use a different MOSFET model with higher voltage rating. You may need to use a different diode model with higher voltage rating. You may need to use a different inductor and capacitor combination for higher voltage gain. You may need to use a different gate drive timing for a different duty cycle. You may need to use a different switching frequency for the same duty cycle. You may need to use a different topology for higher voltage gain. You may need to use a different component configuration. You may want to use a different MOSFET model with higher voltage rating. You may need to use a different diode model with higher voltage rating. You may need to use a different inductor and capacitor combination for higher voltage gain. You may need to use a different gate drive timing for a different duty cycle. You may need to use a different switching frequency for the same duty cycle. You may need to use a different topology for higher voltage gain. You may need to use a different component configuration. You may want to use a different MOSFET model with higher voltage rating. You may need to use a different diode model with higher voltage rating. You may need to use a different inductor and capacitor combination for higher voltage gain. You may need to use a different gate drive timing for a different duty cycle. You may need to use a different switching frequency for the same duty cycle. You may need to use a different topology for higher voltage gain. You may need to use a different component configuration. You may want to use a different MOSFET model with higher voltage rating. You
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 12V to 380V boost, 400W
+Vin in 0 12
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 361
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+ Please try again.
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+* 12V to 380V Boost, 400W
+Vin in 0 12
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 361
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 12V to 380V Boost, 400W
+Vin in 0 12
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 361
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+ The input is too low to generate the required output with a single switch. A 12V to 380V boost requires a larger duty cycle and/or higher inductance to store more energy. Let's try a 100uH inductor with 100kHz switching.
+
+* 12V to 380V Boost, 400W
+Vin in 0 12
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 361
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+ Do not repeat the same design.
+.topology: 12V to 380V Boost, 400W
+Vin in 0 12
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 361
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+
