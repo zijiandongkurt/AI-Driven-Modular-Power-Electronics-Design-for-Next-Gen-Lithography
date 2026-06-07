@@ -10,7 +10,7 @@
 #SBATCH --mail-user=a.kumas@student.tue.nl
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=a.kumas@student.tue.nl
-#SBATCH -o ./logs/slurm-benchmark-%j.out
+#SBATCH -o /home/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/logs/slurm-benchmark-%j.out
 
 module load 2024
 module load CUDA/12.6.0
