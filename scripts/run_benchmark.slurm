@@ -8,9 +8,7 @@
 #SBATCH --mem=64G
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=a.kumas@student.tue.nl
-#SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=a.kumas@student.tue.nl
-#SBATCH -o /home/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/logs/slurm-benchmark-%j.out
+#SBATCH -o ./logs/slurm-benchmark-%j.out
 
 module load 2024
 module load CUDA/12.6.0
@@ -30,4 +28,5 @@ pipeline/llm_topology_generation/net_writer.py \
 pipeline/utility/netlist_database.py \
 pipeline/utility/summary_logger.py
 
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 python experiments/run_benchmark.py --config configs/benchmark_config.json
