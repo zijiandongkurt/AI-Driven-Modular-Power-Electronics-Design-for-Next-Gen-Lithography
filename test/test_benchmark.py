@@ -14,7 +14,6 @@ sys.path.append(str(PROJECT_ROOT))
 
 from experiments.run_benchmark import extract_metrics, get_empty_metrics
 
-# --- MOCK DATA ---
 MOCK_SUMMARY = """
 Overall Best Fitness: 0.85
 Validity Rate: 95.0%

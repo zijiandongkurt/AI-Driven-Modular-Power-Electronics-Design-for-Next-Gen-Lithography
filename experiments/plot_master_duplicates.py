@@ -53,7 +53,6 @@ def generate_master_duplicate_plot(zycos_folder: str):
     mean_dups = np.array([np.mean(global_duplicates[b]) for b in batches])
     std_dups = np.array([np.std(global_duplicates[b]) for b in batches])
 
-    # --- PLOTTING ---
     plt.figure(figsize=(10, 6))
     
     # Plot the average trend line

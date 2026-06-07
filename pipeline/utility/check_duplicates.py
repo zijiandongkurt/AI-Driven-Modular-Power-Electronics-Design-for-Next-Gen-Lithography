@@ -71,7 +71,6 @@ def get_duplicates_per_batch(run_folder_path: str):
 
 def evaluate_duplicates(run_folder_path: str):
     """Standalone diagnostic printout."""
-    # (Your previous print logic remains intact here if you want to run it directly)
     dup_data = get_duplicates_per_batch(run_folder_path)
     print(f"Duplicate Summary for {Path(run_folder_path).name}:")
     for batch, count in dup_data.items():

@@ -17,7 +17,6 @@ def val():
     v.VALID_PREFIXES = set("VRLCDM")
     return v
 
-# --- BASELINE: The Perfect Netlist ---
 VALID_BUCK_NETLIST = """* 12V to 5V Buck Converter
 Vin in 0 12
 M1 in gate sw 0 NMOS W=1 L=1
@@ -37,7 +36,6 @@ def test_perfect_netlist(val):
     checklist = val._validateOne(VALID_BUCK_NETLIST)
     assert all(checklist.values()), f"Perfect netlist failed: {[k for k, v in checklist.items() if not v]}"
 
-# --- 1. SYNTAX & COMPONENT CHECKS ---
 
 def test_banned_components(val):
     """Verify that BJTs (Q) and current sources (I) are strictly rejected."""
@@ -57,7 +55,6 @@ def test_missing_model_declaration(val):
     checklist = val._validateOne(bad_netlist)
     assert not checklist["model_declarations"], "Missing .model directive must fail"
 
-# --- 2. TOPOLOGICAL & NAMING CHECKS ---
 
 def test_missing_ground(val):
     """Verify that node '0' (ground reference) is strictly required."""
@@ -78,7 +75,6 @@ def test_broken_current_path(val):
     checklist = val._validateOne(bad_netlist)
     assert not checklist["current_path"], "Broken current path must fail KCL check"
 
-# --- 3. GRAPH THEORY & SINGULAR MATRIX CHECKS ---
 
 def test_kvl_voltage_loop(val):
     """Verify that two voltage sources forming a closed loop (KVL violation) are caught."""
@@ -108,7 +104,6 @@ def test_cl_loop_instability(val):
     checklist = val._validateOne(bad_netlist)
     assert not checklist["cl_loops"], "LC-only intermediate nodes must fail"
 
-# --- 4. SHORT CIRCUIT CHECKS ---
 
 def test_zero_ohm_resistor(val):
     """Verify that resistors with a value of 0 ohms fail validation."""
@@ -129,7 +124,6 @@ def test_same_node_short(val):
     checklist = val._validateOne(bad_netlist)
     assert not checklist["short_same_node"], "Components shorted to their own pins must fail"
 
-# --- 5. COMPONENT VALUES & SYNTAX TRAPS ---
 
 def test_duplicate_refs(val):
     """Verify that duplicate component reference names fail validation."""
@@ -164,7 +158,6 @@ def test_malformed_mosfet(val):
     assert not checklist["mosfet_bulk"], "MOSFETs missing bulk nodes or models must fail"
 
 
-# --- 6. SIMULATION & MODEL TRAPS ---
 
 def test_missing_tran(val):
     """Verify that netlists without a .tran directive fail validation."""
@@ -200,7 +193,6 @@ def test_undriven_mosfet_gate(val):
     assert not checklist["gate_per_mosfet"], "Undriven MOSFET gates must fail"
 
 
-# --- 7. ADVANCED TOPOLOGY TRAPS ---
 
 def test_disconnected_island(val):
     """Verify that isolated sub-circuits completely detached from the main circuit fail validation."""
@@ -230,7 +222,6 @@ def test_missing_sw_naming_convention(val):
     checklist = val._validateOne(bad_netlist)
     assert not checklist["naming_conventions"], "Missing 'sw' node name must fail"
 
-# --- 8. THE BOSS LEVEL TRAPS (PARSING & GRAPH LIMITATIONS) ---
 
 def test_validator_multiline_support(val):
     """Verify that the validator correctly stitches SPICE '+' continuation lines together."""

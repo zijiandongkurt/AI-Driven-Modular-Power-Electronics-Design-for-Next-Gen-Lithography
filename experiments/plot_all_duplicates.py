@@ -47,7 +47,6 @@ def plot_duplicates_for_zycos(zycos_folder: str):
             batches = sorted(dup_data.keys())
             dup_counts = [dup_data[b] for b in batches]
             
-            # --- PLOTTING ---
             plt.figure(figsize=(9, 6))
             plt.bar(batches, dup_counts, color='coral', alpha=0.8, edgecolor='black')
             plt.title(f'Duplicate Topologies Per Batch ({run_dir.name})', fontsize=14, fontweight='bold')

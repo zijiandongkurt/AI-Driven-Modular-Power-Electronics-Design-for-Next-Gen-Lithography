@@ -138,7 +138,6 @@ def process_zycos_run(zycos_name):
         print(f"⚠️ No valid data extracted for {zycos_name}")
         return
         
-    # --- PLOTTING GENERATOR ---
     def generate_spread_plots(dataset, file_prefix, master_title):
         run_numbers = sorted(list(dataset.keys()))
         
@@ -235,7 +234,6 @@ def process_zycos_run(zycos_name):
             if is_standalone:
                 ax.set_xlabel('Run Number', fontsize=10)
 
-        # --- Generate Individual Spread Plots ---
         def save_standalone(func, y_data, title, ylabel, filename, **kwargs):
             fig, ax = plt.subplots(figsize=(10, 6))
             func(ax, run_numbers, y_data, f"{master_title} - {title}", ylabel, is_standalone=True, **kwargs)
@@ -245,14 +243,12 @@ def process_zycos_run(zycos_name):
                 print(f"❌ PERMISSION ERROR: Close {filename} to allow overwrite.")
             plt.close()
 
-        # --- explicitly set the hline_names ---
         save_standalone(plot_box, v_err_pcts, "Voltage Error (%)", "Error (%)", "err_voltage_pct.png", color='deepskyblue', hline_y=5, hline_name='Tolerance (+/- 5%)', limit_type='band', y_min=-5)
         save_standalone(plot_box, abs_v_errors, "Absolute Voltage Error", "|Error| (V)", "err_abs_voltage.png", color='crimson', hline_y=1, hline_name='Tolerance (1V)', limit_type='lower', y_min=0)
         save_standalone(plot_box, eff_errors, "Efficiency Error", "Error", "err_efficiency.png", color='darkorange', hline_y=0, hline_name='Target Met (0)', limit_type='lower')
         save_standalone(plot_box, volumes, "Volume Spread", "Volume (cm³)", "metric_volume.png", color='purple', is_log=True, hline_y=9000, hline_name='Burn Threshold', limit_type='upper', y_max=10000)
         save_standalone(plot_comp_bars, components, "Component Frequency", "Number of Valid Circuits", "metric_components.png")
 
-        # --- Generate 2x2 Grid Summary ---
         fig, axs = plt.subplots(2, 2, figsize=(16, 10))
         fig.suptitle(f'{master_title} ({zycos_name})', fontsize=16, fontweight='bold')
         

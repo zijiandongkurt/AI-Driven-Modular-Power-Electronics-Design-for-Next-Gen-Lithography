@@ -35,7 +35,6 @@ def get_next_run_folder(data_dir: Path) -> str:
     return f"Run_{next_run_number:03d}"
 
 def main():
-    # --- Configuration ---
     N_batch = 3  # Number of batches to run sequentially
     n_generations_per_batch = 2 # Number of circuits per batch
     
@@ -51,7 +50,6 @@ def main():
                        "inductor": 1.0, "capacitor": 1.0}
     }
 
-    # --- Setup Pipeline Components ---
     llm = TopologyLLM(
         #model_id="Qwen/Qwen2.5-3B-Instruct",
         max_new_tokens=MAX_TOKENS 
@@ -61,7 +59,6 @@ def main():
     reward_fn  = RewardFunctionNorm()
     constraint = load_constraint("pipeline/data/datasets/constraints.json", idx=2)
 
-    # --- Setup Directories ---
     data_dir = Path("pipeline/data")
     run_folder_name = get_next_run_folder(data_dir)
     run_folder_path = data_dir / run_folder_name
@@ -72,7 +69,6 @@ def main():
     # Keep track of the previous batch so the LLM can use its data
     previous_batch_id = None
 
-    # --- Sequential Batch Loop ---
     for i in range(1, N_batch + 1):
         # The underlying classes will resolve this relative to pipeline/data/
         current_batch_id = f"{run_folder_name}/batch_{i}"

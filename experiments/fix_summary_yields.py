@@ -47,7 +47,6 @@ def fix_run_summaries(training_folder_path: str):
                 except Exception as e:
                     print(f"⚠️ Error reading {val_path.name}: {e}")
         
-        # --- FILE PATCHING ---
         text = summary_path.read_text(encoding="utf-8")
         
         # 1. Update the header so we know it was fixed

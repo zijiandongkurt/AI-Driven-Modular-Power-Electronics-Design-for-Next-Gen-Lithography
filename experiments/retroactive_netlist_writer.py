@@ -31,7 +31,6 @@ def process_zycos_folder(zycos_dir: Path):
             if not raw_file.exists() or not reward_file.exists():
                 continue
                 
-            # --- 1. Parse raw_output.txt ---
             text = raw_file.read_text(encoding="utf-8")
             # Split using the exact visual delimiter LLM_API outputs
             blocks = re.split(r"={10,}\n\s*CANDIDATE \d+\s*\n={10,}\n", text)
@@ -40,7 +39,6 @@ def process_zycos_folder(zycos_dir: Path):
             if not candidate_texts:
                 continue
                 
-            # --- 2. Parse reward_results.json for context ---
             try:
                 with open(reward_file, "r", encoding="utf-8") as f:
                     reward_data = json.load(f)
@@ -79,7 +77,6 @@ def process_zycos_folder(zycos_dir: Path):
             if not candidate_texts:
                 continue
                 
-            # --- 3. Format Label ---
             label_raw = constraint.get("_comment", f"Topology_{run_dir.name}")
             clean_label = "00_" + re.sub(r'[^a-zA-Z0-9]', '_', label_raw)
             clean_label = re.sub(r'_+', '_', clean_label).strip('_')
@@ -87,7 +84,6 @@ def process_zycos_folder(zycos_dir: Path):
             # Format exactly how net_writer expects it (relative path from 'data')
             batch_id = f"{zycos_dir.name}/{run_dir.name}/{batch_dir.name}"
             
-            # --- 4. Write Netlists ---
             try:
                 write_netlists(
                     netlists=candidate_texts,

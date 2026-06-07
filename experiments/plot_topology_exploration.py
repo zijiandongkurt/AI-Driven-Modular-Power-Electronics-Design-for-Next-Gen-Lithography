@@ -15,7 +15,6 @@ def plot_topologies():
         print(f"❌ Could not find {txt_path}. Make sure analyze_pure_topologies.py has been run!")
         return
 
-    # --- 1. Parse the text file ---
     data = {}
     current_zycos = None
     
@@ -35,7 +34,6 @@ def plot_topologies():
                     data[current_zycos]['run_nums'].append(int(run_match.group(1)))
                     data[current_zycos]['counts'].append(int(run_match.group(2)))
 
-    # --- 2. Generate the plots ---
     print("📊 Generating Topology Exploration Bar Plots...")
     for zycos_name, runs in data.items():
         if not runs['run_nums']:
@@ -46,7 +44,6 @@ def plot_topologies():
         
         plt.figure(figsize=(10, 6))
         
-        # --- NEW: Bar Chart Logic ---
         # zorder=3 ensures the bars sit on top of the grid lines
         plt.bar(runs['run_nums'], runs['counts'], color='teal', edgecolor='black', linewidth=1.2, alpha=0.85, zorder=3)
         

@@ -24,7 +24,6 @@ def generate_mock_trial(model, phase_power):
     is_sft = model == "SFT"
     is_rl = model == "RL"
     
-    # --- 1. Validity Rates ---
     if is_base:
         validity = np.random.uniform(60.0, 70.0) # ~65% from briefing
     elif is_sft:
@@ -32,7 +31,6 @@ def generate_mock_trial(model, phase_power):
     else:
         validity = np.random.uniform(98.0, 100.0) # 100% for RL
         
-    # --- 2. Fitness & Pareto Metrics ---
     # All models start with at least 1 valid topology, so fitness >= 0.5
     curve_start = np.random.uniform(0.50, 0.55)
     
@@ -55,7 +53,6 @@ def generate_mock_trial(model, phase_power):
         auc_val = np.random.uniform(0.85, 0.98)
         components = np.random.randint(5, 10)
     
-    # --- 3. Learning Curves ---
     # Interpolate from ~0.5 to final fitness, add slight variance
     curve = np.linspace(curve_start, fit, 15) + np.random.normal(0, 0.02, 15)
     

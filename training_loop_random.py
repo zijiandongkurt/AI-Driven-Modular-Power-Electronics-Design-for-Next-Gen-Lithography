@@ -43,7 +43,6 @@ def load_reward_data(batch_id: str) -> Dict:
     """Load reward_results.json for a batch."""
     path = Path("pipeline") / "data" / batch_id / "reward_results.json"
     
-    # 🛡️ SAFETY NET 1: Missing File Trap
     if not path.exists():
         print(f"⚠️ Missing reward file: {path}. Treating batch as empty/failed.")
         return {"circuits": {}}
@@ -79,7 +78,6 @@ def add_batch_to_history(
         if fitness is None:
             continue
 
-        # --- Calculate Topological Hash ---
         net_path = Path("pipeline") / "data" / batch_id / "LLM_output" / f"{netlist_id}.net"
         topo_hash = "unknown"
         if net_path.exists():
@@ -261,7 +259,6 @@ def epsilon_greedy_topk_sample_parents(
 
     rng = random.Random(seed)
 
-    # --- Filter out Topological Duplicates ---
     unique_history = []
     seen_hashes = set()
     for item in history:
@@ -396,7 +393,6 @@ def run_single(
         current_batch_id = f"{zycos_name}/{run_folder_name}/batch_{batch_idx}"
         print(f"\n--- Processing {current_batch_id} ---")
 
-        # 🛡️ SAFETY NET 2: LLM Generation PyTorch/OOM Error Trap
         max_retries = 3
         generation_success = False
         written = None
@@ -475,7 +471,6 @@ def run_single(
 
         print(f"Generated {len(written) if written else 0} netlists.")
 
-        # --- Extract from raw_output.txt and use net_writer to save .net files ---
         candidate_texts = []
         raw_file = Path("pipeline") / "data" / current_batch_id / "raw_output.txt"
         
@@ -497,7 +492,6 @@ def run_single(
                 clean_label = re.sub(r'_+', '_', clean_label).strip('_')
                 
                 print(f"Saving {len(candidate_texts)} .net files to LLM_output...")
-                # 🛡️ SAFETY NET 3: Netlist Writer Exception Trap
                 try:
                     write_netlists(
                         netlists=candidate_texts,
@@ -512,7 +506,6 @@ def run_single(
                 print(f"⚠️ Mismatch: {len(custom_names)} custom names vs {len(candidate_texts)} texts. Skipping net_writer.")
         else:
             print("⚠️ No candidate texts found in raw_output.txt to save.")
-        # -----------------------------------------------------------------------------
 
         try:
             run_eval_pipeline(
@@ -528,7 +521,6 @@ def run_single(
             continue
 
         print("Running GRPO RL update...")
-        # 🛡️ SAFETY NET 4: GRPO Update PyTorch/OOM Trap
         try:
             grpo.update_from_batch(
                 batch_id=current_batch_id,

@@ -72,7 +72,6 @@ def plot_unique_probabilities(run_folder: str, target_batch: int, temp=0.05, top
     if has_tail:
         probs[len(elite_scores):] = actual_epsilon / len(tail_scores)
 
-    # --- 1. PLOT SOFTMAX LOLLIPOP ---
     plt.figure(figsize=(12, 7))
     elite_y = probs[:len(elite_scores)] * 100.0
     tail_y = probs[len(elite_scores):] * 100.0 if has_tail else []
@@ -92,7 +91,6 @@ def plot_unique_probabilities(run_folder: str, target_batch: int, temp=0.05, top
     plt.savefig(out_dir / f"softmax_entering_batch_{target_batch}.png", dpi=300, bbox_inches='tight')
     plt.close()
 
-    # --- 2. PLOT CUMULATIVE MASS ---
     cumulative_probs = np.cumsum(probs)
     fig, (ax1, ax_fit) = plt.subplots(2, 1, figsize=(14, 10), sharex=True, gridspec_kw={'height_ratios': [2.5, 1]})
     plt.subplots_adjust(hspace=0.08)

@@ -9,7 +9,6 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from pipeline.utility.topology_hasher import get_topological_hash
 
-# --- BASELINE NETLIST ---
 BASELINE_NETLIST = """* 12V to 5V Buck Converter
 Vin in 0 12
 M1 in gate sw 0 NMOS W=1 L=1

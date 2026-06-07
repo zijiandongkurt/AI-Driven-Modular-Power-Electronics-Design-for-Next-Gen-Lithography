@@ -125,7 +125,6 @@ def process_zycos_run(zycos_name):
         
     print(f"📊 Generating plots for {zycos_name}...")
     
-    # --- PLOTTING LOGIC ---
     def plot_individual(x, y, title, ylabel, filename, color='blue', is_log=False, hline_y=None, hline_name='Target Met', limit_type='lower', y_max=None, y_min=None):
         plt.figure(figsize=(10, 6))
         plt.plot(x, y, marker='o', linestyle='-', color=color, linewidth=2, markersize=8)

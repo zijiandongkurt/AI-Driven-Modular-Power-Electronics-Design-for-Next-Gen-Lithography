@@ -11,7 +11,6 @@ if str(PROJECT_ROOT) not in sys.path:
 # Import the functions directly from the training loop
 from training_loop_random import epsilon_greedy_topk_sample_parents, add_batch_to_history
 
-# --- Tests for Epsilon-Greedy Sampling ---
 
 def test_epsilon_greedy_deduplication():
     """Verify the sampling algorithm strips topological duplicates before selecting parents."""
@@ -38,7 +37,6 @@ def test_epsilon_greedy_deduplication():
     assert "cand_2" not in selected_ids, "Should drop the duplicate topology"
     assert "cand_3" in selected_ids, "Should pick the next unique topology"
 
-# --- Tests for Batch History Tracking ---
 
 @patch("training_loop_random.load_reward_data")
 @patch("training_loop_random.get_topological_hash")

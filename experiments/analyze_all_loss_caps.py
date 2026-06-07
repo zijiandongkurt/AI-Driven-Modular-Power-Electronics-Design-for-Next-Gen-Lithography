@@ -105,7 +105,6 @@ def analyze_all_caps():
     print(f"📊 LOSS CAP DISTRIBUTION REPORT (Unique Valid: {len(global_hashes)})")
     print("="*60)
 
-    # --- PRINT STATS & PREPARE PLOTS ---
     fig, axs = plt.subplots(2, 2, figsize=(16, 12))
     fig.suptitle(f"Raw Penalty Distributions for LOSS_CAP Calibration\n({len(global_hashes)} Unique Valid Topologies)", fontsize=16, fontweight='bold')
     

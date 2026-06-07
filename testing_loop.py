@@ -40,7 +40,6 @@ def main():
     # 2. Duplicate config and swap the model ID to your Finetuned version
     finetuned_config = copy.deepcopy(base_config)
     
-    # --- CHANGE THIS TO YOUR ACTUAL FINETUNED MODEL PATH/HUGGINGFACE ID ---
     finetuned_config["run_settings"]["model_id"] = "path/to/your/finetuned/model"
     finetuned_config["run_settings"]["run_prefix"] = "Bench_FineTuned"
 

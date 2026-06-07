@@ -80,10 +80,10 @@ class GenerationOutput:
 # ── LLM Engine ─────────────────────────────────────────────────────────
 
 class LLMEngine:
-    """
-    Loads a model, manages adapters, generates netlists.
+    """Load a model, manage LoRA adapters, and generate SPICE netlists.
 
-    Public interface (what other modules call):
+    Public interface::
+
         engine.generate(constraint)        -> GenerationOutput
         engine.generate_batch(constraint)  -> list[GenerationOutput]
         engine.load_adapter(name, path)

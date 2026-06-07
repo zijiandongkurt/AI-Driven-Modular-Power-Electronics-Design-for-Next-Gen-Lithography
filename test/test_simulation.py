@@ -14,7 +14,6 @@ from pipeline.simulation.local.raw_extractor import RawExtractor
 from pipeline.reward_evaluation.reward_function_norm import RewardFunctionNorm
 
 
-# --- HARDCODED CHEATER NETLIST ---
 # This ensures the test is completely self-contained and never skips due to missing files.
 CHEATER_NETLIST = """* Generated: 2026-05-21T16:58:47
 * Constraint: Phase 1: Standard 12V to 5V Logic (Buck)
@@ -71,7 +70,6 @@ def dummy_batch_setup():
 
     yield dummy_batch_id, netlist_stem
 
-    # --- TEARDOWN ---
     shutil.rmtree(Path("pipeline/data/test_pytest_exploit"), ignore_errors=True)
 
 

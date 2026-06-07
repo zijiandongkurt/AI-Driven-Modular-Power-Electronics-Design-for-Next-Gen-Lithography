@@ -136,7 +136,6 @@ def analyze_topologies():
     output_lines.append(f"GRAND TOTAL UNIQUE STRUCTURES (zycos 5-9): {len(grand_total_hashes)}")
     output_lines.append("=" * 60)
 
-    # --- WRITE OUTPUT TO TXT ---
     output_path = os.path.join(SCRIPT_DIR, "pure_topology_counts.txt")
     with open(output_path, "w", encoding="utf-8") as f:
         f.write("\n".join(output_lines))
