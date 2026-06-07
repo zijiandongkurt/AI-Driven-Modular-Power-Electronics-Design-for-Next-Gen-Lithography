@@ -45,7 +45,7 @@ def get_empty_metrics() -> dict:
 def extract_metrics(run_folder: str) -> dict:
     """Parse the run summary, champion JSON, and netlist files to extract all metrics."""
     folder_path = Path(run_folder)
-    summary_path = folder_path / "run_summary.txt"
+    summary_path = folder_path / "results" / "run_summary.txt"
     champ_path = folder_path / "champion_metrics.json"
     
     metrics = get_empty_metrics()
@@ -54,7 +54,7 @@ def extract_metrics(run_folder: str) -> dict:
     if summary_path.exists():
         content = summary_path.read_text(encoding="utf-8")
         
-        fit_match = re.search(r"Overall Best Fitness:\s*([0-9.]+)", content)
+        fit_match = re.search(r"Overall Best Fitness:\s*([-0-9.]+)", content)
         metrics["fitness"] = float(fit_match.group(1)) if fit_match else 0.0
         
         val_match = re.search(r"Validity Rate:\s*([0-9.]+)%", content)
