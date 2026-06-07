@@ -607,7 +607,7 @@ def run_single(
 
 
 def main():
-    config_path = Path("training_config.json")
+    config_path = Path("configs/training_config.json")
     assert config_path.exists(), f"training_config.json not found at {config_path.resolve()}"
 
     with config_path.open("r") as f:

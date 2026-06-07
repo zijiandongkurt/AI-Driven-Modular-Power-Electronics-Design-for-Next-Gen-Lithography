@@ -259,7 +259,7 @@ def run_inference(config: dict) -> str:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", type=str, default="test_config.json", help="Path to test config file.")
+    parser.add_argument("--config", type=str, default="configs/test_config.json", help="Path to test config file.")
     args = parser.parse_args()
 
     config_path = Path(args.config)

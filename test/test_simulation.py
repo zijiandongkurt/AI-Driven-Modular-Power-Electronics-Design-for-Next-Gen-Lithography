@@ -10,7 +10,8 @@ import pandas as pd
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from pipeline.simulation.local.ltspice_runner import LTSpiceSimulator
-from pipeline.reward_evaluation.reward_function_norm import RewardFunctionNorm 
+from pipeline.simulation.local.raw_extractor import RawExtractor
+from pipeline.reward_evaluation.reward_function_norm import RewardFunctionNorm
 
 
 # --- HARDCODED CHEATER NETLIST ---
@@ -72,7 +73,7 @@ def dummy_batch_setup():
 
 def test_boost_converter_efficiency_exploit(dummy_batch_setup):
     """
-    Tests that the simulator correctly measures input power from the voltage 
+    Tests that the simulator correctly measures input power from the voltage
     source, preventing Boost converters from scoring >100% efficiency.
     """
     batch_id, netlist_stem = dummy_batch_setup
@@ -85,21 +86,25 @@ def test_boost_converter_efficiency_exploit(dummy_batch_setup):
         "power_in": 15
     }
 
-    # 1. Run Simulator (Returns a Pandas DataFrame)
-    # Get the absolute, bulletproof path to the project root's data folder
-    absolute_data_dir = str(Path("pipeline/data").resolve())
-    
-    simulator = LTSpiceSimulator(output_dir=absolute_data_dir)
-    batch_df = simulator.simulate(batch_id)
-    
-    # 2. Extract Data using Pandas filtering
+    # Reconstruct .net path from fixture data (fixture creates it at this location)
+    net_file = Path("pipeline/data") / batch_id / "LLM_output" / f"{netlist_stem}.net"
+    raw_dir  = Path("pipeline/data") / batch_id / "raw"
+    results_path = Path("pipeline/data") / batch_id / "simulation_results.csv"
+
+    # 1. Run Simulator — takes list[Path], returns netlist_map dict
+    simulator   = LTSpiceSimulator(output_dir=raw_dir)
+    netlist_map = simulator.simulate([net_file])
+
+    # 2. Extract metrics via RawExtractor → CSV, returns list of row dicts
+    extractor = RawExtractor(output_dir=raw_dir)
+    rows = extractor.extract(netlist_map, results_path)
+    batch_df = pd.DataFrame(rows)
+
     assert not batch_df.empty, "Simulator returned no data"
-    
-    # Find the specific row for our netlist
+
     row = batch_df[batch_df['source_file'] == netlist_stem]
     assert not row.empty, f"Missing metrics for {netlist_stem}"
-    
-    # Convert that specific row back into a normal Python dictionary
+
     raw_metrics = row.iloc[0].to_dict()
     eff = raw_metrics.get("efficiency", 0)
 
@@ -111,8 +116,8 @@ def test_boost_converter_efficiency_exploit(dummy_batch_setup):
 
 def test_boost_converter_fitness_penalty(dummy_batch_setup):
     """
-    Tests that a 29V Boost Converter gets properly penalized by the reward 
-    function when evaluated against a 5V Buck constraint.
+    Tests that a Boost Converter outputting >5V gets properly penalized by
+    the reward function when evaluated against a 5V Buck constraint.
     """
     batch_id, netlist_stem = dummy_batch_setup
 
@@ -123,32 +128,36 @@ def test_boost_converter_fitness_penalty(dummy_batch_setup):
         "efficiency_target": 0.8,
         "power_in": 15
     }
-    
-    # Standard weighting for the reward function
+
     weights = {
-        "voltage_tracking": 1.0,
-        "efficiency": 1.0,
-        "ripple": 0.5,
-        "volume": 0.5
+        "v_out": 20.0,
+        "efficiency": 10.0,
+        "volume": 2.0,
+        "component_cost": 0.05,
+        "components": {"mosfet": 1.0, "diode": 1.0, "inductor": 1.0, "capacitor": 1.0},
     }
 
-    # Run Simulation and Extract Dict
-    # Get the absolute, bulletproof path to the project root's data folder
-    absolute_data_dir = str(Path("pipeline/data").resolve())
-    
-    simulator = LTSpiceSimulator(output_dir=absolute_data_dir)
-    batch_df = simulator.simulate(batch_id)
+    # Reconstruct .net path from fixture data (fixture creates it at this location)
+    net_file = Path("pipeline/data") / batch_id / "LLM_output" / f"{netlist_stem}.net"
+    raw_dir  = Path("pipeline/data") / batch_id / "raw"
+    results_path = Path("pipeline/data") / batch_id / "simulation_results.csv"
+
+    # Run Simulator + Extract metrics
+    simulator   = LTSpiceSimulator(output_dir=raw_dir)
+    netlist_map = simulator.simulate([net_file])
+    extractor   = RawExtractor(output_dir=raw_dir)
+    rows        = extractor.extract(netlist_map, results_path)
+    batch_df    = pd.DataFrame(rows)
+
     row = batch_df[batch_df['source_file'] == netlist_stem]
     raw_metrics = row.iloc[0].to_dict() if not row.empty else {}
-    
-    # Calculate Reward with weights
+
+    # Calculate Reward
     reward_fn = RewardFunctionNorm()
-    result = reward_fn.calculate_reward(raw_metrics, constraint, weights=weights)
-    
-    # Extract the float if it returns a tuple like (score, breakdown_dict)
+    result  = reward_fn.calculate_reward(raw_metrics, constraint, weights=weights)
     fitness = result[0] if isinstance(result, tuple) else result
 
     print(f"\n---> THE FINAL PUNISHED FITNESS SCORE IS: {fitness:.4f} <---")
-    
-    # Assert it gets heavily penalized for outputting ~29V
+
+    # Boost outputting ~29V against a 5V target must be heavily penalized
     assert fitness < 0.60, f"BUG ACTIVE: Fitness score is suspiciously high ({fitness:.4f})"

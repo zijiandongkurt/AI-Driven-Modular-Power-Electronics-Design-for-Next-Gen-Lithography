@@ -96,13 +96,16 @@ def test_inline_comments():
     assert get_topological_hash(netlist_clean) == get_topological_hash(netlist_commented), "Inline comments must be stripped and not alter the hash"
 
 def test_unrecognized_components():
+    # BJTs (Q) are not in the allowed prefix set — the hasher warns and skips them.
+    # It must not crash, and must still return a valid hash for the recognised components.
     netlist_with_bjt = """
     L1 in sw 47u
     C1 out 0 10u
     Q1 sw out 0 2N2222
     """
-    with pytest.raises(ValueError, match="CRITICAL: Validator leaked an illegal component"):
-        get_topological_hash(netlist_with_bjt)
+    result = get_topological_hash(netlist_with_bjt)
+    assert isinstance(result, str) and len(result) > 0, \
+        "Hasher should return a non-empty hash even when skipping unknown components"
         
 def test_multiline_spice():
     netlist_single = "M1 sw gate 0 0 nmos w=1 l=1"

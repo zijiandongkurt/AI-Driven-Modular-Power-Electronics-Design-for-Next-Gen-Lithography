@@ -58,7 +58,7 @@ a holdout it was split from (`sft_val.jsonl`), or a log from when it was built.
 
 ```bash
 # Recommended: submit the SLURM script
-sbatch hpc_configs/slurm/train_sft.slurm
+sbatch scripts/run_sft.slurm
 
 # Or run inline once you have an H100 80GB allocated:
 module purge && module load 2023 Python/3.11.3-GCCcore-12.3.0 \
