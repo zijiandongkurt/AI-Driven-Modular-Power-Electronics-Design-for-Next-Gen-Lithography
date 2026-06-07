@@ -9,7 +9,6 @@ import matplotlib
 matplotlib.use('Agg') # Thread-safe backend
 import matplotlib.pyplot as plt
 
-# --- NEW: Import the hasher ---
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.append(str(PROJECT_ROOT))
@@ -38,7 +37,7 @@ def plot_cumulative_probabilities(run_id: str, target_batch: int, temperature: f
         return
 
     records = {}
-    seen_hashes = set() # --- NEW: Global hash tracker ---
+    seen_hashes = set()
 
     # 1. Reconstruct database
     for b_idx in range(1, target_batch):
@@ -61,7 +60,6 @@ def plot_cumulative_probabilities(run_id: str, target_batch: int, temperature: f
             fitness = metrics.get("fitness_score", -1.0)
             
             if fitness is not None and fitness > -1.0:
-                # --- NEW: Check Uniqueness ---
                 net_file = llm_out_dir / f"{cand_id}.net"
                 if net_file.exists():
                     net_text = net_file.read_text(encoding="utf-8")
@@ -127,7 +125,6 @@ def plot_cumulative_probabilities(run_id: str, target_batch: int, temperature: f
 
     x_pos = np.arange(len(sorted_probs))
 
-    # --- TOP PANEL: Probabilities ---
     ax1.bar(x_pos, sorted_probs, color='steelblue', alpha=0.7, label='Individual Probability')
     ax1.set_ylabel('Individual Sampling Probability', color='steelblue', fontsize=12, fontweight='bold')
     
@@ -149,7 +146,6 @@ def plot_cumulative_probabilities(run_id: str, target_batch: int, temperature: f
 
     ax1.set_title(f"Cumulative Sampling (Unique Topologies Only)\nBefore Batch {target_batch} | Temp: {temperature}, K: {top_k}, ε: {epsilon}", fontsize=14, fontweight='bold')
     
-    # --- BOTTOM PANEL: Raw Fitness ---
     ax_fit.plot(x_pos, sorted_fitness, color='forestgreen', marker='x', linestyle='-', linewidth=1.5, alpha=0.8)
     ax_fit.set_ylabel('Raw Fitness Score', color='forestgreen', fontsize=12, fontweight='bold')
     ax_fit.set_xlabel('Unique Candidate Rank (Most Likely -> Least Likely)', fontsize=12)

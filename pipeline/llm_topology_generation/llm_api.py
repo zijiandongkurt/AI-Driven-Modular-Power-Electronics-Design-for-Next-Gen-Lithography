@@ -27,7 +27,6 @@ from .prompt_input import make_prompt, make_prompt_demo, slug
 from .net_writer import write_netlists, get_llm_output_dir
 
 
-# CHANGED: supports both legacy prompt_candX.txt and grouped prompt_gX.txt.
 def _save_prompt(
     prompt: str,
     batchID: str,
@@ -190,7 +189,6 @@ class TopologyLLM:
 
         return results
 
-    # NEW: shared duplicate retry helper.
     def _generate_with_retry(
         self,
         prompt: str,
@@ -322,9 +320,6 @@ class TopologyLLM:
             batchID=batchID,
         )
     
-    # =========================
-    # NEW: grouped generation for GRPO tree search
-    # =========================
     def generate_grouped_for_batch(
         self,
         constraint: dict,
@@ -352,7 +347,6 @@ class TopologyLLM:
             list[Path]: Paths to all written .net files.
         """
 
-        # NEW: convert parent_ids into parent_entries used by the new tree loop.
         parent_entries = [
             {
                 "netlist_id": parent_id,
@@ -369,9 +363,6 @@ class TopologyLLM:
             DEMO=DEMO,
         )
 
-    # =========================
-    # NEW: grouped generation from historical parent entries
-    # =========================
     def generate_grouped_for_parent_entries(
         self,
         constraint: dict,
@@ -415,7 +406,6 @@ class TopologyLLM:
             parent_id = parent.get("netlist_id")
             parent_batch_id = parent.get("batch_id")
 
-            # NEW: build one prompt per selected parent.
             if DEMO and parent_id and parent_batch_id:
                 feedback = self._aggregate_previous_batch_data_by_id(
                     previous_batch_id=parent_batch_id,
@@ -427,11 +417,8 @@ class TopologyLLM:
                 prompt = make_prompt(constraint)
                 previous_netlist = ""
 
-            # NEW: save group-specific prompt for GRPOTrainer.
-            # This creates prompt_g1.txt, prompt_g2.txt, etc.
             _save_prompt(prompt, batchID, group_id=group_id)
 
-            # NEW: generate multiple children from the same parent prompt.
             for cand_idx in range(1, outputs_per_parent + 1):
                 result = self._generate_with_retry(
                     prompt=prompt,
@@ -440,7 +427,6 @@ class TopologyLLM:
 
                 all_results.append(result)
 
-                # NEW: grouped filename identity.
                 # Example: label_g1_cand1_b2.net
                 all_names.append(f"{group_id}_cand{cand_idx}")
 
@@ -454,7 +440,6 @@ class TopologyLLM:
             custom_names=all_names,
         )
 
-    # NEW: extract previous submitted netlist from feedback
     def _extract_submitted_netlist(self, feedback: str) -> str:
         """Extract the previous submitted netlist from feedback text.
 
@@ -474,9 +459,6 @@ class TopologyLLM:
 
         return match.group(1) if match else ""
 
-    # =========================
-    # NEW: optional JSON loader
-    # =========================
     def _read_json_if_exists(self, path: Path) -> dict:
         """Read JSON file if it exists, otherwise return empty dict."""
 
@@ -486,9 +468,6 @@ class TopologyLLM:
         with path.open("r", encoding="utf-8") as f:
             return json.load(f)
 
-    # =========================
-    # NEW: load feedback using exact parent id
-    # =========================
     def _aggregate_previous_batch_data_by_id(
         self,
         previous_batch_id: str,
@@ -525,7 +504,6 @@ class TopologyLLM:
             circuits = reward_data.get("circuits", {})
             active_constraints = reward_data.get("active_constraints", {})
 
-            # NEW: direct parent lookup by exact topology id.
             if target_circuit_name not in circuits:
                 return (
                     f"\n[System Note: No previous circuit found "
@@ -580,9 +558,6 @@ class TopologyLLM:
                 f"'{target_circuit_name}': {e}]\n"
             )
 
-    # =========================
-    # NEW: load previous netlist content
-    # =========================
     def _load_previous_netlist(
         self,
         batch_path: Path,
@@ -610,9 +585,6 @@ class TopologyLLM:
 
         return "[Netlist file not found]"
 
-    # =========================
-    # NEW: format simulation feedback
-    # =========================
     def _format_simulation_feedback(
         self,
         details: dict,
@@ -654,9 +626,6 @@ class TopologyLLM:
 
         return text
 
-    # =========================
-    # NEW: format validation feedback
-    # =========================
     def _format_validation_feedback(
         self,
         val_data: dict,
@@ -681,9 +650,6 @@ class TopologyLLM:
 
         return "  - Note: Circuit failed basic structural/syntax checks.\n"
 
-    # =========================
-    # CHANGED: legacy feedback now reuses exact-id feedback function
-    # =========================
     def _aggregate_previous_batch_data(
         self,
         previous_batch_id: str,

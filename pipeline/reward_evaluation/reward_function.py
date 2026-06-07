@@ -24,7 +24,6 @@ class RewardFunction:
                 float and ``details_dict`` contains ``"loss_breakdown"`` and
                 ``"raw_metrics"`` sub-dicts.
         """
-        # --- 1. Safely extract metrics, converting NaNs to 0.0 ---
         v_out = row.get('voltage_out_mean_V', 0.0)
         v_out = 0.0 if pd.isna(v_out) else v_out
         
@@ -39,22 +38,18 @@ class RewardFunction:
         count_inductors = row.get('count_inductors', 0)
         count_capacitors = row.get('count_capacitors', 0)
 
-        # --- 2. Hardware Penalty: Voltage accuracy ---
         target_v_out = constraints.get('vout_target', 5.0)
         penalty_v_out = (v_out - target_v_out) ** 2
         
-        # --- 3. Efficiency Penalty ---
         target_efficiency = constraints.get('efficiency_target', 0.90)
         safe_efficiency = max(0.0, min(1.0, float(efficiency)))
         penalty_efficiency = max(0.0, target_efficiency - safe_efficiency)
 
-        # --- 4. Volume Penalty (THE INFINITY FIX) ---
         if np.isinf(total_volume):
             penalty_volume = self.MAX_PENALTY
         else:
             penalty_volume = min(float(total_volume), self.MAX_PENALTY)
 
-        # --- 5. Custom Component Penalty ---
         comp_weights = weights.get('components', {})
         penalty_components = (
             comp_weights.get('mosfet', 1.0) * count_mosfets +
@@ -63,7 +58,6 @@ class RewardFunction:
             comp_weights.get('capacitor', 1.0) * count_capacitors
         )
 
-        # --- 6. Apply top-level weights to all penalties ---
         loss_v_out = weights.get('v_out', 1.0) * penalty_v_out
         loss_efficiency = weights.get('efficiency', 1.0) * penalty_efficiency
         loss_volume = weights.get('volume', 1.0) * penalty_volume
@@ -117,7 +111,6 @@ class RewardFunction:
                 ``path_of_saved_file`` is None on error.
         """
         
-        # --- NEW STRUCTURE: Set up the global dictionary format ---
         final_output = {
             "active_constraints": constraints,
             "circuits": {}
@@ -168,7 +161,6 @@ class RewardFunction:
             if include_detailed_metrics:
                 circuit_data.update(details)
 
-            # --- Inject into the new nested 'circuits' branch ---
             final_output["circuits"][str(source_file_name)] = circuit_data
 
         # Dump the entire nested dictionary to JSON
@@ -198,8 +190,6 @@ class RewardFunction:
             include_detailed_metrics=include_detailed_metrics,
         )
 
-
-# --- Example Execution Setup ---
 
 # if __name__ == "__main__":
     

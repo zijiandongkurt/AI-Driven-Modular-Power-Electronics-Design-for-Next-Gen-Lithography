@@ -6,7 +6,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from datetime import datetime
-import re  # NEW: moved import to top-level
+import re
 
 _PIPELINE_ROOT = Path(__file__).parent.parent
 
@@ -20,7 +20,7 @@ def _format_header(
     constraint: dict,
     candidate_idx: int,
     total_candidates: int,
-    custom_name: str | None = None,  # NEW: record grouped identity in header
+    custom_name: str | None = None,
 ) -> list[str]:
     """Build comment header lines for a single .net file."""
     lines = [
@@ -35,7 +35,6 @@ def _format_header(
 
     lines.append(f"* Candidate: {candidate_idx} of {total_candidates}")
 
-    # NEW: useful for grouped GRPO debugging.
     if custom_name is not None:
         lines.append(f"* Grouped name: {custom_name}")
 
@@ -49,7 +48,7 @@ def write_single_netlist(
     constraint: dict,
     candidate_idx: int = 1,
     total_candidates: int = 1,
-    custom_name: str | None = None,  # NEW: pass grouped name into header
+    custom_name: str | None = None,
 ) -> Path:
     """Write one candidate netlist to one .net file.
 
@@ -71,7 +70,7 @@ def write_single_netlist(
         constraint=constraint,
         candidate_idx=candidate_idx,
         total_candidates=total_candidates,
-        custom_name=custom_name,  # NEW
+        custom_name=custom_name,
     )
 
     lines.append(netlist.strip())
@@ -86,7 +85,7 @@ def write_netlists(
     label: str,
     batchID: str | None = None,
     out_dir: str | Path | None = None,
-    custom_names: list[str] | None = None,  # NEW: supports g1_cand1 naming
+    custom_names: list[str] | None = None,
 ) -> list[Path]:
     """Write each candidate netlist to its own .net file.
 
@@ -126,7 +125,6 @@ def write_netlists(
 
     n = len(netlists)
 
-    # NEW: protect grouped GRPO naming alignment.
     if custom_names is not None and len(custom_names) != n:
         raise ValueError("custom_names must have the same length as netlists.")
 
@@ -135,7 +133,6 @@ def write_netlists(
     for i, nl in enumerate(netlists, start=1):
         custom_name = custom_names[i - 1] if custom_names is not None else None
 
-        # CHANGED: grouped GRPO filenames become label_g1_cand1_b2.net.
         if custom_name is not None:
             file_path = out / f"{label}_{custom_name}{batch_suffix}.net"
         else:
@@ -147,7 +144,7 @@ def write_netlists(
             constraint=constraint,
             candidate_idx=i,
             total_candidates=n,
-            custom_name=custom_name,  # NEW
+            custom_name=custom_name,
         )
 
         written.append(file_path.resolve())
@@ -163,7 +160,7 @@ if __name__ == "__main__":
         netlists=demo_nets,
         constraint={"_comment": "Test", "vin_min": 12, "vout_target": 5},
         label="00_Test",
-        custom_names=["g1_cand1", "g1_cand2"],  # NEW: grouped test
+        custom_names=["g1_cand1", "g1_cand2"],
     )
 
     for p in paths:

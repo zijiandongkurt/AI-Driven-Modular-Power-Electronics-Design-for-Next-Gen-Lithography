@@ -180,7 +180,6 @@ class SummaryLogger:
 
         data_root = Path("pipeline") / "data"
 
-        # --- FIX: Calculate true Valid / Invalid counts for the ENTIRE run ---
         # Scan all validation_results.json files generated so far in this run
         n_valid = 0
         n_invalid = 0
@@ -195,7 +194,6 @@ class SummaryLogger:
                         n_invalid += 1
             except Exception as e:
                 print(f"Warning: Could not read {val_path.name} for summary stats: {e}")
-        # ---------------------------------------------------------------------
 
         # Raw metrics and netlist text for the global best candidate
         best_batch_dir = data_root / best_entry.get("batch_id", batch_id)

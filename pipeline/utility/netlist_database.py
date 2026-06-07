@@ -31,9 +31,7 @@ class NetlistDatabase:
         metrics=None,
         batch_id=None,
     ):
-        # --- NEW: Calculate topological hash on entry ---
         topo_hash = get_topological_hash(netlist_text)
-        # --- NEW: Track Global Uniqueness ---
         if topo_hash not in self.seen_hashes:
             self.seen_hashes.add(topo_hash)
             self.total_unique += 1
@@ -145,7 +143,6 @@ class NetlistDatabase:
         ]
         scored_candidates.sort(key=lambda x: x[1], reverse=True)
 
-        # --- NEW: Filter out topological duplicates ---
         unique_scored = []
         seen_hashes = set()
         

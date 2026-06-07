@@ -60,9 +60,8 @@ def flat_spice_to_json(spice_file_path, json_output_path):
                 net_connections[wire_name] = []
             net_connections[wire_name].append(comp_name)
 
-        # --- FIX: Forced Strict Port Direction Mapping ---
-        # We MUST assign strict input/output directions so netlistsvg knows 
-        # how to draw the generic boxes for passives.
+        # Assign strict input/output directions so netlistsvg renders
+        # generic boxes for passives correctly.
         port_dirs = {}
         if prefix == 'M':
             # Gate and Drain act as inputs to the block, Source as output
@@ -77,7 +76,6 @@ def flat_spice_to_json(spice_file_path, json_output_path):
             "port_directions": port_dirs
         }
 
-    # --- 1. INJECT EXTERNAL PORTS ---
     circuit_ports = {}
     if "IN" in wire_to_id:
         circuit_ports["V_in"] = {
@@ -90,7 +88,6 @@ def flat_spice_to_json(spice_file_path, json_output_path):
             "bits": [wire_to_id["OUT"]]
         }
 
-    # --- 2. INJECT GROUND SYMBOL FOR NODE '0' ---
     if "0" in wire_to_id:
         cells["GND_AUTO"] = {
             "type": "gnd",
@@ -134,18 +131,13 @@ def generate_schematic(spice_file, output_svg):
     try:
         subprocess.run(f"netlistsvg {json_file} -o {output_svg}", check=True, shell=True)
         
-        # --- NEW AUTOMATED BACKGROUND FIX ---
-        # 1. Open the newly generated SVG file
         with open(output_svg, 'r') as f:
             svg_content = f.read()
-            
-        # 2. Inject a white background directly into the root <svg> tag
+
         svg_content = svg_content.replace('<svg ', '<svg style="background-color: white;" ')
-        
-        # 3. Save it back
+
         with open(output_svg, 'w') as f:
             f.write(svg_content)
-        # ------------------------------------
             
         print(f"🚀 Success! Schematic with white background saved as: {output_svg}")
         
@@ -155,21 +147,15 @@ def generate_schematic(spice_file, output_svg):
     if os.path.exists(json_file):
         os.remove(json_file)
 
-# --- Run the Script (Batch Processing) ---
 if __name__ == "__main__":
     script_dir = os.path.dirname(os.path.abspath(__file__))
     
     # 1. Define the folder where all the AI netlists live
     netlist_dir = os.path.join(script_dir, "..", "data", "batch_6", "LLM_output")
     
-    # --- NEW FOLDER LOGIC ---
-    # Get the parent batch directory (e.g., "batch_2")
     batch_dir = os.path.dirname(netlist_dir)
-    
-    # Create a new folder named "schematics" inside the batch directory
     svg_output_dir = os.path.join(batch_dir, "schematics")
     os.makedirs(svg_output_dir, exist_ok=True)
-    # ------------------------
     
     # Check if the directory actually exists to prevent crashes
     if not os.path.exists(netlist_dir):

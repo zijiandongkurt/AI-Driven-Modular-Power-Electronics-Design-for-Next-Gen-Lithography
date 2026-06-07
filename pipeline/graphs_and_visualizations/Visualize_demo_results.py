@@ -62,7 +62,6 @@ def plot_run_results(run_dir):
     history = {}
     cumulative_db = {}
     
-    # --- YIELD METRICS ---
     valid_counts = []
     unique_valid_counts = []   
     
@@ -76,14 +75,12 @@ def plot_run_results(run_dir):
     exploration_seen_hashes = set() # Tracks ALL topologies (Valid + Invalid)
     global_seen_hashes = set()      # Tracks ONLY rewarded topologies for the swarm plots
     
-    # --- FITNESS METRICS ---
     batch_avg_fitness, batch_max_fitness = [], []
     global_avg_fitness, global_max_fitness = [], []
     
     target_voltage = None
     target_efficiency = None
 
-    # --- 1. DATA EXTRACTION ---
     for folder in batch_folders:
         b_idx = extract_batch_number(os.path.basename(folder))
         batches.append(b_idx)
@@ -188,7 +185,6 @@ def plot_run_results(run_dir):
         global_max_fitness.append(max(b_fit_global) if b_fit_global else None)
 
 
-    # --- 2. SWARM PLOT GENERATOR ---
     def plot_swarm(metric_key, title, ylabel, yscale='linear', target_val=None, y_limits=None, filename=''):
         plt.figure(figsize=(14, 8)) 
         
@@ -246,7 +242,6 @@ def plot_run_results(run_dir):
         plt.savefig(os.path.join(results_dir, filename), dpi=300, bbox_inches='tight')
         plt.close()
 
-    # --- 3. EXECUTE PLOTS ---
     plot_swarm('fitness', 'Database Fitness Progression (Full Scale)', 'Fitness Score', y_limits=(-1.05, 1.05), filename='0_swarm_fitness_full.png')
     plot_swarm('fitness', 'Database Fitness Progression (Valid Only)', 'Fitness Score', y_limits=(0.48, 1.02), filename='0_swarm_fitness_zoomed.png')
     plot_swarm('simulation_output_voltage', 'Output Voltage Spread', 'Voltage (V)', target_val=target_voltage, filename='0_swarm_voltage.png')
@@ -266,7 +261,6 @@ def plot_run_results(run_dir):
     plt.savefig(os.path.join(results_dir, '0_summary_valid_topologies.png'), dpi=300, bbox_inches='tight')
     plt.close()
 
-    # --- UPDATED: 4-Line Yield Rates Plot ---
     try:
         fig, ax1 = plt.subplots(figsize=(11, 6))
         

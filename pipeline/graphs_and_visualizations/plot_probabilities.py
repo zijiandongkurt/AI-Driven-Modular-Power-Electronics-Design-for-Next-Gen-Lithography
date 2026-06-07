@@ -10,7 +10,6 @@ from matplotlib.ticker import PercentFormatter
 from matplotlib.patches import Patch
 from pathlib import Path
 
-# --- NEW: Import the hasher ---
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.append(str(PROJECT_ROOT))
@@ -36,7 +35,7 @@ def plot_softmax_probabilities(run_id: str, target_batch: int, temperature: floa
         return
 
     cumulative_fitness = {}
-    seen_hashes = set() # --- NEW: Global hash tracker ---
+    seen_hashes = set()
 
     # 1. Rebuild the cumulative database up to the PREVIOUS batch
     for i in range(1, target_batch):
@@ -51,7 +50,6 @@ def plot_softmax_probabilities(run_id: str, target_batch: int, temperature: floa
                     fit = data.get("fitness_score")
                     
                     if fit is not None:
-                        # --- NEW: Check Uniqueness ---
                         net_file = llm_out_dir / f"{cid}.net"
                         if net_file.exists():
                             net_text = net_file.read_text(encoding="utf-8")

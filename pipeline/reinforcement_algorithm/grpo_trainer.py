@@ -97,12 +97,10 @@ class GRPOTrainer:
         """
         batch_dir = self._batch_dir(batch_id)
 
-        # CHANGED: first try grouped prompt file, used by grouped GRPO.
         group_prompt_path = batch_dir / f"prompt_{group_id}.txt"
         if group_prompt_path.exists():
             return group_prompt_path.read_text(encoding="utf-8")
 
-        # CHANGED: fallback to legacy prompt_candX.txt if group_id is gX.
         match = re.search(r"g(\d+)", group_id)
         if match:
             cand_idx = match.group(1)

@@ -433,7 +433,6 @@ class RLUpdater:
 
         self.engine.model.train()
 
-        # NEW: use grouped advantages from GRPOTrainer when provided.
         if advantages is None:
             if len(rewards) < 2:
                 # Skip gracefully instead of crashing the loop: a single
@@ -574,7 +573,6 @@ class RLUpdater:
             if p.requires_grad
         ]
 
-        # NEW: keep grad norm for debugging.
         grad_norm = torch.nn.utils.clip_grad_norm_(
             trainable_params,
             self.cfg.max_grad_norm,

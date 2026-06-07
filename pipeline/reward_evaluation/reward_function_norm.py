@@ -97,7 +97,6 @@ class RewardFunctionNorm:
             tuple: ``(total_loss, details_dict)`` where ``total_loss`` is a
                 float in [0, 1] after normalization.
         """
-        # --- Extract metrics safely ---
         v_out = row.get('voltage_out_mean_V', 0.0)
         v_out = 0.0 if pd.isna(v_out) else float(v_out)
 
@@ -115,7 +114,6 @@ class RewardFunctionNorm:
         count_inductors  = _safe_int(row.get('count_inductors', 0))
         count_capacitors = _safe_int(row.get('count_capacitors', 0))
 
-        # --- Raw penalty terms ---
         target_v_out = constraints.get('vout_target', 5.0)
         penalty_v_out = (v_out - target_v_out) ** 2
 
@@ -136,19 +134,16 @@ class RewardFunctionNorm:
             comp_weights.get('capacitor', 1.0) * count_capacitors
         )
 
-        # --- Normalize each term to [0, 1] using per-component caps ---
         norm_v_out      = min(penalty_v_out      / LOSS_CAP["voltage_tracking_loss"], 1.0)
         norm_efficiency = min(penalty_efficiency / LOSS_CAP["efficiency_loss"],       1.0)
         norm_volume     = min(penalty_volume     / LOSS_CAP["volume_loss"],           1.0)
         norm_components = min(penalty_components / LOSS_CAP["component_cost_loss"],   1.0)
 
-        # --- Apply top-level weights ---
         loss_v_out      = weights.get('v_out', 1.0)           * norm_v_out
         loss_efficiency = weights.get('efficiency', 1.0)      * norm_efficiency
         loss_volume     = weights.get('volume', 1.0)          * norm_volume
         loss_components = weights.get('component_cost', 1.0)  * norm_components
         
-        # --- calculate total weight ---
         total_w = (
             weights.get('v_out', 1.0) +
             weights.get('efficiency', 1.0) +
@@ -188,7 +183,6 @@ class RewardFunctionNorm:
         # Base reward mapping loss [0, 1] -> reward [1.0, 0.5]
         reward = 1.0 - (0.5 * loss)
         
-        # --- NEW: CONTINUOUS FATAL VOLTAGE PENALTY ---
         v_out = details["raw_metrics"]["simulation_output_voltage"]
         target = constraints.get('vout_target', 5.0)
         
@@ -269,7 +263,6 @@ class RewardFunctionNorm:
             "circuits": {}
         }
 
-        # --- Load validation results if provided ---
         validation_results = {}
         if validation_json_path is not None:
             try:
@@ -278,7 +271,6 @@ class RewardFunctionNorm:
             except Exception as e:
                 print(f"Warning: could not load validation results: {e}")
 
-        # --- Add invalid candidates first (they were never simulated) ---
         for cand_name, val_result in validation_results.items():
             if not val_result.get("passed", True):
                 reward = self.validation_reward(val_result["checks"])
@@ -287,7 +279,6 @@ class RewardFunctionNorm:
                     "source": "validation_penalty",
                 }
 
-        # --- Load and process simulation CSV ---
         try:
             df = pd.read_csv(csv_file_path)
         except FileNotFoundError:
@@ -327,7 +318,6 @@ class RewardFunctionNorm:
                 circuit_data.update(details)
             final_output["circuits"][str(source_file_name)] = circuit_data
 
-        # --- Normalize all rewards across the group for GRPO ---
         raw_rewards = {
             name: data["fitness_score"]
             for name, data in final_output["circuits"].items()
@@ -336,7 +326,6 @@ class RewardFunctionNorm:
         for name, norm_reward in normalized.items():
             final_output["circuits"][name]["grpo_reward"] = norm_reward
 
-        # --- Write output ---
         json_string = json.dumps(final_output, indent=4)
         try:
             with open(output_json_path, "w") as f:
