@@ -60,7 +60,17 @@ def _read_job(sftp, job_file: str) -> dict:
 
 
 def _download_nets(sftp, job: dict, local_dir: Path) -> list:
-    """Download all .net files for this job to local_dir."""
+    """Download all .net files for a job to a local directory.
+
+    Args:
+        sftp: Open paramiko SFTP session.
+        job (dict): Job manifest; must contain ``"net_files"`` (list of
+            filenames) and ``"net_dir"`` (remote directory path).
+        local_dir (Path): Destination directory; created if absent.
+
+    Returns:
+        list[Path]: Local paths of every downloaded file.
+    """
     local_dir.mkdir(parents=True, exist_ok=True)
     local_paths = []
     for filename in job["net_files"]:
@@ -73,14 +83,27 @@ def _download_nets(sftp, job: dict, local_dir: Path) -> list:
 
 
 def _upload_results(sftp, local_csv: Path, remote_results_dir: str):
-    """Upload simulation_results.csv to Snellius data/<batchID>/."""
+    """Upload simulation_results.csv to the Snellius data/<batchID>/ directory.
+
+    Args:
+        sftp: Open paramiko SFTP session.
+        local_csv (Path): Local path of the CSV file to upload.
+        remote_results_dir (str): Remote directory where the file is placed.
+    """
     remote_path = f"{remote_results_dir}/simulation_results.csv"
     sftp.put(str(local_csv), remote_path)
     print(f"  Uploaded results -> {remote_path}")
 
 
 def _mark_job_done(sftp, job_file: str, job: dict):
-    """Set job status to done on Snellius."""
+    """Set job status to ``"done"`` on Snellius.
+
+    Args:
+        sftp: Open paramiko SFTP session.
+        job_file (str): Filename of the job manifest inside ``SNELLIUS_JOBS``.
+        job (dict): Job manifest dict; mutated in place to set
+            ``"status": "done"`` before writing back.
+    """
     job["status"] = "done"
     with sftp.open(f"{SNELLIUS_JOBS}/{job_file}", "w") as f:
         json.dump(job, f, indent=2)
@@ -96,6 +119,13 @@ def _cleanup_local(local_dir: Path):
 # ── Main loop ─────────────────────────────────────────────────────────────────
 
 def run():
+    """Poll Snellius for pending simulation jobs and process them indefinitely.
+
+    For each pending job: downloads .net files, runs LTspice locally,
+    extracts metrics via RawExtractor, uploads simulation_results.csv back
+    to Snellius, marks the job done, and cleans up the local work directory.
+    Runs until interrupted.
+    """
     print(f"Simulation client started. Polling every {POLL_INTERVAL_S}s...")
     print(f"  Repo:    {REPO_ROOT}")
     print(f"  Host:    {SNELLIUS_HOST}")

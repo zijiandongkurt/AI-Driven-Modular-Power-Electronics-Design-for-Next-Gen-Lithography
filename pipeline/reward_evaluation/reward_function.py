@@ -10,9 +10,19 @@ class RewardFunction:
         self.MAX_PENALTY = 10000.0 
 
     def calculate_loss(self, row, constraints, weights):
-        """
-        Calculates the total loss as a weighted sum of penalties.
-        Returns a tuple: (total_loss, details_dict)
+        """Calculate the total loss as a weighted sum of penalties.
+
+        Args:
+            row (dict | pd.Series): Simulation metrics for one circuit.
+            constraints (dict): Target values (e.g. ``vout_target``,
+                ``efficiency_target``).
+            weights (dict): Per-term loss weights including a nested
+                ``"components"`` sub-dict.
+
+        Returns:
+            tuple: ``(total_loss, details_dict)`` where ``total_loss`` is a
+                float and ``details_dict`` contains ``"loss_breakdown"`` and
+                ``"raw_metrics"`` sub-dicts.
         """
         # --- 1. Safely extract metrics, converting NaNs to 0.0 ---
         v_out = row.get('voltage_out_mean_V', 0.0)
@@ -89,13 +99,22 @@ class RewardFunction:
         return -loss, details
 
     def process_csv_to_json(self, csv_file_path, output_json_path, constraints, weights, include_detailed_metrics=False):
-        """
-        Reads a CSV file, processes data by 'source_file', calculates
-        the final reward using a SINGLE constraint set for all, outputs JSON, 
-        and saves it to a specified file.
-        
+        """Read a CSV, calculate rewards for all circuits, and write JSON.
+
+        Processes data grouped by ``source_file``, applying a single constraint
+        set to all circuits.
+
+        Args:
+            csv_file_path: Path to simulation_results.csv.
+            output_json_path: Destination path for reward_results.json.
+            constraints (dict): Target values applied to every circuit.
+            weights (dict): Loss weight dict.
+            include_detailed_metrics (bool): Whether to include
+                ``"loss_breakdown"`` and ``"raw_metrics"`` in output.
+
         Returns:
-            tuple: (json_output_string, path_of_saved_file)
+            tuple: ``(json_output_string, path_of_saved_file)`` where
+                ``path_of_saved_file`` is None on error.
         """
         
         # --- NEW STRUCTURE: Set up the global dictionary format ---

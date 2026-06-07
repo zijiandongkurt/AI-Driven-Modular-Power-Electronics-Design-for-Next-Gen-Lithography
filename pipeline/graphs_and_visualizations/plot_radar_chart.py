@@ -5,9 +5,17 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 def plot_radar_chart(master_results: dict, output_dir: str = "experiments"):
-    """
-    Plots a 4-axis Radar Chart (Spider Plot) to visualize the physical
-    trade-offs (The "Shape" of the Engineer) for each model.
+    """Plot a 4-axis radar chart visualizing physical trade-offs per model.
+
+    The four axes are voltage accuracy, power efficiency, size compactness,
+    and simplicity (low component count).
+
+    Args:
+        master_results (dict): Nested dict of shape
+            ``{model: {task_label: [trial_dicts]}}``.  Each trial dict should
+            have ``"v_error_pct"``, ``"efficiency"``, ``"volume"``,
+            ``"target_power"``, and ``"components"`` keys.
+        output_dir (str): Directory where the PNG file is saved.
     """
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     

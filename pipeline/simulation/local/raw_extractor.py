@@ -32,22 +32,24 @@ class RawExtractor:
     """
 
     def __init__(self, output_dir: Path):
-        """
-        PARAMS:
-        output_dir <Path> : Directory containing .raw files for one batch
+        """Initialize the extractor.
+
+        Args:
+            output_dir (Path): Directory containing .raw files for one batch.
         """
         self.output_dir = Path(output_dir)
 
     def extract(self, netlist_map: dict, results_path: Path) -> list:
         """Extract metrics from all .raw files in output_dir.
 
-        PARAMS:
-        netlist_map  <dict> : Maps netlist stem -> metadata from SpiceEditor
-                              (counts, l_values, switching_freq_Hz)
-        results_path <Path> : Where to write simulation_results.json
+        Args:
+            netlist_map (dict): Maps netlist stem to metadata from SpiceEditor
+                with keys ``counts``, ``l_values``, and ``switching_freq_Hz``.
+            results_path (Path): Where to write simulation_results.csv.
 
-        RETURNS:
-        all_rows <list> : List of dicts, one per simulation step
+        Returns:
+            list: List of dicts, one per simulation step, each containing
+                scalar performance metrics.
         """
         assert self.output_dir.exists(), f"Output dir not found: {self.output_dir}"
 

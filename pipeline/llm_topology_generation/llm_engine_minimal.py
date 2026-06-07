@@ -269,10 +269,14 @@ class LLMEngine:
     def _clean(raw: str) -> str:
         """Clean generated text and keep only the first full netlist.
 
-        - Trim whitespace
-        - Remove Markdown code fences
-        - Skip LLM preamble chatter before the netlist starts
-        - Stop at .end or . end if present (ignoring trailing text)
+        Trims whitespace, removes Markdown code fences, skips LLM preamble
+        before the netlist starts, and stops at ``.end`` or ``. end``.
+
+        Args:
+            raw (str): Raw text emitted by the language model.
+
+        Returns:
+            str: Cleaned SPICE netlist text ending with ``.end``.
         """
         _SPICE_START_CHARS = {'*', 'v', 'r', 'l', 'c', 'd', 'm', '.'}
         lines = []

@@ -60,17 +60,16 @@ class RewardFunctionNorm:
 
         A completely invalid netlist (all checks failed) returns -1.0.
         A netlist that passed all structural checks but failed simulation
-        directives returns close to -0.5.
-
-        This range is intentionally separated from the simulation reward range [0.5, 1.0]
-        to create a strict distinction (a gap from -0.5 to 0.5) so that any 
+        directives returns close to -0.5.  This range is intentionally
+        separated from the simulation reward range [0.5, 1.0] so that any
         valid/simulated topology vastly outranks an invalid one.
 
         Args:
-            checks: dict of check_name -> bool from validation_results.json
+            checks (dict): Mapping of check_name to bool from
+                validation_results.json.
 
         Returns:
-            float in [-1.0, -0.5]
+            float: Reward value in [-1.0, -0.5].
         """
         score = 0.0
         for check, weight in VALIDATION_CHECK_WEIGHTS.items():
@@ -87,9 +86,16 @@ class RewardFunctionNorm:
         Each loss term is capped and normalized to [0, 1] before weighting,
         so no single term can dominate the gradient signal.
 
+        Args:
+            row (dict | pd.Series): Simulation metrics for one circuit.
+            constraints (dict): Target values (e.g. ``vout_target``,
+                ``efficiency_target``).
+            weights (dict): Per-term loss weights including a nested
+                ``"components"`` sub-dict.
+
         Returns:
-            tuple: (total_loss, details_dict)
-                   total_loss is in [0, 1] after normalization.
+            tuple: ``(total_loss, details_dict)`` where ``total_loss`` is a
+                float in [0, 1] after normalization.
         """
         # --- Extract metrics safely ---
         v_out = row.get('voltage_out_mean_V', 0.0)

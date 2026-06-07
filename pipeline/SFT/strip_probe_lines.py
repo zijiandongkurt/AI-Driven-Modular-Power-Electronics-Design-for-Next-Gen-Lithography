@@ -33,7 +33,15 @@ TARGET = ".probe V(*) I(*)"
 
 
 def _strip(text: str) -> tuple[str, bool]:
-    """Return (cleaned_text, was_changed)."""
+    """Remove all `.probe V(*) I(*)` lines from a text string.
+
+    Args:
+        text (str): Raw text content to clean.
+
+    Returns:
+        tuple[str, bool]: ``(cleaned_text, was_changed)`` where
+            ``was_changed`` is True only when the target line was present.
+    """
     if TARGET not in text:
         return text, False
     cleaned = (text
@@ -43,7 +51,14 @@ def _strip(text: str) -> tuple[str, bool]:
 
 
 def fix_jsonl(path: Path) -> int:
-    """Strip .probe from every completion field in a JSONL. Returns # changed."""
+    """Strip `.probe V(*) I(*)` from every completion field in a JSONL file.
+
+    Args:
+        path (Path): Path to the JSONL file to rewrite in place.
+
+    Returns:
+        int: Number of rows whose ``"completion"`` field was modified.
+    """
     if not path.exists():
         return 0
     rows = []
@@ -66,7 +81,14 @@ def fix_jsonl(path: Path) -> int:
 
 
 def fix_net_files(root: Path) -> int:
-    """Strip .probe from every .net file under root. Returns # changed."""
+    """Strip `.probe V(*) I(*)` from every .net file under a directory tree.
+
+    Args:
+        root (Path): Root directory to search recursively for ``*.net`` files.
+
+    Returns:
+        int: Number of files that were modified.
+    """
     n_changed = 0
     for net_path in root.rglob("*.net"):
         text = net_path.read_text(encoding="utf-8")

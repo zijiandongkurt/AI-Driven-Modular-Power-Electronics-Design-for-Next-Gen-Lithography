@@ -1,5 +1,14 @@
 def _run_one(filename):
-            """Run a single netlist through the container and move .raw output to output_path."""
+            """Run a single netlist through the container and move the .raw output.
+
+            Args:
+                filename (str): Netlist filename (e.g. ``"top1.net"``) located
+                    in the container's simulation directory.
+
+            Returns:
+                bool: True if the simulation succeeded and a .raw file was
+                    produced; False otherwise.
+            """
             container_path = f"Z:\\\\sim\\\\{filename}"
             result = subprocess.run(
                 [str(self.RUN_SCRIPT), container_path],

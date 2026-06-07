@@ -51,7 +51,19 @@ def write_single_netlist(
     total_candidates: int = 1,
     custom_name: str | None = None,  # NEW: pass grouped name into header
 ) -> Path:
-    """Write ONE candidate netlist to ONE .net file."""
+    """Write one candidate netlist to one .net file.
+
+    Args:
+        path (str | Path): Destination file path.
+        netlist (str): SPICE netlist text to write.
+        constraint (dict): Constraint dict written into the comment header.
+        candidate_idx (int): 1-based index of this candidate.
+        total_candidates (int): Total number of candidates in the batch.
+        custom_name (str | None): Optional grouped name recorded in the header.
+
+    Returns:
+        Path: Resolved absolute path of the written file.
+    """
     out = Path(path)
     out.parent.mkdir(parents=True, exist_ok=True)
 
@@ -76,7 +88,27 @@ def write_netlists(
     out_dir: str | Path | None = None,
     custom_names: list[str] | None = None,  # NEW: supports g1_cand1 naming
 ) -> list[Path]:
-    """Write each candidate to its own .net file."""
+    """Write each candidate netlist to its own .net file.
+
+    Args:
+        netlists (list[str]): SPICE netlist texts, one per candidate.
+        constraint (dict): Constraint dict written into each comment header.
+        label (str): Filename slug prefix (e.g. ``"00_Buck_12V"``).
+        batchID (str | None): Batch identifier; determines output directory
+            when provided.  Mutually exclusive with ``out_dir``.
+        out_dir (str | Path | None): Explicit output directory; used when
+            ``batchID`` is not given.
+        custom_names (list[str] | None): Per-candidate name suffixes for
+            grouped GRPO filenames (e.g. ``["g1_cand1", "g1_cand2"]``).
+            Must have the same length as ``netlists`` when provided.
+
+    Returns:
+        list[Path]: Resolved absolute paths of all written files.
+
+    Raises:
+        ValueError: If neither ``batchID`` nor ``out_dir`` is provided, or if
+            ``custom_names`` length does not match ``netlists``.
+    """
     if batchID is not None:
         out = get_llm_output_dir(batchID)
     elif out_dir is not None:

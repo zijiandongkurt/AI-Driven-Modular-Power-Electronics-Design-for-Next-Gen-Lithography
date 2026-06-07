@@ -159,10 +159,18 @@ def make_prompt(constraint: dict) -> str:
     )
 
 def make_prompt_demo(constraint: dict, previous_feedback: str) -> str:
-    """
-    Build the full prompt for one constraint dict in DEMO mode.
-    This injects the performance feedback of the previous batch so the LLM 
+    """Build the full prompt for one constraint dict in DEMO mode.
+
+    Injects the performance feedback of the previous batch so the LLM
     can learn and improve its topology generation.
+
+    Args:
+        constraint (dict): Design constraint dict; keys starting with ``_``
+            are filtered before serialisation.
+        previous_feedback (str): Feedback string from the prior iteration.
+
+    Returns:
+        str: Complete prompt string ready for the model.
     """
     payload = {k: v for k, v in constraint.items() if not k.startswith("_")}
     return (

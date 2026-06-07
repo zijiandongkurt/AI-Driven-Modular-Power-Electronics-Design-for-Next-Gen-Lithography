@@ -5,9 +5,17 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 def plot_learning_curves(master_results: dict, output_dir: str = "experiments", n_batches: int = 15):
-    """
-    Plots the global learning curves (Max Fitness over Time) for each model,
-    including shaded regions for the standard deviation.
+    """Plot global learning curves (max fitness over time) for each model.
+
+    Includes shaded regions for the standard deviation across trials.
+
+    Args:
+        master_results (dict): Nested dict of shape
+            ``{model: {task_label: [trial_dicts]}}``.  Each trial dict should
+            have a ``"learning_curve"`` key with a list of per-batch max
+            fitness values.
+        output_dir (str): Directory where the PNG file is saved.
+        n_batches (int): Number of batches to plot on the x-axis.
     """
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     plt.figure(figsize=(12, 7))

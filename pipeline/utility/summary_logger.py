@@ -149,12 +149,21 @@ class SummaryLogger:
         history: List[Dict],
         batch_id: str,
     ) -> None:
-        """Training-loop variant of log_batch.
+        """Log a training-loop batch and update summary files on disk.
 
         Works directly from the running history list and the per-batch
         reward/validation JSON files instead of requiring a NetlistDatabase.
-        Overwrites results/run_summary.txt and results/best_topology.net after
-        every batch so progress is visible mid-run.
+        Overwrites ``results/run_summary.txt`` and ``results/best_topology.net``
+        after every batch so progress is visible mid-run.
+
+        Args:
+            batch_idx (int): 1-based index of the completed batch.
+            batch_duration (float): Wall-clock seconds for this batch.
+            history (list[dict]): Accumulated candidate entries with at least
+                ``"netlist_id"``, ``"fitness"``, and ``"batch_id"`` fields.
+            batch_id (str): Batch identifier of the most recently completed
+                batch (used as fallback when a history entry lacks
+                ``"batch_id"``).
         """
         if not history:
             return

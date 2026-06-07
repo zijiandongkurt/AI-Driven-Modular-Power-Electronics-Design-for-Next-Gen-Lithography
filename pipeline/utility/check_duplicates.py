@@ -20,9 +20,16 @@ def normalize_netlist(text: str) -> str:
     return '\n'.join(cleaned_lines)
 
 def get_duplicates_per_batch(run_folder_path: str):
-    """
-    Chronologically scans raw_output.txt per batch to count mode collapse.
-    Returns a dictionary mapping {batch_number: duplicate_count}.
+    """Chronologically scan raw_output.txt per batch to count mode collapse.
+
+    Args:
+        run_folder_path (str): Path to the run folder containing batch_*
+            subdirectories.
+
+    Returns:
+        dict: Mapping of ``{batch_number: duplicate_count}`` where
+            ``duplicate_count`` is the number of candidates in that batch
+            whose normalized netlist was seen in an earlier batch.
     """
     base_dir = Path(run_folder_path)
     batch_folders = [d for d in base_dir.iterdir() if d.is_dir() and d.name.startswith("batch_")]

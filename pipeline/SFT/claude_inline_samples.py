@@ -984,6 +984,13 @@ Vgate gate 0 PULSE(0 12 0 1n 1n 5.24u 10u)
 # ────────────────────────────────────────────────────────────────────────
 
 def main():
+    """Write hand-crafted SFT pairs to disk and run the validator on each batch.
+
+    Reads the ``SAMPLES`` list, groups entries by constraint index, writes
+    each group to a canonical ``batch_sft_claude_inline_idx<N>/`` directory,
+    runs the validator, and appends passing pairs to
+    ``data/sft/sft_from_claude_inline.jsonl``.
+    """
     constraints = load_constraints(
         str(REPO_ROOT / "pipeline" / "data" / "datasets" / "constraints.json")
     )

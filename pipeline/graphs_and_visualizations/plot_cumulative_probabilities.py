@@ -17,9 +17,20 @@ from pipeline.utility.topology_hasher import get_topological_hash
 
 
 def plot_cumulative_probabilities(run_id: str, target_batch: int, temperature: float = 0.05, top_k: int = 15, epsilon: float = 0.15, label: str = ""):
-    """
-    Calculates Epsilon-Greedy Top-K Softmax probabilities using pure fitness 
-    and plots a 2-panel chart showing probability mass accumulation.
+    """Calculate and plot cumulative sampling probabilities for unique topologies.
+
+    Computes Epsilon-Greedy Top-K Softmax probabilities using pure fitness
+    and renders a 2-panel chart showing probability mass accumulation.
+
+    Args:
+        run_id (str): Run identifier matching a folder under ``pipeline/data/``.
+        target_batch (int): Only batches strictly before this index are used
+            to reconstruct the database.
+        temperature (float): Softmax temperature for elite exploitation.
+        top_k (int): Number of elite candidates for softmax exploitation.
+        epsilon (float): Fraction of probability mass reserved for uniform
+            tail exploration.
+        label (str): Optional label appended to the output filename.
     """
     data_dir = Path("pipeline/data") / run_id
     if not data_dir.exists():

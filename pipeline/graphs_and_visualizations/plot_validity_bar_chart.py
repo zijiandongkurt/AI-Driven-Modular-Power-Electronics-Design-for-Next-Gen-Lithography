@@ -5,9 +5,15 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 def plot_validity_bar_chart(master_results: dict, output_dir: str = "experiments"):
-    """
-    Plots a grouped bar chart showing the Mean Validity % across all tasks 
-    for each model, complete with standard deviation error bars.
+    """Plot a grouped bar chart of mean validity rates across all tasks per model.
+
+    Includes standard deviation error bars for each bar.
+
+    Args:
+        master_results (dict): Nested dict of shape
+            ``{model: {task_label: [trial_dicts]}}``.  Each trial dict should
+            have a ``"validity"`` key (float, percentage).
+        output_dir (str): Directory where the PNG file is saved.
     """
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     

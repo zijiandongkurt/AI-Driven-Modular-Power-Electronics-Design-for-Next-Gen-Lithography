@@ -32,7 +32,26 @@ class SimulationServer:
         self.JOBS_DIR.mkdir(exist_ok=True)
 
     def simulate(self, batchID: str) -> pd.DataFrame:
-        """Submit a batch to the PC client and wait for results."""
+        """Submit a batch to the PC client and block until results arrive.
+
+        Writes a job manifest JSON to the ``jobs/`` directory, polls until
+        the PC client marks it done and uploads simulation_results.csv, then
+        reads and returns that CSV as a DataFrame.
+
+        Args:
+            batchID (str): Batch identifier matching a folder under
+                ``pipeline/data/``.
+
+        Returns:
+            pd.DataFrame: Simulation metrics; empty DataFrame when all
+                simulations failed or no valid netlists exist.
+
+        Raises:
+            AssertionError: If ``LLM_output/`` or ``validation_results.json``
+                are missing for the given ``batchID``.
+            TimeoutError: If the PC client does not respond within
+                ``JOB_TIMEOUT_S`` seconds.
+        """
         batch_dir        = self.DATA_DIR / batchID
         llm_output_dir   = batch_dir / "LLM_output"
         val_results_path = batch_dir / "validation_results.json"
@@ -103,7 +122,16 @@ class SimulationServer:
         return self._load_results(results_path)
 
     def _load_results(self, results_path: Path) -> pd.DataFrame:
-        """Load simulation_results.csv into a DataFrame."""
+        """Load simulation_results.csv into a DataFrame.
+
+        Args:
+            results_path (Path): Path to the CSV file written by the PC
+                simulation client.
+
+        Returns:
+            pd.DataFrame: Parsed simulation results; empty DataFrame when the
+                CSV is empty (all simulations failed).
+        """
         try:
             df = pd.read_csv(results_path)
             print(f"Loaded {len(df)} result(s) from {results_path}")

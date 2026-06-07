@@ -70,7 +70,19 @@ from pipeline.llm_topology_generation.net_writer import write_single_netlist
 # ────────────────────────────────────────────────────────────────────────
 
 def load_val_constraints(jsonl_path: Path, n: int) -> List[Dict]:
-    """Pull the first n samples from sft_val.jsonl, keeping prompt+constraint."""
+    """Load the first n samples from a validation JSONL, keeping prompt and constraint.
+
+    Args:
+        jsonl_path (Path): Path to the validation JSONL file.
+        n (int): Maximum number of samples to return.
+
+    Returns:
+        list[dict]: Each dict has keys ``"prompt_id"``, ``"prompt"``,
+            ``"constraint"``, ``"tag"``, ``"source"``, and ``"gold"``.
+
+    Raises:
+        FileNotFoundError: If ``jsonl_path`` does not exist.
+    """
     if not jsonl_path.exists():
         raise FileNotFoundError(f"Missing val split: {jsonl_path}")
     out: List[Dict] = []
@@ -99,10 +111,19 @@ def load_val_constraints(jsonl_path: Path, n: int) -> List[Dict]:
 
 
 def generate_candidates(engine, prompt: str, k: int, temp: float) -> List[str]:
-    """Call the model k times, return cleaned netlist strings.
+    """Call the model k times and return cleaned netlist strings.
 
-    Takes the LLMEngine directly (NOT the TopologyLLM wrapper) so callers
-    can pass `llm.engine` and we avoid double-dotted attribute access.
+    Takes the LLMEngine directly (not the TopologyLLM wrapper) so callers
+    can pass ``llm.engine`` directly.
+
+    Args:
+        engine: LLMEngine instance with ``.model``, ``.tokenizer`` attributes.
+        prompt (str): Full prompt string to feed to the model.
+        k (int): Number of candidates to generate.
+        temp (float): Sampling temperature.
+
+    Returns:
+        list[str]: Cleaned netlist strings, one per generation.
     """
     out: List[str] = []
     tok = engine.tokenizer
@@ -139,10 +160,21 @@ def run_one_batch(
     simulator,
     reward_fn,
 ) -> List[Dict]:
-    """Validate + simulate + reward one batch of candidates.
+    """Validate, simulate, and score one batch of candidate netlists.
 
-    Returns a list of per-candidate dicts:
-      {"top": "top1", "valid": bool, "sim_ok": bool, "reward": float}
+    Args:
+        batch_id (str): Unique batch identifier used for filesystem paths.
+        candidates (list[str]): Raw netlist strings to evaluate.
+        constraint (dict): Active constraint dict passed to the reward function.
+        validator: Validator instance with a ``validate(batch_id)`` method.
+        simulator: Simulator instance with a ``simulate(batch_id)`` method.
+        reward_fn: Reward function instance with a ``process_batch(...)``
+            method.
+
+    Returns:
+        list[dict]: One dict per candidate with keys ``"top"`` (str),
+            ``"valid"`` (bool), ``"sim_ok"`` (bool), and ``"reward"``
+            (float).
     """
     # 1. Write each candidate to top{1..K}.net in the canonical batch dir
     from pipeline.llm_topology_generation.net_writer import write_netlists
@@ -201,7 +233,17 @@ def run_one_batch(
 
 
 def aggregate(per_cand_rows: List[Dict]) -> Dict[str, float]:
-    """Compute the three headline metrics."""
+    """Compute the three headline benchmark metrics from per-candidate rows.
+
+    Args:
+        per_cand_rows (list[dict]): Output of ``run_one_batch``; each dict
+            must have ``"valid"`` (bool), ``"sim_ok"`` (bool), and
+            ``"reward"`` (float) keys.
+
+    Returns:
+        dict: ``{"valid_pct": float, "sim_pct": float, "mean_reward": float}``
+            where percentages are in the range [0, 100].
+    """
     if not per_cand_rows:
         return {"valid_pct": 0.0, "sim_pct": 0.0, "mean_reward": -1.0}
     n = len(per_cand_rows)

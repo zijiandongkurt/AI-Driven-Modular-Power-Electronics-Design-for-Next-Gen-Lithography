@@ -134,13 +134,16 @@ class GRPOTrainer:
         return fail_path.read_text(encoding="utf-8")
 
     def _extract_group_id(self, topology_id: str) -> str:
-        """
-        Extract group id from grouped filename.
+        """Extract group id from a grouped filename.
 
-        Example:
-            00_xxx_g1_cand3_b2 -> g1
+        Example: ``00_xxx_g1_cand3_b2`` returns ``g1``.
+        Falls back to ``"g1"`` when no group id is present.
 
-        If no group id exists, fallback to one shared group.
+        Args:
+            topology_id (str): Netlist identifier string.
+
+        Returns:
+            str: Group identifier such as ``"g1"`` or ``"g2"``.
         """
         match = re.search(r"_(g\d+)_cand\d+", topology_id)
         if match:
@@ -160,10 +163,19 @@ class GRPOTrainer:
         return None, None
 
     def _normalize_group_rewards(self, rewards: List[float]) -> List[float]:
-        """
-        Normalize rewards inside one prompt group.
+        """Normalize rewards inside one prompt group.
 
         This is the key grouped-GRPO step.
+
+        Args:
+            rewards (list[float]): Raw reward values for all candidates in the
+                group.
+
+        Returns:
+            list[float]: Z-score normalized advantages, one per candidate.
+
+        Raises:
+            RuntimeError: If fewer than 2 samples are provided.
         """
         if len(rewards) < 2:
             raise RuntimeError(
@@ -177,11 +189,19 @@ class GRPOTrainer:
         return [(r - mean) / std for r in rewards]
 
     def _build_grouped_training_batch(self, batch_id: str):
-        """
-        Build prompts, completions, rewards, and grouped advantages.
+        """Build prompts, completions, rewards, and grouped advantages.
 
-        Important:
-            advantages are normalized within each group_id.
+        Advantages are normalized within each group_id.
+
+        Args:
+            batch_id (str): Batch identifier to load reward data from.
+
+        Returns:
+            tuple: ``(prompts, completions, rewards, advantages, group_ids,
+                topology_ids)`` — each a list of equal length.
+
+        Raises:
+            RuntimeError: If no circuits are found or no valid groups are built.
         """
         reward_data = self._load_rewards(batch_id)
         circuits = reward_data.get("circuits", {})
@@ -260,8 +280,18 @@ class GRPOTrainer:
         print(f"Saved metrics to {save_path}")
 
     def update_from_batch(self, batch_id: str, max_samples: Optional[int] = None) -> Dict:
-        """
-        Run grouped GRPO update from an already evaluated batch.
+        """Run grouped GRPO update from an already evaluated batch.
+
+        Args:
+            batch_id (str): Batch identifier to load data from.
+            max_samples (int | None): Cap the number of samples used; uses all
+                available when None.
+
+        Returns:
+            dict: Training metrics including loss, rewards, and group info.
+
+        Raises:
+            RuntimeError: If fewer than 2 samples are available after loading.
         """
         (
             prompts,
@@ -311,11 +341,18 @@ class GRPOTrainer:
         return metrics
 
     def train(self, batch_id: str = "batch_1", n: int = 4, max_samples: Optional[int] = None):
-        """
-        Legacy full-pipeline GRPO iteration.
+        """Run a legacy full-pipeline GRPO iteration.
 
         In the new project setup, training_loop.py is the main orchestrator.
-        This method is kept only for compatibility.
+        This method is kept only for backward compatibility.
+
+        Args:
+            batch_id (str): Batch identifier to generate and train from.
+            n (int): Number of candidates to generate.
+            max_samples (int | None): Cap on samples passed to the RL update.
+
+        Returns:
+            dict: Training metrics from ``update_from_batch``.
         """
         written = self.llm.generate_for_batch(
             self.constraint_dict,

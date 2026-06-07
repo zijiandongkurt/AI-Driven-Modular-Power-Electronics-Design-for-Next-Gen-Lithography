@@ -3,9 +3,14 @@ import subprocess
 import os
 
 def flat_spice_to_json(spice_file_path, json_output_path):
-    """
-    Reads a raw/flat SPICE netlist, ignoring simulation commands,
-    and converts physical components into a strict netlistsvg JSON format.
+    """Convert a flat SPICE netlist to netlistsvg JSON format.
+
+    Reads a raw/flat SPICE netlist, ignores simulation directives, and
+    converts physical components into the strict netlistsvg JSON format.
+
+    Args:
+        spice_file_path: Path to the input .net SPICE file.
+        json_output_path: Destination path for the generated JSON file.
     """
     with open(spice_file_path, 'r') as f:
         lines = f.readlines()

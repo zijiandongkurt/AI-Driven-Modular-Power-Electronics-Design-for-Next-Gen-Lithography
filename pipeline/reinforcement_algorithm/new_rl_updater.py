@@ -137,11 +137,16 @@ class RLUpdater:
         return self.engine.tokenizer
 
     def _normalize_rewards(self, rewards: List[float]) -> torch.Tensor:
-        """
-        Fallback normalization.
+        """Normalize rewards to zero-mean unit-variance (fallback).
 
         Used only when GRPOTrainer does not provide external advantages.
         For true grouped GRPO, advantages should be passed in explicitly.
+
+        Args:
+            rewards (list[float]): Raw reward values.
+
+        Returns:
+            torch.Tensor: Normalized advantage tensor.
         """
         r = torch.tensor(rewards, dtype=torch.float32)
 
@@ -151,8 +156,15 @@ class RLUpdater:
         return (r - r_mean) / r_std
 
     def _prepare_text_pair(self, prompt: str, completion: str) -> tuple[str, str]:
-        """
-        Clean empty prompt/completion edge cases.
+        """Clean empty prompt/completion edge cases.
+
+        Args:
+            prompt (str): Raw prompt string.
+            completion (str): Raw completion string.
+
+        Returns:
+            tuple[str, str]: Sanitized ``(prompt, completion)`` pair with
+                fallback defaults when either is empty.
         """
         prompt = prompt.strip()
         completion = completion.strip()
@@ -170,10 +182,19 @@ class RLUpdater:
         prompt: str,
         completion: str,
     ) -> Optional[Dict[str, torch.Tensor]]:
-        """
-        Tokenize prompt and completion separately, then concatenate.
+        """Tokenize prompt and completion separately, then concatenate.
 
-        This helps preserve completion tokens when the prompt is long.
+        Tokenizing separately helps preserve completion tokens when the prompt
+        is long.
+
+        Args:
+            prompt (str): Prompt text.
+            completion (str): Completion text.
+
+        Returns:
+            dict | None: Tensor dict with keys ``input_ids``,
+                ``attention_mask``, ``prompt_len``, and ``completion_len``, or
+                None if the completion encodes to zero tokens.
         """
         tok = self._tokenizer()
         device = self._device()
@@ -228,10 +249,17 @@ class RLUpdater:
         prompt: str,
         completion: str,
     ) -> Optional[torch.Tensor]:
-        """
-        Compute mean log P(completion | prompt).
+        """Compute mean log P(completion | prompt).
 
-        Only completion tokens contribute to the loss.
+        Only completion tokens contribute to the result.
+
+        Args:
+            prompt (str): Prompt text.
+            completion (str): Completion text.
+
+        Returns:
+            torch.Tensor | None: Scalar mean log-probability tensor, or None
+                if encoding produced no valid completion tokens.
         """
         encoded = self._encode_prompt_completion(prompt, completion)
 
@@ -297,17 +325,23 @@ class RLUpdater:
         prompt: str,
         completion: str,
     ) -> Optional[Dict[str, Optional[torch.Tensor]]]:
-        """
-        Per-token-mean statistics for one (prompt, completion) pair:
-
-            log_prob_mean      mean log P_theta(completion | prompt)   [grad]
-            ref_log_prob_mean  mean log P_base(...) via disabled LoRA  [detached]
-                               or None when kl_beta == 0
-            entropy_mean       mean per-token entropy of P_theta       [grad]
-                               or None when entropy_beta == 0
+        """Compute per-token-mean statistics for one (prompt, completion) pair.
 
         All quantities are per-token means so that the KL and entropy terms
         share the scale of the (already per-token) policy loss.
+
+        Args:
+            prompt (str): Prompt text.
+            completion (str): Completion text.
+
+        Returns:
+            dict | None: Dict with keys:
+                ``log_prob_mean`` — mean log P_theta(completion | prompt) [grad];
+                ``ref_log_prob_mean`` — mean log P_base via disabled LoRA
+                    [detached], or None when ``kl_beta == 0``;
+                ``entropy_mean`` — mean per-token entropy of P_theta [grad],
+                    or None when ``entropy_beta == 0``.
+                Returns None if encoding yields no valid completion tokens.
         """
         encoded = self._encode_prompt_completion(prompt, completion)
         if encoded is None:
@@ -362,11 +396,26 @@ class RLUpdater:
         rewards: List[float],
         advantages: Optional[List[float]] = None,
     ) -> Dict:
-        """
-        Run one LoRA policy update.
+        """Run one LoRA policy update.
 
         If advantages are provided, they are assumed to be already normalized
         within each GRPO prompt group.
+
+        Args:
+            prompts (list[str]): Prompt strings, one per sample.
+            completions (list[str]): Completion strings, one per sample.
+            rewards (list[float]): Raw reward values, one per sample.
+            advantages (list[float] | None): Pre-normalized grouped advantages;
+                when None the rewards are normalized internally as a fallback.
+
+        Returns:
+            dict: Training metrics including ``step``, ``policy_loss``,
+                ``kl_loss``, ``mean_reward``, and others.
+
+        Raises:
+            ValueError: If list lengths are inconsistent or no samples are
+                provided.
+            RuntimeError: If no valid completion tokens remain after encoding.
         """
         if not (len(prompts) == len(completions) == len(rewards)):
             raise ValueError("prompts, completions, and rewards must have same length.")
@@ -574,8 +623,14 @@ class RLUpdater:
         return metrics
 
     def save(self, path: Optional[str] = None) -> Path:
-        """
-        Save current LoRA adapter.
+        """Save the current LoRA adapter to disk.
+
+        Args:
+            path (str | None): Destination directory; uses
+                ``<output_dir>/final`` when None.
+
+        Returns:
+            Path: Resolved path of the saved adapter directory.
         """
         save_path = Path(path or f"{self.cfg.output_dir}/final")
         save_path.mkdir(parents=True, exist_ok=True)

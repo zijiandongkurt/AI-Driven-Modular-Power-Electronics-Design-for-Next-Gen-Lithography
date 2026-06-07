@@ -64,7 +64,20 @@ def _find_netlist(batch_dir: Path, top_id: str) -> Path | None:
 
 
 def mine_batch(batch_dir: Path, top_k: int, min_fitness: float) -> list[dict]:
-    """Mine a single batch_* folder, returning at most top_k valid pairs."""
+    """Mine a single batch directory for valid (prompt, completion) pairs.
+
+    Args:
+        batch_dir (Path): Path to a ``batch_*/`` directory containing
+            ``reward_results.json`` and ``validation_results.json``.
+        top_k (int): Maximum number of top-fitness pairs to return.
+        min_fitness (float): Minimum fitness score; candidates below this
+            threshold are discarded.
+
+    Returns:
+        list[dict]: At most ``top_k`` dicts with keys ``"prompt"``,
+            ``"completion"``, ``"fitness"``, ``"source"``, and
+            ``"constraint"``, sorted by descending fitness.
+    """
     rew = _read_json(batch_dir / "reward_results.json")
     val = _read_json(batch_dir / "validation_results.json")
 

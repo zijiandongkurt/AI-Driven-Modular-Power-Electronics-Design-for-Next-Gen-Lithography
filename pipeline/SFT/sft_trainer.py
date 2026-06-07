@@ -158,11 +158,21 @@ class SFTTrainer:
         return self.engine.tokenizer
 
     def _encode_one(self, prompt: str, completion: str) -> Optional[dict]:
-        """Tokenize one (prompt, completion) into ids + labels.
+        """Tokenize one (prompt, completion) pair into ids and labels.
 
-        labels[i] = ids[i] for completion tokens, -100 for prompt tokens.
-        Truncates prompt from the head and completion from the tail if
-        the total exceeds max_length.
+        Completion tokens get their real ids as labels; prompt tokens are
+        masked with -100 so they do not contribute to the CE loss.
+        Truncates the prompt from the head and the completion from the tail
+        when the combined length exceeds ``max_length``.
+
+        Args:
+            prompt (str): Full prompt string (system message + constraint).
+            completion (str): Target SPICE netlist text.
+
+        Returns:
+            dict | None: Dict with keys ``"ids"`` (list[int]), ``"labels"``
+                (list[int]), and ``"prompt_len"`` (int), or None if either
+                input is empty after stripping.
         """
         tok = self._tokenizer()
 
@@ -194,7 +204,17 @@ class SFTTrainer:
         return {"ids": ids, "labels": labels, "prompt_len": len(p_ids)}
 
     def _collate(self, encoded_batch: List[dict]) -> dict:
-        """Right-pad a batch of encoded samples to the longest length."""
+        """Right-pad a batch of encoded samples to the longest sequence length.
+
+        Args:
+            encoded_batch (list[dict]): Output dicts from ``_encode_one``,
+                each with ``"ids"`` and ``"labels"`` keys.
+
+        Returns:
+            dict: Tensors ready for the model: ``"input_ids"``,
+                ``"labels"``, and ``"attention_mask"``, all on the engine
+                device.
+        """
         tok = self._tokenizer()
         device = self._device()
         pad_id = tok.pad_token_id
@@ -217,7 +237,17 @@ class SFTTrainer:
     # ── Single optimizer step ─────────────────────────────────────────
 
     def _step(self, batch_samples: List[dict]) -> dict:
-        """One AdamW step on a list of {prompt, completion} dicts."""
+        """Run one AdamW step on a list of prompt/completion dicts.
+
+        Args:
+            batch_samples (list[dict]): Each dict must have ``"prompt"`` and
+                ``"completion"`` keys.
+
+        Returns:
+            dict: Step metrics with keys ``"loss"``, ``"n_samples"``, and
+                ``"n_loss_tokens"``.  ``"loss"`` is None when all samples
+                encode to empty.
+        """
         # Encode + drop any sample that came out empty
         encoded = [self._encode_one(s["prompt"], s["completion"])
                    for s in batch_samples]
@@ -261,7 +291,15 @@ class SFTTrainer:
 
     @torch.no_grad()
     def evaluate(self, samples: List[dict]) -> float:
-        """Return mean next-token CE loss over the held-out samples."""
+        """Return mean next-token cross-entropy loss over held-out samples.
+
+        Args:
+            samples (list[dict]): Each dict must have ``"prompt"`` and
+                ``"completion"`` keys.
+
+        Returns:
+            float: Token-weighted mean cross-entropy loss.
+        """
         self.engine.model.eval()
         total_loss = 0.0
         total_tokens = 0
@@ -293,7 +331,23 @@ class SFTTrainer:
         val_path: Optional[str | Path] = None,
         epochs: Optional[int] = None,
     ) -> List[dict]:
-        """Train on a JSONL file.  Each line must have `prompt` and `completion`."""
+        """Train on a JSONL file where each line has ``prompt`` and ``completion``.
+
+        Args:
+            train_path (str | Path): Path to the training JSONL file.
+            val_path (str | Path | None): Optional path to a validation JSONL
+                file.  Validation is skipped when None.
+            epochs (int | None): Number of training epochs; falls back to
+                ``SFTConfig.epochs`` when None.
+
+        Returns:
+            list[dict]: Per-epoch history entries with ``"epoch"``,
+                ``"train_loss"``, ``"tokens"``, ``"wall_s"``, and optionally
+                ``"val_loss"``.
+
+        Raises:
+            RuntimeError: If no training samples are found in ``train_path``.
+        """
         train_path = Path(train_path)
         train_samples = self._load_jsonl(train_path)
         if not train_samples:
@@ -352,6 +406,15 @@ class SFTTrainer:
     # ── Save / load helpers ───────────────────────────────────────────
 
     def save(self, path: Optional[str] = None) -> Path:
+        """Save the LoRA adapter and tokenizer to disk.
+
+        Args:
+            path (str | None): Destination directory.  Falls back to
+                ``SFTConfig.output_dir/final`` when None.
+
+        Returns:
+            Path: Absolute path to the saved checkpoint directory.
+        """
         save_path = Path(path or f"{self.cfg.output_dir}/final")
         save_path.mkdir(parents=True, exist_ok=True)
         self.engine.model.save_pretrained(str(save_path))
@@ -361,7 +424,15 @@ class SFTTrainer:
 
     @staticmethod
     def _load_jsonl(path: Path) -> List[dict]:
-        """Read a JSONL of {prompt, completion, ...} dicts."""
+        """Read a JSONL file of prompt/completion records.
+
+        Args:
+            path (Path): Path to the JSONL file.
+
+        Returns:
+            list[dict]: Dicts with ``"prompt"`` and ``"completion"`` keys;
+                lines missing either key are silently dropped.
+        """
         if not path.exists():
             return []
         out = []

@@ -56,10 +56,14 @@ class NetlistDatabase:
             self.total_invalid += 1
 
     def ingest_batch_data(self, batch_id: str, database_dir: Path):
-        """
-        Parses the results of a batch from disk and pushes all candidates
-        into the database. Also saves a physical copy of each netlist to
-        the global database folder.
+        """Parse batch results from disk and push all candidates into the database.
+
+        Also saves a physical copy of each netlist to the global database folder.
+
+        Args:
+            batch_id (str): Batch identifier to load (relative to
+                ``pipeline/data/``).
+            database_dir (Path): Directory where .net file copies are written.
         """
         data_dir    = Path("pipeline/data") / batch_id
         reward_path = data_dir / "reward_results.json"
@@ -115,10 +119,20 @@ class NetlistDatabase:
             )
 
     def sample_states(self, n=2, top_k=15, epsilon=0.15):
-        """
-        Samples 'n' states using Epsilon-Greedy Top-K Softmax.
-        - (1 - epsilon): Exploits Top-K elite circuits via Softmax.
-        - (epsilon):     Explores the long tail uniformly.
+        """Sample n states using Epsilon-Greedy Top-K Softmax.
+
+        With probability ``(1 - epsilon)`` exploits the Top-K elite circuits
+        via softmax; with probability ``epsilon`` explores the long tail
+        uniformly.
+
+        Args:
+            n (int): Number of states to sample.
+            top_k (int): Size of the elite pool for softmax exploitation.
+            epsilon (float): Exploration probability for uniform tail sampling.
+
+        Returns:
+            list[dict]: List of record dicts, each containing the candidate
+                id and all stored fields (netlist_text, fitness, etc.).
         """
         if not self.records:
             return []

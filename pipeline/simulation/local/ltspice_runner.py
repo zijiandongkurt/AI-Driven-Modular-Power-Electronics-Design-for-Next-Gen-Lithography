@@ -39,9 +39,10 @@ class LTSpiceSimulator:
     """
 
     def __init__(self, output_dir: Path):
-        """
-        PARAMS:
-        output_dir <Path> : Where .raw files will be written
+        """Initialize the simulator.
+
+        Args:
+            output_dir (Path): Directory where .raw files will be written.
         """
         self.output_dir = Path(output_dir)
 
@@ -58,12 +59,13 @@ class LTSpiceSimulator:
     def simulate(self, net_paths: list) -> dict:
         """Run LTspice on a list of .net files.
 
-        PARAMS:
-        net_paths <list[Path]> : Local paths to .net files to simulate
+        Args:
+            net_paths (list[Path]): Local paths to .net files to simulate.
 
-        RETURNS:
-        netlist_map <dict> : Maps netlist stem -> metadata (counts, l_values, switching_freq_Hz)
-                             Passed to RawExtractor.extract()
+        Returns:
+            dict: Maps netlist stem to metadata dict with keys ``counts``,
+                ``l_values``, and ``switching_freq_Hz``.  Passed to
+                ``RawExtractor.extract()``.
         """
         self.output_dir.mkdir(parents=True, exist_ok=True)
 

@@ -2,9 +2,16 @@ import networkx as nx
 import re
 
 def _normalize_spice_value(val_str: str) -> str:
-    """
-    Converts equivalent SPICE formats (47u, 47uF, 47e-6, 0.047m) 
-    into a strict, uniform scientific notation string.
+    """Convert equivalent SPICE value formats to uniform scientific notation.
+
+    Handles formats such as ``47u``, ``47uF``, ``47e-6``, and ``0.047m``.
+
+    Args:
+        val_str (str): Raw SPICE value string.
+
+    Returns:
+        str: Strictly formatted scientific notation string (e.g. ``4.7000e-05``),
+            or the original string for non-numeric tokens like ``DIODE``.
     """
     val_str = val_str.lower()
     
@@ -35,10 +42,17 @@ def _normalize_spice_value(val_str: str) -> str:
     return f"{val:.4e}"
 
 def get_topological_hash(netlist_text: str) -> str:
-    """
-    Converts a SPICE netlist into a mathematical graph and returns a strict topological hash.
-    Impervious to line-swapping, internal node renaming, pin-swapping, inline comments, 
-    value formatting (47u vs 4.7e-5), and parameter ordering.
+    """Convert a SPICE netlist into a topological hash via graph isomorphism.
+
+    Impervious to line-swapping, internal node renaming, pin-swapping, inline
+    comments, value formatting (``47u`` vs ``4.7e-5``), and parameter ordering.
+
+    Args:
+        netlist_text (str): Full SPICE netlist text.
+
+    Returns:
+        str: Weisfeiler-Lehman graph hash string uniquely identifying the
+            circuit topology.
     """
     # 1. Sanitize unicode
     netlist_text = netlist_text.encode('ascii', 'ignore').decode('ascii').lower()

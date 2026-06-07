@@ -135,16 +135,17 @@ class TopologyLLM:
         n: int,
         temp_override: float | None = None,
     ) -> list[dict[str, str]]:
-        """
-        Generate n completions from the same prompt.
+        """Generate n completions from the same prompt.
+
+        Args:
+            prompt (str): Full prompt string to feed the model.
+            n (int): Number of completions to generate.
+            temp_override (float | None): Override sampling temperature; uses
+                engine default when None.
 
         Returns:
-            [
-                {
-                    "raw": raw model text,
-                    "cleaned": cleaned SPICE netlist
-                }
-            ]
+            list[dict]: Each entry has keys ``"raw"`` (raw model text) and
+                ``"cleaned"`` (cleaned SPICE netlist).
         """
         tok = self.engine.tokenizer
         model = self.engine.model
@@ -196,11 +197,20 @@ class TopologyLLM:
         previous_netlist: str = "",
         max_retries: int = 3,
     ) -> dict[str, str]:
-        """
-        Generate one candidate.
+        """Generate one candidate, retrying on exact duplicates.
 
         If previous_netlist is provided, retry when the model outputs
         the exact same normalized netlist.
+
+        Args:
+            prompt (str): Full prompt string.
+            previous_netlist (str): Netlist from a prior iteration used for
+                duplicate detection; empty string disables the check.
+            max_retries (int): Maximum number of retry attempts before
+                accepting a duplicate.
+
+        Returns:
+            dict: ``{"raw": str, "cleaned": str}`` for the accepted candidate.
         """
         previous_clean = (
             normalize_netlist(previous_netlist)
@@ -261,11 +271,21 @@ class TopologyLLM:
         DEMO: bool = False,
         previous_batch_id: str | None = None,
     ) -> list[Path]:
-        """
-        Legacy generation method.
+        """Generate n netlists for a batch (legacy method).
 
         Kept for demo/backward compatibility.
         For grouped GRPO, use generate_grouped_for_batch().
+
+        Args:
+            constraint (dict): Design constraint dict.
+            batchID (str): Batch identifier string.
+            n (int): Number of candidates to generate.
+            DEMO (bool): Whether to inject feedback from the previous batch.
+            previous_batch_id (str | None): ID of the prior batch used when
+                DEMO is True.
+
+        Returns:
+            list[Path]: Paths to the written .net files.
         """
         label = slug(constraint, 0)
         results = []
@@ -314,14 +334,22 @@ class TopologyLLM:
         outputs_per_parent: int = 4,
         DEMO: bool = True,
     ) -> list[Path]:
-        """
-        Grouped generation for GRPO.
+        """Generate grouped candidates for GRPO from a single previous batch.
 
         Each selected parent produces one prompt, and each prompt generates
-        multiple children.
+        multiple children.  This wrapper supports the old interface where all
+        parents come from the same previous batch.
 
-        This wrapper supports the old interface where all parents come from
-        the same previous batch.
+        Args:
+            constraint (dict): Design constraint dict.
+            batchID (str): Batch identifier for the new generation.
+            parent_ids (list[str]): Netlist IDs of selected parent circuits.
+            previous_batch_id (str | None): Batch ID where the parents live.
+            outputs_per_parent (int): Number of children to generate per parent.
+            DEMO (bool): Whether to inject per-parent feedback into the prompt.
+
+        Returns:
+            list[Path]: Paths to all written .net files.
         """
 
         # NEW: convert parent_ids into parent_entries used by the new tree loop.
@@ -352,17 +380,28 @@ class TopologyLLM:
         outputs_per_parent: int = 4,
         DEMO: bool = True,
     ) -> list[Path]:
-        """
-        Tree-search grouped generation.
+        """Generate grouped candidates for GRPO tree-search from arbitrary parents.
 
-        parent_entries example:
+        Supports selecting parents from different historical batches.
+
+        Example parent_entries entry::
+
             {
                 "netlist_id": "00_xxx_g1_cand2_b1",
                 "batch_id": "Run_001/batch_1",
                 "depth": 1
             }
 
-        This supports selecting parents from different historical batches.
+        Args:
+            constraint (dict): Design constraint dict.
+            batchID (str): Batch identifier for the new generation.
+            parent_entries (list[dict]): Each entry must have ``"netlist_id"``
+                and ``"batch_id"``; an optional ``"depth"`` field is ignored.
+            outputs_per_parent (int): Number of children to generate per parent.
+            DEMO (bool): Whether to inject per-parent feedback into the prompt.
+
+        Returns:
+            list[Path]: Paths to all written .net files.
         """
 
         label = slug(constraint, 0)
@@ -417,9 +456,14 @@ class TopologyLLM:
 
     # NEW: extract previous submitted netlist from feedback
     def _extract_submitted_netlist(self, feedback: str) -> str:
-        """
-        Extract the previous submitted netlist from feedback text.
-        Used for duplicate detection.
+        """Extract the previous submitted netlist from feedback text.
+
+        Args:
+            feedback (str): Feedback string injected into the prompt.
+
+        Returns:
+            str: Netlist text up to and including ``.end``, or empty string
+                if not found.
         """
 
         match = re.search(
@@ -450,9 +494,15 @@ class TopologyLLM:
         previous_batch_id: str,
         target_circuit_name: str,
     ) -> str:
-        """
-        Read feedback for one selected parent circuit by exact circuit id.
-        Used by grouped GRPO generation.
+        """Read feedback for one selected parent circuit by exact circuit id.
+
+        Args:
+            previous_batch_id (str): Batch ID containing the target circuit.
+            target_circuit_name (str): Exact circuit identifier to look up.
+
+        Returns:
+            str: Formatted feedback string for injection into the prompt, or
+                an empty string if no data is found.
         """
 
         if not previous_batch_id:
@@ -538,10 +588,16 @@ class TopologyLLM:
         batch_path: Path,
         target_circuit_name: str,
     ) -> str:
-        """
-        Load previous netlist.
+        """Load a previous netlist from disk.
 
-        Supports both LLM_output and llm_output folder names.
+        Supports both ``LLM_output`` and ``llm_output`` folder names.
+
+        Args:
+            batch_path (Path): Root directory of the target batch.
+            target_circuit_name (str): Stem of the .net file to load.
+
+        Returns:
+            str: Netlist text, or ``"[Netlist file not found]"`` if missing.
         """
 
         netlist_path = batch_path / "LLM_output" / f"{target_circuit_name}.net"
@@ -634,10 +690,17 @@ class TopologyLLM:
         label: str,
         candidate_idx: int,
     ) -> str:
-        """
-        Legacy feedback method for generate_for_batch().
+        """Build feedback string for a single candidate (legacy method).
 
         New grouped GRPO should use _aggregate_previous_batch_data_by_id().
+
+        Args:
+            previous_batch_id (str): Batch ID of the previous generation.
+            label (str): Filename label slug for the constraint.
+            candidate_idx (int): 1-based candidate index within the batch.
+
+        Returns:
+            str: Formatted feedback string, or empty string when unavailable.
         """
 
         if not previous_batch_id:

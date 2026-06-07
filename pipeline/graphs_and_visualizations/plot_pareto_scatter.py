@@ -5,8 +5,13 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 def plot_pareto_scatter(master_results: dict, output_dir: str = "experiments"):
-    """
-    Plots a Trade-Off Scatter plot (Voltage Error vs Efficiency) for all champion circuits.
+    """Plot a trade-off scatter (voltage error vs efficiency) for champion circuits.
+
+    Args:
+        master_results (dict): Nested dict of shape
+            ``{model: {task_label: [trial_dicts]}}``.  Each trial dict should
+            have ``"v_error_pct"`` and ``"efficiency"`` keys.
+        output_dir (str): Directory where the PNG file is saved.
     """
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     plt.figure(figsize=(10, 8))

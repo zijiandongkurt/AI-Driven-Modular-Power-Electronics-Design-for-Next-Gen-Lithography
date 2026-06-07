@@ -51,8 +51,17 @@ from pipeline.llm_topology_generation.net_writer import (
 
 
 def _load_fewshot_examples(path: Path, k: int = 2) -> list[dict]:
-    """Load top-k high-fitness samples from sft_from_existing.jsonl to use
-    as in-context examples.  Returns [] if file missing."""
+    """Load top-k high-fitness samples for use as in-context examples.
+
+    Args:
+        path (Path): Path to ``sft_from_existing.jsonl`` or any JSONL with
+            a ``"fitness"`` field per line.
+        k (int): Number of top-fitness samples to return.
+
+    Returns:
+        list[dict]: Up to ``k`` rows sorted by descending fitness; empty
+            list if the file is missing.
+    """
     if not path.exists():
         return []
     rows = []
@@ -68,8 +77,18 @@ def _load_fewshot_examples(path: Path, k: int = 2) -> list[dict]:
 
 
 def _build_fewshot_prompt(constraint: dict, fewshots: list[dict]) -> str:
-    """Build a prompt that injects 1-2 worked examples before asking for a
-    new netlist.  Falls back to plain make_prompt if no fewshots."""
+    """Build a prompt that injects worked examples before the target constraint.
+
+    Falls back to the bare ``make_prompt`` output when ``fewshots`` is empty.
+
+    Args:
+        constraint (dict): Target constraint for which a netlist is requested.
+        fewshots (list[dict]): In-context examples; each dict must have
+            ``"completion"`` and optionally ``"constraint"`` keys.
+
+    Returns:
+        str: Full prompt string ready for the model.
+    """
     if not fewshots:
         return make_prompt(constraint)
 
@@ -102,8 +121,17 @@ def _build_fewshot_prompt(constraint: dict, fewshots: list[dict]) -> str:
 
 
 def _run_validator(batch_id: str) -> dict:
-    """Best-effort: run validator.validate(batch_id) and return parsed
-    validation_results.json.  Returns {} if validator isn't importable."""
+    """Run the validator on a batch and return parsed validation results.
+
+    Args:
+        batch_id (str): Batch identifier; determines where the validator
+            reads and writes files.
+
+    Returns:
+        dict: Parsed ``validation_results.json`` keyed by topology id;
+            empty dict if the validator cannot be imported or the results
+            file is not written.
+    """
     try:
         from pipeline.netlist_validation.validator import validator
     except ImportError as e:
@@ -124,6 +152,22 @@ def _run_validator(batch_id: str) -> dict:
 
 def generate_for_constraint(llm, constraint_idx, constraint, n, batch_id_prefix,
                             fewshots):
+    """Generate, validate, and collect SFT pairs for one constraint.
+
+    Args:
+        llm: TopologyLLM instance used for generation.
+        constraint_idx (int): Index of the constraint in the constraints list.
+        constraint (dict): Constraint specification.
+        n (int): Number of candidate netlists to generate.
+        batch_id_prefix (str): Prefix for the batch identifier written to
+            disk (e.g. ``"batch_sft_gen"``).
+        fewshots (list[dict]): In-context examples injected into the prompt.
+
+    Returns:
+        list[dict]: Validator-passing SFT pairs, each with keys ``"prompt"``,
+            ``"completion"``, ``"fitness"``, ``"source"``, and
+            ``"constraint"``.
+    """
     print(f"\n══════════════════════════════════════════════════════════════")
     print(f" Constraint #{constraint_idx}: "
           f"vin={constraint.get('vin_min')}-{constraint.get('vin_max')}V → "

@@ -214,6 +214,18 @@ CC_SEPIC = [22e-6, 47e-6]                  # SEPIC coupling C
 # ── Generate per constraint ───────────────────────────────────────────────
 
 def generate_for_constraint(idx: int, constraint: dict) -> list[dict]:
+    """Generate all template-driven netlist candidates for one constraint.
+
+    Args:
+        idx (int): Constraint index used to look up the topology class and
+            Vin sweep from ``PRESETS``.
+        constraint (dict): Constraint specification; must have
+            ``"vout_target"`` and ``"power_in"`` keys.
+
+    Returns:
+        list[dict]: Candidate dicts with ``"net"`` (SPICE netlist string)
+            and ``"tag"`` (human-readable variant identifier).
+    """
     topo_class, vins = PRESETS[idx]
     vout = constraint['vout_target']
     p    = constraint['power_in']

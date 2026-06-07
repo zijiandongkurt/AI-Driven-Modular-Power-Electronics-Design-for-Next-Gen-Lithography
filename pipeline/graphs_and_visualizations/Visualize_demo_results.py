@@ -22,14 +22,30 @@ def extract_batch_number(folder_name):
     return int(match.group()) if match else -1
 
 def shorten_cid(cid):
-    """Shortens Phase1_cons4_b2_cand1 into b2_cand1 for cleaner plot labels."""
+    """Shorten a candidate id to a compact label for plot annotations.
+
+    Args:
+        cid (str): Full candidate identifier (e.g. ``Phase1_cons4_b2_cand1``).
+
+    Returns:
+        str: Short label such as ``b2_c1``, or first 10 characters if the
+            pattern is not found.
+    """
     match = re.search(r'_b(\d+)_cand(\d+)', cid)
     if match:
         return f"b{match.group(1)}_c{match.group(2)}"
     return cid[:10]
 
 def get_sampled_parents(batch_folder):
-    """Finds which parents were sampled to generate this batch."""
+    """Find which parents were sampled to generate a given batch.
+
+    Args:
+        batch_folder (str): Path to the batch directory.
+
+    Returns:
+        list[str]: Parent circuit identifiers extracted from
+            ``prompt_parent_*.txt`` filenames.
+    """
     parent_files = glob.glob(os.path.join(batch_folder, 'prompt_parent_*.txt'))
     return [os.path.basename(pf).replace('prompt_parent_', '').replace('.txt', '') for pf in parent_files]
 

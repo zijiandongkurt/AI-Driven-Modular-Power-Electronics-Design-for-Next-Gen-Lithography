@@ -17,9 +17,19 @@ if str(PROJECT_ROOT) not in sys.path:
 from pipeline.utility.topology_hasher import get_topological_hash
 
 def plot_softmax_probabilities(run_id: str, target_batch: int, temperature: float = 0.05, top_k: int = 15, epsilon: float = 0.15):
-    """
-    Plots the Epsilon-Greedy Top-K Softmax probability distribution.
-    Uses a Lollipop chart against Raw Fitness to visualize the exponential curve.
+    """Plot the Epsilon-Greedy Top-K Softmax probability distribution.
+
+    Uses a lollipop chart against raw fitness to visualize the exponential
+    sampling curve.
+
+    Args:
+        run_id (str): Run identifier matching a folder under ``pipeline/data/``.
+        target_batch (int): Only batches strictly before this index are used
+            to reconstruct the cumulative database.
+        temperature (float): Softmax temperature for elite exploitation.
+        top_k (int): Number of elite candidates for softmax exploitation.
+        epsilon (float): Fraction of probability mass reserved for uniform
+            tail exploration.
     """
     data_dir = Path("pipeline/data") / run_id
     if not data_dir.exists():

@@ -5,9 +5,15 @@ import matplotlib.pyplot as plt
 from pathlib import Path
 
 def plot_combined_fitness(master_results: dict, output_dir: str = "experiments"):
-    """
-    Aggregates all fitness scores across all tasks and trials for each model,
+    """Aggregate fitness scores and plot a combined model capability boxplot.
+
+    Aggregates all fitness scores across all tasks and trials for each model
     and plots a standard boxplot showing the distribution of max fitness.
+
+    Args:
+        master_results (dict): Nested dict of shape
+            ``{model: {task_label: [trial_dicts]}}``.
+        output_dir (str): Directory where the PNG file is saved.
     """
     Path(output_dir).mkdir(parents=True, exist_ok=True)
     models = list(master_results.keys())

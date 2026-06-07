@@ -100,14 +100,17 @@ class validator():
 
     def validate(self, batchID):
         """Validate all .net files in data/<batchID>/llm_output/.
+
         Injects .save and title comment into passing netlists in-place.
         Writes validation_results.json to data/<batchID>/.
 
-        PARAMS:
-        batchID <string> : The ID of a batch
+        Args:
+            batchID (str): The ID of a batch.
 
-        RETURNS:
-        results <dict> : { filename: (passed <bool>, checklist <dict>) }
+        Returns:
+            dict: Mapping of filename to ``(passed, checklist)`` where
+                ``passed`` is bool and ``checklist`` is a dict of check
+                name to bool.
         """
         import json
 
