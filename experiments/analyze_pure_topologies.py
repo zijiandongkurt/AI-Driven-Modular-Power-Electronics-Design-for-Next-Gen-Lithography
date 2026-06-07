@@ -83,9 +83,9 @@ def analyze_topologies():
     output_lines.append("=== PURE STRUCTURAL TOPOLOGY EXPLORATION COUNTS ===\n")
     output_lines.append("Note: This counts EVERY topology explored (Valid + Invalid), ignoring component values.\n\n")
 
-    print("🔍 Scanning zycos_005 through zycos_009...")
+    print("🔍 Scanning zycos_008 through zycos_010...")
 
-    for i in range(8, 10):
+    for i in range(8, 11):
         zycos_name = f"zycos_{i:03d}"
         zycos_dir = os.path.join(DATA_DIR, zycos_name)
         
