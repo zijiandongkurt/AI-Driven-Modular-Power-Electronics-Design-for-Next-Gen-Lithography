@@ -172,7 +172,12 @@ def main():
                 print(f"\n🚀 Running {model_name} on '{task['label']}' (Trial {trial}/{TRIALS_PER_TASK})...")
                 
                 run_config = copy.deepcopy(base_config)
-                run_config["run_settings"]["model_id"] = model_path
+                if isinstance(model_path, dict):
+                    run_config["run_settings"]["model_id"] = model_path["model_id"]
+                    run_config["run_settings"]["lora_path"] = model_path.get("lora_path")
+                else:
+                    run_config["run_settings"]["model_id"] = model_path
+                    run_config["run_settings"]["lora_path"] = None
                 run_config["run_settings"]["run_prefix"] = f"Bench_{model_name}_{task['label']}_T{trial}"
                 run_config["run_settings"]["seed"] = 42000 + trial
                 run_config["constraint_settings"]["dataset_path"] = task["file"]

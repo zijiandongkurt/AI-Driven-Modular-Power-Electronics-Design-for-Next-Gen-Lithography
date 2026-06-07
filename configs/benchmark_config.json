@@ -1,11 +1,11 @@
 {
-    "trials_per_task": 3,
+    "trials_per_task": 2,
     "base_config": {
         "run_settings": {
             "n_batches": 15,
             "sampled_states_per_batch": 2,
             "candidates_per_prompt": 4,
-            "max_tokens": 2048,
+            "max_tokens": 1536,
             "update_plots_per_batch": false,
             "model_id": "",
             "run_prefix": ""
@@ -21,8 +21,8 @@
             "phase": ""
         },
         "weights": {
-            "v_out": 10.0,
-            "efficiency": 20.0,
+            "v_out": 20.0,
+            "efficiency": 10.0,
             "volume": 2.0,
             "component_cost": 1.0,
             "components": {
@@ -34,19 +34,18 @@
         }
     },
     "models": {
-        "Base": "Qwen/Qwen3-14B"
+        "Base":    {"model_id": "Qwen/Qwen3-14B",  "lora_path": null},
+        "SFT":     {"model_id": "Qwen/Qwen3-14B",  "lora_path": "checkpoints/sft/sft_002"},
+        "Zycos10": {"model_id": "Qwen/Qwen3-14B",  "lora_path": "checkpoints/zycos_010/grpo-lora/final/grpo"}
     },
     "tasks": [
-        {"phase": "Phase1", "label": "P1_Buck_Std",      "file": "pipeline/data/datasets/constraints_easy.json",   "idx": 0},
-        {"phase": "Phase1", "label": "P1_Boost_Std",     "file": "pipeline/data/datasets/constraints_easy.json",   "idx": 6},
-        {"phase": "Phase1", "label": "P1_Buck_RatioLim", "file": "pipeline/data/datasets/constraints_easy.json",   "idx": 16},
+        {"phase": "Phase1", "label": "P1_Buck_Std",      "file": "pipeline/data/datasets/constraints_easy.json",   "idx": 1},
+        {"phase": "Phase1", "label": "P1_Boost_Std",     "file": "pipeline/data/datasets/constraints_easy.json",   "idx": 7},
 
-        {"phase": "Phase2", "label": "P2_Buck_Extreme",  "file": "pipeline/data/datasets/constraints_medium.json", "idx": 0},
-        {"phase": "Phase2", "label": "P2_Buck_HighPwr",  "file": "pipeline/data/datasets/constraints_medium.json", "idx": 10},
-        {"phase": "Phase2", "label": "P2_Boost_Extreme", "file": "pipeline/data/datasets/constraints_medium.json", "idx": 19},
+        {"phase": "Phase2", "label": "P2_Buck_Extreme",  "file": "pipeline/data/datasets/constraints_medium.json", "idx": 8},
+        {"phase": "Phase2", "label": "P2_Boost_Extreme", "file": "pipeline/data/datasets/constraints_medium.json", "idx": 15},
 
-        {"phase": "Phase3", "label": "P3_Buck_Mains",    "file": "pipeline/data/datasets/constraints_hard.json",   "idx": 0},
-        {"phase": "Phase3", "label": "P3_Boost_Extreme", "file": "pipeline/data/datasets/constraints_hard.json",   "idx": 1},
-        {"phase": "Phase3", "label": "P3_Buck_MaxPwr",   "file": "pipeline/data/datasets/constraints_hard.json",   "idx": 10}
+        {"phase": "Phase3", "label": "P3_Buck_Mains",    "file": "pipeline/data/datasets/constraints_hard.json",   "idx": 6},
+        {"phase": "Phase3", "label": "P3_Boost_Extreme", "file": "pipeline/data/datasets/constraints_hard.json",   "idx": 3}
     ]
 }
