@@ -8,13 +8,9 @@ from pipeline.llm_topology_generation.prompt_input import make_prompt
 
 
 class GRPOTrainer:
-    """
-    GRPO trainer.
+    """Orchestrate grouped GRPO updates from evaluated batches.
 
-    New grouped-GRPO behavior:
-        group g1: g1_cand1, g1_cand2, g1_cand3, g1_cand4
-        group g2: g2_cand1, g2_cand2, g2_cand3, g2_cand4
-
+    Candidates are grouped by parent prompt (g1_cand1..g1_cand4, g2_cand1..g2_cand4).
     Advantages are normalized within each group, not across the whole batch.
     """
 
