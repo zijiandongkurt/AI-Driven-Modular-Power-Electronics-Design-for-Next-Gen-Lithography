@@ -12,8 +12,7 @@ logs/
 
 .gradio/
 
-# Model checkpoints are large — kept out of git
-checkpoints/
+# Checkpoints tracked via git LFS (*.safetensors, tokenizer.json)
 
 # Generated netlists are numerous but not useful to track
 pipeline/data/**/LLM_output/
