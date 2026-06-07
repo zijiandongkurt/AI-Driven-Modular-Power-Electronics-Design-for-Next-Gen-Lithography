@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 
 class RewardFunction:
+    """Compute fitness rewards from simulation metrics for RL training."""
+
     def __init__(self):
         # Define a maximum penalty cap to prevent network gradients from exploding
         self.MAX_PENALTY = 10000.0 
@@ -89,6 +91,16 @@ class RewardFunction:
         return total_loss, details
 
     def calculate_reward(self, row, constraints, weights):
+        """Convert simulation metrics to a scalar reward.
+
+        Args:
+            row (dict | pd.Series): Simulation metrics for one circuit.
+            constraints (dict): Target values (e.g. ``vout_target``).
+            weights (dict): Per-term loss weights.
+
+        Returns:
+            tuple: ``(reward, details_dict)`` where reward is the negated loss.
+        """
         loss, details = self.calculate_loss(row, constraints, weights)
         return -loss, details
 

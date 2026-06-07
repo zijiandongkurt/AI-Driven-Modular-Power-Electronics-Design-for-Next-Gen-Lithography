@@ -72,12 +72,12 @@ def extract_metrics(run_folder: str) -> dict:
         
         norm_scores = [0.0 if s < 0.5 else (s - 0.5) * 2.0 for s in raw_scores]
         
-        # --- FIX: NumPy 2.0 Compatibility (trapz -> trapezoid) ---
+        # np.trapezoid added in NumPy 2.0; fall back to trapz for older installs
         if len(norm_scores) > 1:
             try:
                 metrics["auc"] = np.trapezoid(norm_scores)
             except AttributeError:
-                metrics["auc"] = np.trapz(norm_scores) # Fallback for older numpy versions
+                metrics["auc"] = np.trapz(norm_scores)
         else:
             metrics["auc"] = 0.0
 
@@ -95,7 +95,6 @@ def extract_metrics(run_folder: str) -> dict:
         except Exception:
             continue
             
-    # FIX: Safe duplicate rate to prevent "Fake 0%" when files are missing
     if total_netlists > 0:
         metrics["duplicate_rate"] = (1.0 - (len(unique_hashes) / total_netlists)) * 100.0
 
@@ -146,7 +145,6 @@ def main():
     out_path.mkdir(parents=True, exist_ok=True)
     checkpoint_file = out_path / "benchmark_checkpoint.json"
 
-    # --- NEW: Checkpointing System ---
     if checkpoint_file.exists():
         print(f"🔄 Resuming from existing checkpoint: {checkpoint_file}")
         with open(checkpoint_file, "r", encoding="utf-8") as f:
@@ -193,7 +191,6 @@ def main():
                     # Appends the safe fallback dictionary to prevent plotting crashes
                     master_results[model_name][task['label']].append(get_empty_metrics())
                     
-                # --- BULLETPROOF ATOMIC CHECKPOINT SAVING ---
                 # 1. Write to a temporary file
                 fd, temp_path = tempfile.mkstemp(dir=out_path, suffix='.tmp')
                 with os.fdopen(fd, 'w', encoding='utf-8') as f:
@@ -203,7 +200,6 @@ def main():
                 # If power fails exactly here, the original file is completely unharmed!
                 os.replace(temp_path, checkpoint_file)
 
-    # --- FINAL MULTI-METRIC REPORT ---
     report_text = f"\n\n{'='*120}\n"
     report_text += f"🏆 COMPREHENSIVE BENCHMARK RESULTS (Mean ± StdDev) 🏆\n"
     report_text += f"{'='*120}\n"
@@ -230,7 +226,6 @@ def main():
             for model_name in models.keys():
                 trial_data = master_results.get(model_name, {}).get(task_lbl, [])
                 
-                # FIX: Safely filter out None types before using numpy
                 vals = [t.get(key) for t in trial_data if t and t.get(key) is not None]
                 
                 if vals:

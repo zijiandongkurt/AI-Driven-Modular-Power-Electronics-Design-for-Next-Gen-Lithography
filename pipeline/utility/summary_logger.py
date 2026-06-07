@@ -6,10 +6,7 @@ from typing import List, Dict
 from pipeline.utility.netlist_database import NetlistDatabase
 
 class SummaryLogger:
-    """
-    Handles logging and formatting of the MCTS/RL Loop execution summary.
-    Generates run_summary.txt and outputs the current best_topology.net to disk.
-    """
+    """Write per-batch run summaries and the current best netlist to disk."""
     def __init__(self, run_folder_path: Path, n_batches: int, sim_params: dict, weights: dict, constraint_idx: int = None):
         self.run_folder_path = Path(run_folder_path)
         self.results_dir = self.run_folder_path / "results"
@@ -23,6 +20,14 @@ class SummaryLogger:
         self.batch_times = []
 
     def log_batch(self, batch_idx: int, batch_duration: float, db: NetlistDatabase, best_cand_id: str):
+        """Log an inference-loop batch and overwrite the on-disk summary files.
+
+        Args:
+            batch_idx (int): 1-based index of the completed batch.
+            batch_duration (float): Wall-clock seconds for this batch.
+            db (NetlistDatabase): Live database containing all candidates so far.
+            best_cand_id (str): Key of the current best candidate in ``db.records``.
+        """
         self.batch_times.append(batch_duration)
         avg_time_batch = sum(self.batch_times) / len(self.batch_times)
         

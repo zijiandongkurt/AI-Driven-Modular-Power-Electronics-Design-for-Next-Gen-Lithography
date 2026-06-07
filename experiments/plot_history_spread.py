@@ -150,7 +150,6 @@ def process_zycos_run(zycos_name):
         components = [[d['comps'] for d in dataset[r]] for r in run_numbers]
         
         # 1. Boxplot Builder for Continuous Metrics
-        # --- NEW: Added hline_name parameter ---
         def plot_box(ax, x, y_lists, title, ylabel, color, is_log=False, hline_y=None, hline_name=None, limit_type='lower', y_max=None, y_min=None, is_standalone=False):
             # Sanitize empty lists to avoid matplotlib crashes
             plot_data = [lst if len(lst) > 0 else [np.nan] for lst in y_lists]
@@ -163,7 +162,6 @@ def process_zycos_run(zycos_name):
                              medianprops=dict(color='black', linewidth=2))
                              
             if hline_y is not None:
-                # --- NEW: Uses custom name if provided, otherwise falls back to Threshold (value) ---
                 label_text = hline_name if hline_name else f'Threshold ({hline_y})'
                 ax.axhline(y=hline_y, color='black', linestyle='--', linewidth=2, alpha=0.7, label=label_text)
                 

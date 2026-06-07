@@ -58,11 +58,7 @@ import torch
 
 @dataclass
 class SFTConfig:
-    """
-    Configuration for supervised fine-tuning.
-
-    Defaults match the H100 80GB recipe (same as new_rl_updater.py).
-    """
+    """Hyperparameters for supervised fine-tuning on (prompt, netlist) pairs."""
 
     # ── LoRA (same as RLConfig) ────────────────────────────────────────
     lora_r: int = 16
@@ -99,13 +95,11 @@ class SFTConfig:
 # ────────────────────────────────────────────────────────────────────────
 
 class SFTTrainer:
-    """
-    Supervised fine-tuner that LoRA-wraps `engine.model` and trains it
-    with next-token cross-entropy on (prompt, completion) pairs.
+    """Fine-tune a model with next-token cross-entropy on (prompt, netlist) pairs.
 
-    `engine` is the same `LLMEngine` instance that `TopologyLLM` holds,
-    so any LoRA installed here persists on the shared model, and
-    downstream GRPO sees the SFT-trained weights automatically.
+    LoRA is applied directly to the shared ``LLMEngine`` model, so the
+    trained weights are visible to any downstream GRPO update without
+    reloading the model.
     """
 
     # ── Initialization ────────────────────────────────────────────────

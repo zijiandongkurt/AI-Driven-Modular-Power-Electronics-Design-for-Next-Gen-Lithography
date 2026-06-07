@@ -41,7 +41,6 @@ def main():
     
     UPDATE_PLOTS_PER_BATCH = True # <-- TOGGLE: Set to False to only plot at the very end
     
-    # NEW: Context window hyperparameter
     MAX_TOKENS = 1024  # Increase this if your netlists are getting cut off
 
     # Define weight distribution for the reward function

@@ -177,7 +177,19 @@ class RewardFunctionNorm:
         return total_loss, details
 
     def calculate_reward(self, row, constraints, weights):
-        """Convert loss into a reward in [0.5, 1.0]."""
+        """Convert simulation metrics to a reward in [0.5, 1.0].
+
+        Maps loss [0, 1] → reward [1.0, 0.5], then applies an exponential
+        voltage-error decay if the output voltage deviates beyond 50% of target.
+
+        Args:
+            row (dict | pd.Series): Simulation metrics for one circuit.
+            constraints (dict): Target values including ``vout_target``.
+            weights (dict): Per-term loss weights.
+
+        Returns:
+            tuple: ``(reward, details_dict)`` where reward is in [0.5, 1.0].
+        """
         loss, details = self.calculate_loss(row, constraints, weights)
         
         # Base reward mapping loss [0, 1] -> reward [1.0, 0.5]

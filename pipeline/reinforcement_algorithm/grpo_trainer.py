@@ -77,19 +77,18 @@ class GRPOTrainer:
         return make_prompt(self.constraint_dict)
 
     def _load_group_prompt(self, batch_id: str, group_id: str) -> str:
-        """
-        Load prompt for a specific GRPO group.
+        """Load the prompt used to generate a specific GRPO group.
 
-        Preferred grouped files:
-            prompt_g1.txt
-            prompt_g2.txt
+        Tries ``prompt_g1.txt`` / ``prompt_g2.txt`` first, then the legacy
+        ``prompt_cand1.txt`` / ``prompt_cand2.txt`` files, and finally falls
+        back to a freshly reconstructed system prompt + constraint.
 
-        Legacy fallback files:
-            prompt_cand1.txt
-            prompt_cand2.txt
+        Args:
+            batch_id (str): Batch identifier to look up files under.
+            group_id (str): Group identifier such as ``"g1"`` or ``"g2"``.
 
-        Final fallback:
-            reconstructed system prompt + constraint.
+        Returns:
+            str: Prompt text to condition the log-prob computation on.
         """
         batch_dir = self._batch_dir(batch_id)
 

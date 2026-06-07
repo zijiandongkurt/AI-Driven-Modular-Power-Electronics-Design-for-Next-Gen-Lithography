@@ -36,7 +36,6 @@ def process_zycos_run(zycos_name):
         print(f"⚠️ No Run folders found in {zycos_name}. Skipping...")
         return
 
-    # --- NEW: Added v_err_pcts to track percentage error ---
     run_numbers, v_errors, abs_v_errors, v_err_pcts, eff_errors, volumes, components = [], [], [], [], [], [], []
 
     print(f"\n🔍 Scanning {zycos_name} for Best Candidates:")
@@ -108,8 +107,6 @@ def process_zycos_run(zycos_name):
         v_err = target_v - v_out
         abs_v_err = abs(v_err)
         
-        # --- NEW: Calculate Percentage Voltage Error ---
-        # Safeguard against division by zero just in case
         safe_target_v = target_v if target_v != 0 else 1e-6
         v_err_pct = (v_err / safe_target_v) * 100.0
         
@@ -180,7 +177,6 @@ def process_zycos_run(zycos_name):
     plot_individual(run_numbers, v_errors, "Voltage Error (Target - Actual)", "Voltage Error (V)", "cs_err_voltage.png", color='royalblue', hline_y=1, hline_name='Tolerance (+/- 1V)', limit_type='band', y_min=-1)
     plot_individual(run_numbers, abs_v_errors, "Absolute Voltage Error", "|Voltage Error| (V)", "cs_err_abs_voltage.png", color='crimson', hline_y=1, hline_name='Tolerance (1V)', limit_type='lower', y_min=0)
     
-    # --- NEW: Standalone Percentage Voltage Error Plot (+/- 5% Tolerance Band) ---
     plot_individual(run_numbers, v_err_pcts, "Percentage Voltage Error", "Voltage Error (%)", "cs_err_voltage_pct.png", color='deepskyblue', hline_y=5, hline_name='Tolerance (+/- 5%)', limit_type='band', y_min=-5)
     
     plot_individual(run_numbers, eff_errors, "Efficiency Error (Target - Actual)", "Efficiency Error", "cs_err_efficiency.png", color='darkorange', hline_y=0, hline_name='Target Met (0)', limit_type='lower')
@@ -191,7 +187,6 @@ def process_zycos_run(zycos_name):
     fig, axs = plt.subplots(2, 2, figsize=(16, 10))
     fig.suptitle(f'Constraint Satisfaction & Metrics Summary ({zycos_name})', fontsize=16, fontweight='bold')
     
-    # --- NEW: Subplot 1 is now Percentage Voltage Error with a +/- 5% Tolerance Band ---
     axs[0, 0].plot(run_numbers, v_err_pcts, marker='o', color='deepskyblue', linewidth=2)
     
     axs[0, 0].axhline(y=5, color='black', linestyle='--', linewidth=2, alpha=0.7, label='Tolerance (+/- 5%)')

@@ -20,7 +20,6 @@ from pipeline.graphs_and_visualizations.plot_cumulative_probabilities import plo
 from pipeline.utility.summary_logger import SummaryLogger
 from pipeline.utility.topology_hasher import get_topological_hash
 
-# --- NEW: Import your net_writer ---
 from pipeline.llm_topology_generation.net_writer import write_netlists
 
 def get_next_zycos_folder(data_dir: Path) -> str:
@@ -295,13 +294,10 @@ def epsilon_greedy_topk_sample_parents(
             if item["netlist_id"] not in selected_ids
         ]
         
-        # --- THE FIX: Sample from Unique History with Replacement ---
         if not available_top and not available_tail:
-            # We have exhausted all unique topologies!
-            # Fallback: Pick randomly from the unique champions we already found.
+            # All unique topologies exhausted; fall back to random champion.
             chosen = rng.choice(sorted_history)
             selection_mode = "fallback_duplicate_unique"
-        # ----------------------------------------------------------
         else:
             use_exploration = (
                 bool(available_tail)

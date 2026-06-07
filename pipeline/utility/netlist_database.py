@@ -5,9 +5,10 @@ from pathlib import Path
 from pipeline.utility.topology_hasher import get_topological_hash
 
 class NetlistDatabase:
-    """
-    In-memory database to track all generated netlists and their fitness.
-    Implements Epsilon-Greedy Top-K Softmax sampling.
+    """Track generated netlists and their fitness scores for MCTS state sampling.
+
+    Uses Epsilon-Greedy Top-K Softmax to balance exploitation of high-fitness
+    topologies with exploration of lower-ranked candidates.
     """
 
     def __init__(self, temperature=0.05):
@@ -31,6 +32,17 @@ class NetlistDatabase:
         metrics=None,
         batch_id=None,
     ):
+        """Store a candidate netlist and update global validity and uniqueness counters.
+
+        Args:
+            candidate_id (str): Unique identifier for this netlist.
+            netlist_text (str): Raw SPICE netlist content.
+            fitness (float): Fitness score from the reward function.
+            feedback_text (str): Human-readable feedback string for MCTS prompting.
+            is_valid (bool): Whether the netlist passed all validation checks.
+            metrics (dict | None): Raw simulation and reward metrics dict.
+            batch_id (str | None): Batch the candidate was generated in.
+        """
         topo_hash = get_topological_hash(netlist_text)
         if topo_hash not in self.seen_hashes:
             self.seen_hashes.add(topo_hash)

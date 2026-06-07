@@ -12,7 +12,6 @@ import pytest
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.append(str(PROJECT_ROOT))
 
-# --- FIX: Import our new get_empty_metrics function ---
 from experiments.run_benchmark import extract_metrics, get_empty_metrics
 
 # --- MOCK DATA ---

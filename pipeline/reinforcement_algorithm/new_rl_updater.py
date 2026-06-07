@@ -33,9 +33,7 @@ import torch.nn.functional as F
 
 @dataclass
 class RLConfig:
-    """
-    Configuration for GRPO-style LoRA policy update.
-    """
+    """Hyperparameters for a GRPO-style LoRA policy update."""
 
     # LoRA settings
     lora_r: int = 4
@@ -80,11 +78,10 @@ class RLConfig:
 
 
 class RLUpdater:
-    """
-    GRPO-style policy updater.
+    """Apply a single GRPO gradient step to the LoRA parameters of a model.
 
-    This class updates only LoRA parameters.
-    Grouped advantage calculation is handled by GRPOTrainer.
+    Grouped advantage calculation is delegated to GRPOTrainer; this class
+    only handles tokenization, loss computation, and the optimizer step.
     """
 
     def __init__(self, engine, config: Optional[RLConfig] = None):
