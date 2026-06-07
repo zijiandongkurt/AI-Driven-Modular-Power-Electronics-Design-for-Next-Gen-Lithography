@@ -35,9 +35,7 @@ MOCK_CHAMPION_ZERO_VOLTAGE = """
 """
 
 def test_extract_metrics_handles_zero_voltage():
-    """
-    EXPECTED PASS: The ZeroDivisionError and NumPy 2.0 trapz bugs are fixed.
-    """
+    """Verify that ZeroDivisionError and NumPy 2.0 trapz bugs are fixed."""
     with patch('pathlib.Path.exists', return_value=True), \
          patch('pathlib.Path.read_text', return_value=MOCK_SUMMARY), \
          patch('builtins.open', mock_open(read_data=MOCK_CHAMPION_ZERO_VOLTAGE)), \
@@ -48,9 +46,7 @@ def test_extract_metrics_handles_zero_voltage():
         assert metrics["auc"] > 0.0
 
 def test_fallback_dictionary_schema_matches_extract_metrics():
-    """
-    EXPECTED PASS: The new get_empty_metrics() perfectly matches the schema.
-    """
+    """Verify that get_empty_metrics() schema perfectly matches extract_metrics output."""
     with patch('pathlib.Path.exists', return_value=False), \
          patch('pathlib.Path.rglob', return_value=[]):
         success_metrics = extract_metrics("dummy_folder")
@@ -62,9 +58,7 @@ def test_fallback_dictionary_schema_matches_extract_metrics():
     assert len(missing_keys) == 0, f"Fallback dict is still missing keys: {missing_keys}"
 
 def test_numpy_aggregation_survives_missing_champion_files():
-    """
-    EXPECTED PASS: The new list comprehension filters None types safely.
-    """
+    """Verify that the list comprehension safely filters None types before NumPy aggregation."""
     trial_data = [
         {"fitness": 0.9, "volume": 25.0},
         {"fitness": 0.0, "volume": None}
@@ -84,9 +78,10 @@ def test_numpy_aggregation_survives_missing_champion_files():
 
 
 def test_extract_metrics_survives_corrupt_champion_json():
-    """
-    EXPECTED PASS: extract_metrics catches JSONDecodeError and doesn't crash.
-    It should preserve the summary metrics but safely nullify the physical metrics.
+    """Verify that extract_metrics catches JSONDecodeError without crashing.
+
+    The function should preserve summary-level metrics while safely nullifying
+    any physical metrics that depend on the corrupted champion JSON.
     """
     # Simulate a file that was cut off halfway through writing due to a power loss
     MOCK_CORRUPT_JSON = '{\n    "target_voltage": 5.0,\n    "raw_voltage": 4.9,\n    "raw_ef'
@@ -113,10 +108,7 @@ def test_extract_metrics_survives_corrupt_champion_json():
 @patch('experiments.run_benchmark.run_inference')
 @patch('experiments.run_benchmark.extract_metrics')
 def test_atomic_checkpoint_write_behavior(mock_extract, mock_inference, mock_mkstemp, mock_replace):
-    """
-    EXPECTED PASS: The benchmark loop uses temporary files and atomic OS swaps 
-    to save progress, rather than vulnerable direct writes.
-    """
+    """Verify that the benchmark loop uses atomic OS swaps for checkpoint saves."""
     from experiments.run_benchmark import main
     import sys
     
@@ -165,10 +157,10 @@ def test_atomic_checkpoint_write_behavior(mock_extract, mock_inference, mock_mks
     assert "benchmark_checkpoint.json" in str(called_args[1])
 
 def test_extract_metrics_survives_none_path():
-    """
-    EXPECTED FAILURE: TypeError
-    Why it fails: If run_inference() fatally errors and returns None instead of 
-    a string path, pathlib.Path(None) will throw a TypeError.
+    """Document that passing None as a path raises TypeError.
+
+    If run_inference() fatally errors and returns None instead of a string path,
+    pathlib.Path(None) will throw a TypeError, exposing the vulnerability.
     """
     try:
         # We pass None as if the inference function failed completely

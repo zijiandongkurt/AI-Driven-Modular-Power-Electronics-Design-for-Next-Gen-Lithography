@@ -42,10 +42,14 @@ Vgate gate 0 PULSE(0 12 0 1n 1n 6.5u 10u)
 
 @pytest.fixture
 def dummy_batch_setup():
-    """
-    Pytest Fixture: Sets up a temporary batch folder for the simulator,
-    writes the hardcoded cheating netlist into it, generates a fake validation file,
-    and automatically cleans it up after.
+    """Set up a temporary batch folder, write the cheater netlist, and clean up after.
+
+    Creates the batch directory structure under ``pipeline/data``, writes the
+    hardcoded cheater netlist to ``LLM_output``, and generates a fake
+    ``validation_results.json``. The directory tree is removed on teardown.
+
+    Yields:
+        tuple: A two-element tuple of (dummy_batch_id, netlist_stem).
     """
     dummy_batch_id = "test_pytest_exploit/batch_1"
     dummy_batch_dir = Path("pipeline/data") / dummy_batch_id
@@ -72,10 +76,7 @@ def dummy_batch_setup():
 
 
 def test_boost_converter_efficiency_exploit(dummy_batch_setup):
-    """
-    Tests that the simulator correctly measures input power from the voltage
-    source, preventing Boost converters from scoring >100% efficiency.
-    """
+    """Verify the simulator measures input power correctly to prevent >100% efficiency scores."""
     batch_id, netlist_stem = dummy_batch_setup
 
     constraint = {
@@ -115,10 +116,7 @@ def test_boost_converter_efficiency_exploit(dummy_batch_setup):
 
 
 def test_boost_converter_fitness_penalty(dummy_batch_setup):
-    """
-    Tests that a Boost Converter outputting >5V gets properly penalized by
-    the reward function when evaluated against a 5V Buck constraint.
-    """
+    """Verify that a Boost Converter outputting above target voltage is penalized by the reward function."""
     batch_id, netlist_stem = dummy_batch_setup
 
     constraint = {

@@ -9,12 +9,12 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 def extract_run_number(folder_name):
-    """Extracts the integer run number from a folder name like 'Run_005'."""
+    """Extract the integer run number from a folder name like 'Run_005'."""
     match = re.search(r'Run_(\d+)', folder_name)
     return int(match.group(1)) if match else -1
 
 def process_zycos_run(zycos_name):
-    """Scans all Runs in a zycos folder, extracts best metrics, and plots satisfaction."""
+    """Scan all runs in a zycos folder, extract best metrics, and plot constraint satisfaction."""
     
     # Setup Paths
     SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))

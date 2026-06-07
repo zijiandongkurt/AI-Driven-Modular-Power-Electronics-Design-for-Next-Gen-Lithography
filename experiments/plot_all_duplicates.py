@@ -14,9 +14,11 @@ if str(PROJECT_ROOT) not in sys.path:
 from pipeline.utility.check_duplicates import get_duplicates_per_batch
 
 def plot_duplicates_for_zycos(zycos_folder: str):
-    """
-    Crawls a main training folder, finds all Run_XXX folders, and generates 
-    a duplicate topologies bar chart for each run.
+    """Crawl a training folder and generate a duplicate-topology bar chart for each run.
+
+    Args:
+        zycos_folder (str): Path to the top-level zycos training folder containing
+            Run_XXX subdirectories.
     """
     zycos_path = Path(zycos_folder)
     

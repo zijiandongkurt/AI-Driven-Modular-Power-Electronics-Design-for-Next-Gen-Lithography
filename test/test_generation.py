@@ -40,7 +40,7 @@ DUMMY_NETLIST = "* Buck\nVin in 0 12\nRload out 0 10\n.end"
 
 @pytest.fixture
 def constraint_json(tmp_path):
-    """Write a minimal constraint JSON file and return its path."""
+    """Write a minimal two-entry constraint JSON file and return its path."""
     data = [SAMPLE_CONSTRAINT, {**SAMPLE_CONSTRAINT, "_comment": "Phase 2"}]
     p = tmp_path / "constraints.json"
     p.write_text(json.dumps(data), encoding="utf-8")

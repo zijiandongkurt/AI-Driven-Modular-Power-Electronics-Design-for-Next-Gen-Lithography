@@ -28,7 +28,7 @@ except ImportError as e:
 
 
 def get_next_run_folder(data_dir: Path, prefix="Run") -> str:
-    """Generates the next sequential run folder name with an optional prefix."""
+    """Generate the next sequential run folder name with an optional prefix."""
     if not data_dir.exists():
         data_dir.mkdir(parents=True, exist_ok=True)
 
@@ -48,10 +48,14 @@ def get_next_run_folder(data_dir: Path, prefix="Run") -> str:
 
 
 def run_inference(config: dict) -> str:
-    """
-    Main orchestrator method. Takes a dictionary of hyperparameters and
-    executes the Epsilon-Greedy Evolutionary Search loop.
-    Returns the path to the results folder.
+    """Run the Epsilon-Greedy Evolutionary Search loop.
+
+    Args:
+        config (dict): Hyperparameter dictionary with keys ``run_settings``,
+            ``mcts_settings``, ``constraint_settings``, and ``weights``.
+
+    Returns:
+        str: Absolute path to the results folder for this run.
     """
     run_settings        = config.get("run_settings", {})
     mcts_settings       = config.get("mcts_settings", {})

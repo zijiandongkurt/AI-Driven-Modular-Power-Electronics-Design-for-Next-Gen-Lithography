@@ -14,7 +14,7 @@ from training_loop_random import epsilon_greedy_topk_sample_parents, add_batch_t
 # --- Tests for Epsilon-Greedy Sampling ---
 
 def test_epsilon_greedy_deduplication():
-    """Ensure the sampling algorithm mathematically strips duplicates before picking parents."""
+    """Verify the sampling algorithm strips topological duplicates before selecting parents."""
     
     fake_history = [
         {"netlist_id": "cand_1", "fitness": 0.9, "topo_hash": "hash_A", "depth": 1, "batch_id": "b1"},
@@ -43,7 +43,7 @@ def test_epsilon_greedy_deduplication():
 @patch("training_loop_random.load_reward_data")
 @patch("training_loop_random.get_topological_hash")
 def test_add_batch_to_history(mock_hasher, mock_load_reward, monkeypatch):
-    """Ensure that adding a batch correctly reads the .net file and generates the hash."""
+    """Verify that adding a batch reads the .net file and stores the topological hash."""
     
     mock_load_reward.return_value = {
         "circuits": {
@@ -75,7 +75,7 @@ def test_add_batch_to_history(mock_hasher, mock_load_reward, monkeypatch):
 
 @patch("training_loop_random.load_reward_data")
 def test_add_batch_to_history_missing_file(mock_load_reward, monkeypatch):
-    """Ensure it handles missing .net files gracefully."""
+    """Verify that missing .net files are handled gracefully with an 'unknown' hash fallback."""
     
     mock_load_reward.return_value = {
         "circuits": {

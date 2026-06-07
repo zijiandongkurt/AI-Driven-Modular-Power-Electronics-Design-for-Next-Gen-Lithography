@@ -118,9 +118,13 @@ def save_history(history: List[Dict], run_folder_path: Path) -> None:
         json.dump(history, f, indent=2)
 
 def generate_global_training_summary(zycos_path: Path, current_run_idx: int, total_runs: int, config: Dict = None):
-    """
-    Scans all completed runs in the current zycos folder and generates a live-updating
-    master summary file tracking global progress, aggregate yields, and the best overall fitness.
+    """Scan completed runs and write a live-updating master summary file.
+
+    Args:
+        zycos_path (Path): Path to the current zycos training folder.
+        current_run_idx (int): Number of runs completed so far.
+        total_runs (int): Total number of runs planned.
+        config (Dict, optional): Training hyperparameters to embed in the summary.
     """
     summary_files = list(zycos_path.glob("Run_*/results/run_summary.txt"))
     if not summary_files:
@@ -237,10 +241,21 @@ def epsilon_greedy_topk_sample_parents(
     temperature: float,
     seed: int = 42,
 ) -> List[Dict]:
-    """
-    Select parents using epsilon-greedy Top-K softmax.
-    Includes a fallback to sample with replacement from unique topologies 
-    if we run out of unique candidates.
+    """Select parents using epsilon-greedy Top-K softmax.
+
+    Includes a fallback to sample with replacement from unique topologies
+    if all unique candidates have been exhausted.
+
+    Args:
+        history (List[Dict]): List of evaluated netlist records with fitness and topo_hash.
+        k (int): Number of parents to select.
+        top_k (int): Size of the elite pool for softmax sampling.
+        epsilon (float): Probability of selecting from the long-tail (exploration).
+        temperature (float): Softmax temperature scaling factor.
+        seed (int): Random seed for reproducibility.
+
+    Returns:
+        List[Dict]: Selected parent records, each annotated with a selection_mode key.
     """
     if not history:
         raise RuntimeError("History is completely empty. Cannot sample parents.")

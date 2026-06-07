@@ -18,7 +18,7 @@ except ImportError:
     plot_run_results = None
 
 def get_next_run_folder(data_dir: Path) -> str:
-    """Scans the data directory and returns the next Run_XXX folder name."""
+    """Scan the data directory and return the next Run_XXX folder name."""
     if not data_dir.exists():
         data_dir.mkdir(parents=True, exist_ok=True)
 

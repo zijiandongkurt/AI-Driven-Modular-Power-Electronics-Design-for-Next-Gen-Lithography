@@ -3,9 +3,16 @@ import glob
 import networkx as nx
 
 def get_pure_topology_hash(netlist_text: str) -> str:
-    """
-    A modified Weisfeiler-Lehman hasher that completely ignores component values
-    and MOSFET parameters. It only cares about the physical wiring structure.
+    """Compute a WL graph hash based solely on physical wiring structure.
+
+    Ignores component values and MOSFET parameters entirely; only the
+    connectivity topology is considered.
+
+    Args:
+        netlist_text (str): Raw SPICE netlist text to hash.
+
+    Returns:
+        str: Weisfeiler-Lehman graph hash string representing the wiring structure.
     """
     netlist_text = netlist_text.encode('ascii', 'ignore').decode('ascii').lower()
     raw_lines = netlist_text.split('\n')

@@ -130,18 +130,27 @@ def epsilon_greedy_topk_sample_parents(
     temperature: float,
     seed: int = 42,
 ) -> List[Dict]:
-    """
-    Select parents using epsilon-greedy Top-K softmax.
+    """Select parents using epsilon-greedy Top-K softmax.
 
-    Exploitation:
-        With probability 1 - epsilon, sample from the Top-K candidates
-        using temperature-scaled softmax over fitness.
+    With probability ``1 - epsilon`` (exploitation), samples from the Top-K
+    candidates using temperature-scaled softmax over fitness. With probability
+    ``epsilon`` (exploration), randomly samples from the long-tail candidates
+    outside Top-K. Depth is used only for lineage tracking, not for selection.
 
-    Exploration:
-        With probability epsilon, randomly sample from the long-tail
-        candidates outside Top-K.
+    Args:
+        history (List[Dict]): List of evaluated netlist records with fitness values.
+        k (int): Number of parents to select.
+        top_k (int): Size of the elite pool for softmax sampling.
+        epsilon (float): Probability of selecting from the long-tail (exploration).
+        temperature (float): Softmax temperature scaling factor.
+        seed (int): Random seed for reproducibility.
 
-    Depth is only used for lineage tracking and is not used for selection.
+    Returns:
+        List[Dict]: Selected parent records, each annotated with a selection_mode key.
+
+    Raises:
+        RuntimeError: If history contains fewer than k entries, or if fewer than k
+            parents could be selected.
     """
     if len(history) < k:
         raise RuntimeError(f"Not enough history states to sample {k} parents.")

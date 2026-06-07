@@ -120,7 +120,7 @@ def test_formatting_variations():
     assert get_topological_hash(netlist_neat) == get_topological_hash(netlist_messy), "Whitespace, tabs, and capitalization must not alter the hash"
 
 def test_hasher_spice_value_equivalency():
-    """Ensure the hasher understands that 47u and 47e-6 are physically identical."""
+    """Verify the hasher treats equivalent SPICE values (47u and 47e-6) as identical."""
     netlist_a = BASELINE_NETLIST
     
     # Change 47u to scientific notation, and 220u to millifarads
@@ -132,7 +132,7 @@ def test_hasher_spice_value_equivalency():
     assert hash_a == hash_b, "Hasher failed: It treated '47u' and '47e-6' as different circuits!"
 
 def test_hasher_mosfet_param_ordering():
-    """Ensure the hasher isn't fooled by the LLM swapping the order of MOSFET parameters."""
+    """Verify the hasher is not fooled by swapped MOSFET parameter order (W=1 L=1 vs L=1 W=1)."""
     netlist_a = BASELINE_NETLIST
     
     # Swap 'W=1 L=1' to 'L=1 W=1'
@@ -144,7 +144,7 @@ def test_hasher_mosfet_param_ordering():
     assert hash_a == hash_b, "Hasher failed: It treated 'W=1 L=1' and 'L=1 W=1' as different circuits!"
 
 def test_hasher_multi_gate_masking():
-    """Ensure the hasher masks ANY valid gate name (gate, gate_hi, gate1) universally."""
+    """Verify the hasher masks any valid gate name (gate, gate_hi, gate1) universally."""
     netlist_a = BASELINE_NETLIST
     
     # Rename 'gate' to 'gate_hi' everywhere in the circuit

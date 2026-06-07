@@ -17,7 +17,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from pipeline.utility.topology_hasher import get_topological_hash
 
 def get_unique_database(data_dir: Path, target_batch: int):
-    """Rebuilds the database up to target_batch, keeping ONLY unique topologies."""
+    """Rebuild the database up to target_batch, keeping only unique topologies."""
     records = {}
     seen_hashes = set()
 
@@ -42,7 +42,7 @@ def get_unique_database(data_dir: Path, target_batch: int):
     return records
 
 def plot_unique_probabilities(run_folder: str, target_batch: int, temp=0.05, top_k=15, epsilon=0.15):
-    """Generates both the Softmax and Cumulative probability plots for unique topologies."""
+    """Generate the softmax and cumulative probability plots for unique topologies."""
     data_dir = Path(run_folder)
     records = get_unique_database(data_dir, target_batch)
     

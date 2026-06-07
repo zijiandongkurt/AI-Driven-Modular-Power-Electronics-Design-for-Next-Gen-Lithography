@@ -26,7 +26,7 @@ except ImportError as e:
     print(f"Warning: Plotting modules not found. Plotting disabled. Error: {e}")
 
 def get_empty_metrics() -> dict:
-    """Returns a perfectly structured empty metrics dictionary to prevent KeyErrors."""
+    """Return a perfectly structured empty metrics dictionary to prevent KeyErrors."""
     return {
         "fitness": 0.0, 
         "auc": 0.0, 
@@ -43,7 +43,7 @@ def get_empty_metrics() -> dict:
     }
 
 def extract_metrics(run_folder: str) -> dict:
-    """Parses the run summary, champion JSON, and netlist files to extract all metrics."""
+    """Parse the run summary, champion JSON, and netlist files to extract all metrics."""
     folder_path = Path(run_folder)
     summary_path = folder_path / "run_summary.txt"
     champ_path = folder_path / "champion_metrics.json"
