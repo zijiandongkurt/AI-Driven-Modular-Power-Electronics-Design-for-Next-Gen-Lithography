@@ -61,6 +61,7 @@ Constraints JSON
 ├── experiments/                   # Benchmark runner and results
 ├── test/                          # 179-test suite (pytest)
 ├── docs/                          # Project documentation
+├── meetings/                      # Meeting notes
 ├── checkpoints/                   # Saved LoRA adapters
 ├── training_loop_random.py        # Main GRPO training loop (runs on Snellius)
 ├── configs/                       # JSON configuration files
