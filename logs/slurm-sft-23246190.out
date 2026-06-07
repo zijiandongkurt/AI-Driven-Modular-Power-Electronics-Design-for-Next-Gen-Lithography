@@ -1,0 +1,102 @@
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+════════════════════════════════════════════════════════════════
+ SFT runner
+════════════════════════════════════════════════════════════════
+  model_id      : Qwen/Qwen3-14B
+  quantization  : bf16 (full)
+  train_path    : pipeline/data/sft/sft_train.jsonl
+  val_path      : pipeline/data/sft/sft_val.jsonl
+  output_dir    : checkpoints/sft/sft_001
+  epochs        : 5
+  batch_size    : 4
+  learning_rate : 0.0002
+  lora_r/alpha  : 16/32
+  max_length    : 2048
+
+[sft_loop] Loading TopologyLLM...
+Loading weights:   0%|          | 0/443 [00:00<?, ?it/s]Loading weights:   0%|          | 1/443 [00:03<24:02,  3.26s/it]Loading weights:   1%|          | 4/443 [00:03<05:29,  1.33it/s]Loading weights:   1%|▏         | 6/443 [00:04<03:37,  2.01it/s]Loading weights:   2%|▏         | 10/443 [00:04<01:47,  4.04it/s]Loading weights:   3%|▎         | 12/443 [00:04<01:23,  5.15it/s]Loading weights:   3%|▎         | 15/443 [00:04<01:10,  6.11it/s]Loading weights:   4%|▍         | 17/443 [00:05<01:10,  6.03it/s]Loading weights:   5%|▌         | 23/443 [00:05<00:36, 11.44it/s]Loading weights:   6%|▌         | 26/443 [00:05<00:33, 12.52it/s]Loading weights:   7%|▋         | 29/443 [00:05<00:36, 11.19it/s]Loading weights:   8%|▊         | 34/443 [00:05<00:25, 16.05it/s]Loading weights:   8%|▊         | 37/443 [00:06<00:29, 13.86it/s]Loading weights:   9%|▉         | 40/443 [00:06<00:33, 12.00it/s]Loading weights:  10%|▉         | 44/443 [00:06<00:25, 15.52it/s]Loading weights:  11%|█         | 47/443 [00:06<00:22, 17.23it/s]Loading weights:  11%|█▏        | 50/443 [00:07<00:30, 12.68it/s]Loading weights:  12%|█▏        | 54/443 [00:07<00:23, 16.29it/s]Loading weights:  13%|█▎        | 59/443 [00:07<00:20, 18.69it/s]Loading weights:  14%|█▍        | 62/443 [00:07<00:26, 14.49it/s]Loading weights:  15%|█▍        | 65/443 [00:07<00:23, 16.43it/s]Loading weights:  16%|█▌        | 70/443 [00:08<00:19, 19.39it/s]Loading weights:  16%|█▋        | 73/443 [00:08<00:25, 14.77it/s]Loading weights:  17%|█▋        | 76/443 [00:08<00:21, 16.74it/s]Loading weights:  18%|█▊        | 81/443 [00:08<00:18, 19.67it/s]Loading weights:  19%|█▉        | 84/443 [00:09<00:23, 15.03it/s]Loading weights:  20%|██        | 89/443 [00:09<00:17, 19.95it/s]Loading weights:  21%|██        | 92/443 [00:09<00:18, 19.04it/s]Loading weights:  21%|██▏       | 95/443 [00:09<00:23, 14.63it/s]Loading weights:  22%|██▏       | 98/443 [00:09<00:22, 15.11it/s]Loading weights:  23%|██▎       | 102/443 [00:10<00:22, 15.15it/s]Loading weights:  23%|██▎       | 104/443 [00:10<00:23, 14.55it/s]Loading weights:  24%|██▍       | 106/443 [00:10<00:26, 12.88it/s]Loading weights:  25%|██▍       | 109/443 [00:10<00:21, 15.42it/s]Loading weights:  25%|██▌       | 112/443 [00:10<00:19, 17.13it/s]Loading weights:  26%|██▌       | 114/443 [00:10<00:22, 14.45it/s]Loading weights:  26%|██▌       | 116/443 [00:11<00:30, 10.56it/s]Loading weights:  28%|██▊       | 122/443 [00:11<00:17, 18.03it/s]Loading weights:  28%|██▊       | 125/443 [00:11<00:17, 17.73it/s]Loading weights:  29%|██▉       | 128/443 [00:11<00:22, 13.80it/s]Loading weights:  30%|██▉       | 131/443 [00:12<00:19, 15.93it/s]Loading weights:  30%|███       | 135/443 [00:12<00:17, 17.62it/s]Loading weights:  31%|███       | 138/443 [00:12<00:22, 13.80it/s]Loading weights:  32%|███▏      | 142/443 [00:12<00:17, 17.07it/s]Loading weights:  33%|███▎      | 147/443 [00:13<00:19, 15.22it/s]Loading weights:  34%|███▎      | 149/443 [00:14<00:40,  7.32it/s]Loading weights:  35%|███▍      | 155/443 [00:14<00:24, 11.70it/s]Loading weights:  36%|███▌      | 158/443 [00:14<00:22, 12.60it/s]Loading weights:  36%|███▋      | 161/443 [00:14<00:24, 11.36it/s]Loading weights:  37%|███▋      | 166/443 [00:14<00:17, 15.80it/s]Loading weights:  38%|███▊      | 169/443 [00:15<00:19, 14.32it/s]Loading weights:  39%|███▉      | 172/443 [00:15<00:21, 12.33it/s]Loading weights:  40%|███▉      | 177/443 [00:15<00:15, 17.06it/s]Loading weights:  41%|████      | 180/443 [00:15<00:15, 17.00it/s]Loading weights:  41%|████▏     | 183/443 [00:16<00:18, 13.70it/s]Loading weights:  42%|████▏     | 186/443 [00:16<00:16, 15.83it/s]Loading weights:  43%|████▎     | 191/443 [00:16<00:13, 19.10it/s]Loading weights:  44%|████▍     | 194/443 [00:16<00:17, 14.50it/s]Loading weights:  45%|████▍     | 199/443 [00:16<00:12, 19.47it/s]Loading weights:  46%|████▌     | 202/443 [00:16<00:12, 18.75it/s]Loading weights:  46%|████▋     | 205/443 [00:17<00:16, 14.52it/s]Loading weights:  47%|████▋     | 210/443 [00:17<00:11, 19.58it/s]Loading weights:  48%|████▊     | 213/443 [00:17<00:12, 18.77it/s]Loading weights:  49%|████▉     | 216/443 [00:17<00:15, 14.50it/s]Loading weights:  50%|████▉     | 221/443 [00:18<00:11, 19.59it/s]Loading weights:  51%|█████     | 224/443 [00:18<00:12, 17.25it/s]Loading weights:  51%|█████     | 227/443 [00:18<00:14, 14.66it/s]Loading weights:  52%|█████▏    | 232/443 [00:18<00:10, 19.80it/s]Loading weights:  53%|█████▎    | 235/443 [00:18<00:12, 16.32it/s]Loading weights:  54%|█████▎    | 238/443 [00:19<00:15, 13.40it/s]Loading weights:  54%|█████▍    | 241/443 [00:19<00:12, 15.56it/s]Loading weights:  56%|█████▌    | 246/443 [00:19<00:10, 18.87it/s]Loading weights:  56%|█████▌    | 249/443 [00:19<00:14, 13.69it/s]Loading weights:  57%|█████▋    | 252/443 [00:20<00:12, 15.76it/s]Loading weights:  58%|█████▊    | 257/443 [00:20<00:09, 18.97it/s]Loading weights:  59%|█████▊    | 260/443 [00:20<00:12, 14.50it/s]Loading weights:  59%|█████▉    | 262/443 [00:20<00:12, 13.96it/s]Loading weights:  60%|██████    | 266/443 [00:20<00:10, 17.53it/s]Loading weights:  61%|██████    | 269/443 [00:21<00:12, 14.48it/s]Loading weights:  61%|██████    | 271/443 [00:21<00:12, 13.80it/s]Loading weights:  62%|██████▏   | 275/443 [00:21<00:09, 17.95it/s]Loading weights:  63%|██████▎   | 279/443 [00:21<00:08, 19.32it/s]Loading weights:  64%|██████▎   | 282/443 [00:21<00:11, 14.61it/s]Loading weights:  65%|██████▍   | 287/443 [00:22<00:07, 19.91it/s]Loading weights:  65%|██████▌   | 290/443 [00:22<00:08, 19.11it/s]Loading weights:  66%|██████▌   | 293/443 [00:22<00:10, 14.49it/s]Loading weights:  67%|██████▋   | 297/443 [00:22<00:08, 17.95it/s]Loading weights:  68%|██████▊   | 301/443 [00:23<00:08, 16.55it/s]Loading weights:  69%|██████▊   | 304/443 [00:23<00:10, 13.54it/s]Loading weights:  70%|██████▉   | 308/443 [00:23<00:07, 17.06it/s]Loading weights:  70%|███████   | 312/443 [00:23<00:09, 14.11it/s]Loading weights:  71%|███████   | 314/443 [00:24<00:09, 13.63it/s]Loading weights:  72%|███████▏  | 320/443 [00:24<00:06, 19.25it/s]Loading weights:  73%|███████▎  | 323/443 [00:24<00:06, 18.97it/s]Loading weights:  74%|███████▎  | 326/443 [00:24<00:07, 14.87it/s]Loading weights:  74%|███████▍  | 329/443 [00:24<00:07, 15.15it/s]Loading weights:  75%|███████▌  | 334/443 [00:25<00:05, 19.44it/s]Loading weights:  76%|███████▌  | 337/443 [00:25<00:07, 14.88it/s]Loading weights:  77%|███████▋  | 342/443 [00:25<00:05, 19.90it/s]Loading weights:  78%|███████▊  | 345/443 [00:25<00:05, 19.02it/s]Loading weights:  79%|███████▊  | 348/443 [00:26<00:07, 12.67it/s]Loading weights:  79%|███████▉  | 352/443 [00:26<00:05, 16.08it/s]Loading weights:  80%|████████  | 356/443 [00:26<00:04, 17.77it/s]Loading weights:  81%|████████  | 359/443 [00:26<00:05, 14.02it/s]Loading weights:  82%|████████▏ | 362/443 [00:26<00:05, 14.78it/s]Loading weights:  83%|████████▎ | 367/443 [00:28<00:10,  7.42it/s]Loading weights:  83%|████████▎ | 369/443 [00:28<00:09,  7.97it/s]Loading weights:  84%|████████▍ | 374/443 [00:28<00:05, 11.80it/s]Loading weights:  85%|████████▌ | 378/443 [00:28<00:04, 13.84it/s]Loading weights:  86%|████████▌ | 381/443 [00:28<00:05, 11.89it/s]Loading weights:  87%|████████▋ | 386/443 [00:29<00:03, 16.07it/s]Loading weights:  88%|████████▊ | 389/443 [00:29<00:04, 12.93it/s]Loading weights:  88%|████████▊ | 391/443 [00:30<00:06,  8.25it/s]Loading weights:  90%|████████▉ | 397/443 [00:30<00:03, 13.27it/s]Loading weights:  90%|█████████ | 400/443 [00:30<00:03, 13.63it/s]Loading weights:  91%|█████████ | 403/443 [00:30<00:03, 12.26it/s]Loading weights:  92%|█████████▏| 407/443 [00:30<00:02, 15.68it/s]Loading weights:  93%|█████████▎| 411/443 [00:30<00:01, 17.35it/s]Loading weights:  93%|█████████▎| 414/443 [00:31<00:02, 13.95it/s]Loading weights:  94%|█████████▍| 418/443 [00:31<00:01, 17.45it/s]Loading weights:  95%|█████████▌| 422/443 [00:31<00:01, 18.85it/s]Loading weights:  96%|█████████▌| 425/443 [00:31<00:01, 14.51it/s]Loading weights:  97%|█████████▋| 428/443 [00:32<00:00, 16.69it/s]Loading weights:  98%|█████████▊| 433/443 [00:32<00:00, 16.56it/s]Loading weights:  98%|█████████▊| 436/443 [00:32<00:00, 13.60it/s]Loading weights: 100%|█████████▉| 441/443 [00:32<00:00, 18.42it/s]Loading weights: 100%|██████████| 443/443 [00:32<00:00, 13.51it/s]
+trainable params: 64,225,280 || all params: 14,832,532,480 || trainable%: 0.4330
+[sft] training on 647 samples, val=71, epochs=5, batch_size=4, lr=0.0002
+Traceback (most recent call last):
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/sft_loop.py", line 92, in <module>
+    main()
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/sft_loop.py", line 72, in main
+    history = trainer.train(
+              ^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/pipeline/SFT/sft_trainer.py", line 315, in train
+    m = self._step(batch)
+        ^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/pipeline/SFT/sft_trainer.py", line 231, in _step
+    outputs = self.engine.model(
+              ^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/lib/python3.11/site-packages/peft/peft_model.py", line 1993, in forward
+    return self.base_model(
+           ^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/lib/python3.11/site-packages/peft/tuners/tuners_utils.py", line 330, in forward
+    return self.model.forward(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/lib/python3.11/site-packages/transformers/utils/generic.py", line 903, in wrapper
+    output = func(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py", line 492, in forward
+    outputs: BaseModelOutputWithPast = self.model(
+                                       ^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/lib/python3.11/site-packages/transformers/utils/generic.py", line 1032, in wrapper
+    output = func(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/lib/python3.11/site-packages/transformers/utils/output_capturing.py", line 252, in wrapper
+    outputs = func(self, *args, **kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py", line 424, in forward
+    hidden_states = decoder_layer(
+                    ^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/lib/python3.11/site-packages/transformers/modeling_layers.py", line 93, in __call__
+    return super().__call__(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py", line 332, in forward
+    hidden_states = self.mlp(hidden_states)
+                    ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/lib/python3.11/site-packages/transformers/models/qwen3/modeling_qwen3.py", line 82, in forward
+    down_proj = self.down_proj(self.act_fn(self.gate_proj(x)) * self.up_proj(x))
+                                           ^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/gpfs/home1/akumas/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography/.venv/lib/python3.11/site-packages/peft/tuners/lora/layer.py", line 969, in forward
+    result = result + lora_B(lora_A(dropout(x))) * scaling
+                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 162.00 MiB. GPU 0 has a total capacity of 93.09 GiB of which 161.25 MiB is free. Including non-PyTorch memory, this process has 92.92 GiB memory in use. Of the allocated memory 91.16 GiB is allocated by PyTorch, and 1.10 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
