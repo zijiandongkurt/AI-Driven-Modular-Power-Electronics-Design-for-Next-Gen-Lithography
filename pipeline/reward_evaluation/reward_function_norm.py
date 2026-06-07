@@ -101,10 +101,13 @@ class RewardFunctionNorm:
         total_volume = row.get('total_volume_cm3', self.MAX_PENALTY)
         total_volume = self.MAX_PENALTY if pd.isna(total_volume) else float(total_volume)
 
-        count_mosfets    = int(row.get('count_mosfets', 0))
-        count_diodes     = int(row.get('count_diodes', 0))
-        count_inductors  = int(row.get('count_inductors', 0))
-        count_capacitors = int(row.get('count_capacitors', 0))
+        def _safe_int(val, default=0):
+            return default if (val is None or pd.isna(val)) else int(val)
+
+        count_mosfets    = _safe_int(row.get('count_mosfets', 0))
+        count_diodes     = _safe_int(row.get('count_diodes', 0))
+        count_inductors  = _safe_int(row.get('count_inductors', 0))
+        count_capacitors = _safe_int(row.get('count_capacitors', 0))
 
         # --- Raw penalty terms ---
         target_v_out = constraints.get('vout_target', 5.0)

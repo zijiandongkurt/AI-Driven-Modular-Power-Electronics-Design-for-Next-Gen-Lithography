@@ -121,7 +121,7 @@ def extract_metrics(run_folder: str) -> dict:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", type=str, default="benchmark_config.json", help="Path to benchmark config file.")
+    parser.add_argument("--config", type=str, default="configs/benchmark_config.json", help="Path to benchmark config file.")
     args = parser.parse_args()
 
     config_path = Path(args.config)

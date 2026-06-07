@@ -1,11 +1,11 @@
 """
 sft_loop.py — HPC-friendly driver for the SFT trainer.
 
-Loads configuration from sft_config.json at repo root.
+Loads configuration from configs/sft_config.json.
 
 Usage:
     python sft_loop.py
-    python sft_loop.py --config sft_config.json
+    python sft_loop.py --config configs/sft_config.json
 """
 
 from __future__ import annotations
@@ -24,7 +24,7 @@ from pipeline.SFT.sft_trainer import SFTTrainer, SFTConfig
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", type=str, default="sft_config.json")
+    parser.add_argument("--config", type=str, default="configs/sft_config.json")
     args = parser.parse_args()
 
     config_path = Path(args.config)

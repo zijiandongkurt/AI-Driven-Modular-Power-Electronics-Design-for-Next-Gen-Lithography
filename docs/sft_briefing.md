@@ -235,7 +235,7 @@ separate small project — happy to do that next if the team wants.
 - Runner: `scripts/run_sft.py` + `scripts/run_pipeline.sh sft`
 - Data: `data/sft/sft_{train,val}.jsonl`
 - Benchmark: `scripts/benchmark_sft.py` + `scripts/benchmark_sft.sh`
-- HPC ops guide: `hpc_configs/PIPELINE_GUIDE.md`
+- HPC scripts: `scripts/` (SLURM job files)
 
 <!-- speaker notes:
 Close by inviting questions on any of the four columns. If asked "why only
