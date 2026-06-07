@@ -75,8 +75,7 @@ Constraints JSON
     ├── run_sft.slurm              # SFT warm-up
     ├── run_inference.slurm        # Batch inference
     ├── run_benchmark.slurm        # Benchmark evaluation
-    ├── run_gui.slurm              # GUI/visualisation server
-    └── env.sh                     # Environment setup helper
+    └── run_gui.slurm              # GUI/visualisation server
 ```
 
 ---
@@ -92,14 +91,17 @@ Constraints JSON
 ### Install
 
 ```bash
+git lfs install
 git clone https://github.com/zijiandongkurt/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography
 cd AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography
 pip install -r requirements.txt
 ```
 
+> Checkpoints and presentations are stored with git LFS. Run `git lfs install` once per machine before cloning.
+
 ### Simulation bridge (Windows PC)
 
-Edit `simulation_config.json` with your machine paths:
+Edit `configs/simulation_config.json` with your machine paths:
 
 ```json
 {
@@ -122,7 +124,7 @@ Before every training run, start the simulation client on your PC:
 
 ## Running a Training Run
 
-All training runs on Snellius. Configure `training_config.json` then submit:
+All training runs on Snellius. Configure `configs/training_config.json` then submit:
 
 ```bash
 sbatch scripts/run_training.slurm
@@ -151,6 +153,25 @@ Key config fields:
 ```
 
 Results are written to `pipeline/data/zycos_XXX/` after each batch.
+
+---
+
+## Testing Environment (GUI)
+
+An interactive Gradio interface for generating and inspecting SPICE netlists without running the full training loop.
+
+**On Snellius:**
+```bash
+sbatch scripts/run_gui.slurm
+tail -f logs/slurm-gui-<JOBID>.out  # prints the SSH tunnel command
+```
+
+Then on your local machine run the printed tunnel command and open `http://localhost:7860`.
+
+**Locally** (no model loading — layout preview only):
+```bash
+gradio run_gui.py
+```
 
 ---
 

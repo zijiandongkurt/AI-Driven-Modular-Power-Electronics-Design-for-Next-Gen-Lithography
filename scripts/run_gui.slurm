@@ -22,5 +22,9 @@ source $HOME/AI-Driven-Modular-Power-Electronics-Design-for-Next-Gen-Lithography
 
 python -m py_compile run_gui.py
 
+echo "GUI node: $(hostname)"
+echo "SSH tunnel: ssh -L 7860:$(hostname):7860 $USER@snellius.surf.nl"
+echo "Then open:  http://localhost:7860"
+
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 python run_gui.py
