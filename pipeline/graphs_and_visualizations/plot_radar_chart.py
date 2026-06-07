@@ -81,4 +81,4 @@ def plot_radar_chart(master_results: dict, output_dir: str = "experiments"):
     filepath = Path(output_dir) / "combined_radar_profile.png"
     plt.savefig(filepath, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"🕸️ Radar plot successfully saved to: {filepath}")
+    print(f" Radar plot successfully saved to: {filepath}")

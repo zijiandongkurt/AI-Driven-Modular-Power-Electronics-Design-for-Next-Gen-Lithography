@@ -52,15 +52,15 @@ import torch
 # ignore_index=-100, so we just unpack `outputs.loss`.
 
 
-# ────────────────────────────────────────────────────────────────────────
+# 
 # Config
-# ────────────────────────────────────────────────────────────────────────
+# 
 
 @dataclass
 class SFTConfig:
     """Hyperparameters for supervised fine-tuning on (prompt, netlist) pairs."""
 
-    # ── LoRA (same as RLConfig) ────────────────────────────────────────
+    #  LoRA (same as RLConfig) 
     lora_r: int = 16
     lora_alpha: int = 32
     lora_dropout: float = 0.05
@@ -71,28 +71,28 @@ class SFTConfig:
         ]
     )
 
-    # ── Training (SFT-specific) ────────────────────────────────────────
+    #  Training (SFT-specific) 
     learning_rate: float = 2e-4    # ← bigger than GRPO's 2e-5 (SFT signal is stronger)
     max_grad_norm: float = 1.0
     batch_size: int = 4            # samples per optimizer step
     epochs: int = 5
     eval_every_epochs: int = 1     # run val pass every N epochs
 
-    # ── Sequence (same as RLConfig) ────────────────────────────────────
+    #  Sequence (same as RLConfig) 
     max_length: int = 2048
     max_prompt_length: int = 1536
     max_completion_length: int = 1024
 
-    # ── Runtime ────────────────────────────────────────────────────────
+    #  Runtime 
     bf16: bool = True
     gradient_checkpointing: bool = True
     seed: int = 42
     output_dir: str = "./checkpoints/sft-lora"
 
 
-# ────────────────────────────────────────────────────────────────────────
+# 
 # Trainer
-# ────────────────────────────────────────────────────────────────────────
+# 
 
 class SFTTrainer:
     """Fine-tune a model with next-token cross-entropy on (prompt, netlist) pairs.
@@ -102,7 +102,7 @@ class SFTTrainer:
     reloading the model.
     """
 
-    # ── Initialization ────────────────────────────────────────────────
+    #  Initialization 
 
     def __init__(self, engine, config: Optional[SFTConfig] = None):
 
@@ -143,7 +143,7 @@ class SFTTrainer:
             self.engine.tokenizer.pad_token = self.engine.tokenizer.eos_token
             self.engine.tokenizer.pad_token_id = self.engine.tokenizer.eos_token_id
 
-    # ── Helpers ───────────────────────────────────────────────────────
+    #  Helpers 
 
     def _device(self):
         return self.engine.model.device
@@ -228,7 +228,7 @@ class SFTTrainer:
             "attention_mask": torch.tensor(masks,  dtype=torch.long, device=device),
         }
 
-    # ── Single optimizer step ─────────────────────────────────────────
+    #  Single optimizer step 
 
     def _step(self, batch_samples: List[dict]) -> dict:
         """Run one AdamW step on a list of prompt/completion dicts.
@@ -281,7 +281,7 @@ class SFTTrainer:
             "n_loss_tokens": n_loss_tokens,
         }
 
-    # ── Eval (no grad) ────────────────────────────────────────────────
+    #  Eval (no grad) 
 
     @torch.no_grad()
     def evaluate(self, samples: List[dict]) -> float:
@@ -317,7 +317,7 @@ class SFTTrainer:
         self.engine.model.train()
         return total_loss / max(total_tokens, 1)
 
-    # ── Main training loop ────────────────────────────────────────────
+    #  Main training loop 
 
     def train(
         self,
@@ -385,11 +385,11 @@ class SFTTrainer:
             if val_samples and (epoch % self.cfg.eval_every_epochs == 0):
                 val_loss = self.evaluate(val_samples)
                 entry["val_loss"] = val_loss
-                print(f"[sft] ── epoch {epoch}/{n_epochs} ── "
+                print(f"[sft]  epoch {epoch}/{n_epochs}  "
                       f"train_loss={train_loss:.4f} val_loss={val_loss:.4f} "
                       f"({dt:.1f}s)", flush=True)
             else:
-                print(f"[sft] ── epoch {epoch}/{n_epochs} ── "
+                print(f"[sft]  epoch {epoch}/{n_epochs}  "
                       f"train_loss={train_loss:.4f} ({dt:.1f}s)", flush=True)
 
             history.append(entry)
@@ -397,7 +397,7 @@ class SFTTrainer:
 
         return history
 
-    # ── Save / load helpers ───────────────────────────────────────────
+    #  Save / load helpers 
 
     def save(self, path: Optional[str] = None) -> Path:
         """Save the LoRA adapter and tokenizer to disk.
@@ -444,9 +444,9 @@ class SFTTrainer:
         return out
 
 
-# ────────────────────────────────────────────────────────────────────────
+# 
 # CLI entry point: `python -m pipeline.reinforcement_algorithm.sft_trainer ...`
-# ────────────────────────────────────────────────────────────────────────
+# 
 
 def _main():
     import argparse, os

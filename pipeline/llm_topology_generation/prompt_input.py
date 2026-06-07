@@ -19,7 +19,7 @@ import json
 from pathlib import Path
 
 
-# ── System prompt ────────────────────────────────────────────────────────
+#  System prompt 
 #
 # Defines the model's role, allowed components, fixed rules, required nodes,
 # and output format. Injected into every prompt.

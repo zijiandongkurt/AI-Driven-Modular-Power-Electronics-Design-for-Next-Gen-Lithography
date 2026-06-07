@@ -18,7 +18,7 @@ from training_loop_random import (
 )
 
 
-# ── parse_group_id ────────────────────────────────────────────────────────────
+#  parse_group_id 
 
 class TestParseGroupId:
     def test_standard_name(self):
@@ -37,7 +37,7 @@ class TestParseGroupId:
         assert parse_group_id("Phase1_g12_cand3_b2") == "g12"
 
 
-# ── get_next_zycos_folder ─────────────────────────────────────────────────────
+#  get_next_zycos_folder 
 
 class TestGetNextZycosFolder:
     def test_empty_directory_returns_001(self, tmp_path):
@@ -67,7 +67,7 @@ class TestGetNextZycosFolder:
         assert new_dir.exists()
 
 
-# ── load_reward_data ──────────────────────────────────────────────────────────
+#  load_reward_data 
 
 class TestLoadRewardData:
     def test_returns_empty_circuits_when_missing(self, tmp_path, monkeypatch):
@@ -95,7 +95,7 @@ class TestLoadRewardData:
         assert result == {"circuits": {}}
 
 
-# ── save_history ──────────────────────────────────────────────────────────────
+#  save_history 
 
 class TestSaveHistory:
     def test_roundtrip(self, tmp_path):
@@ -115,7 +115,7 @@ class TestSaveHistory:
         assert saved == []
 
 
-# ── _softmax_sample_from_pool ─────────────────────────────────────────────────
+#  _softmax_sample_from_pool 
 
 class TestSoftmaxSampleFromPool:
     def _make_pool(self, fitnesses):
@@ -145,7 +145,7 @@ class TestSoftmaxSampleFromPool:
         assert counts.get("c2", 0) > 150
 
 
-# ── epsilon_greedy_topk_sample_parents ───────────────────────────────────────
+#  epsilon_greedy_topk_sample_parents 
 
 class TestEpsilonGreedyTopkSampleParents:
     def _make_history(self, n, base_fitness=0.5):

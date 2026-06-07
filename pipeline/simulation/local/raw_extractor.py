@@ -95,23 +95,23 @@ class RawExtractor:
 
                 row = {"source_file": raw_path.stem, "step": step}
 
-                # ── Output voltage ────────────────────────────────────────────────
+                #  Output voltage 
                 if "v(out)" in df_ss:
                     v_out_vals                  = df_ss["v(out)"].values
                     row["voltage_out_mean_V"]   = np.trapezoid(v_out_vals, t) / t_span
                     row["voltage_out_ripple_V"] = v_out_vals.max() - v_out_vals.min()
 
-                # ── Input voltage ─────────────────────────────────────────────────
+                #  Input voltage 
                 if "v(in)" in df_ss:
                     v_in_vals                  = df_ss["v(in)"].values
                     row["voltage_in_mean_V"]   = np.trapezoid(v_in_vals, t) / t_span
                     row["voltage_in_ripple_V"] = v_in_vals.max() - v_in_vals.min()
 
-                # ── Conversion ratio ──────────────────────────────────────────────
+                #  Conversion ratio 
                 if "voltage_out_mean_V" in row and "voltage_in_mean_V" in row and row["voltage_in_mean_V"] != 0:
                     row["conversion_ratio"] = row["voltage_out_mean_V"] / row["voltage_in_mean_V"]
 
-                # ── Inductor current ──────────────────────────────────────────────
+                #  Inductor current 
                 i_l_cols = [c for c in df_ss.columns if c.startswith("i(l")]
                 if i_l_cols:
                     all_mean, all_rms, all_peak, all_ripple, all_min = [], [], [], [], []
@@ -128,7 +128,7 @@ class RawExtractor:
                     row["inductor_current_ripple_A"] = max(all_ripple)
                     row["is_ccm"]                    = int(min(all_min) > 1e-6)
 
-                # ── Switching frequency ───────────────────────────────────────────
+                #  Switching frequency 
                 f_sw = meta.get("switching_freq_Hz", float("nan"))
                 if np.isnan(f_sw) and i_l_cols:
                     i_l_vals = df_ss[i_l_cols[0]].values
@@ -140,14 +140,14 @@ class RawExtractor:
                         f_sw = float(1.0 / np.diff(t[peaks]).mean())
                 row["switching_freq_Hz"] = f_sw
 
-                # ── Output power ──────────────────────────────────────────────────
+                #  Output power 
                 i_load_col = next((c for c in df_ss.columns if "rload" in c or "r_load" in c), None)
                 if i_load_col and "voltage_out_mean_V" in row:
                     i_load_vals                = df_ss[i_load_col].values
                     row["load_current_mean_A"] = abs(np.trapezoid(i_load_vals, t) / t_span)
                     row["power_out_W"]         = row["voltage_out_mean_V"] * row["load_current_mean_A"]
 
-                # ── Input power & efficiency ──────────────────────────────────────
+                #  Input power & efficiency 
                 if "v(in)" in df_ss.columns:
                     v_in_vals = df_ss["v(in)"].values
                     i_in_cols = [c for c in df_ss.columns if c.startswith("i(v") and "in" in c]
@@ -159,7 +159,7 @@ class RawExtractor:
                             if "power_out_W" in row:
                                 row["efficiency"] = row["power_out_W"] / row["power_in_W"]
 
-                # ── Losses & thermal ──────────────────────────────────────────────
+                #  Losses & thermal 
                 if "power_in_W" in row and "power_out_W" in row:
                     p_loss              = row["power_in_W"] - row["power_out_W"]
                     row["power_loss_W"] = p_loss
@@ -171,12 +171,12 @@ class RawExtractor:
                         row["heatsink_thermal_resistance_CW"] = float("inf")
                         row["heatsink_volume_cm3"]            = 0.0
 
-                # ── Switch voltage stress ─────────────────────────────────────────
+                #  Switch voltage stress 
                 v_ds_cols = [c for c in df_ss.columns if c == "v(sw)" or re.match(r'v\(sw\d+\)', c) or c == "v(ds)"]
                 if v_ds_cols:
                     row["switch_voltage_peak_V"] = max(df_ss[c].abs().max() for c in v_ds_cols)
 
-                # ── Switch current stress ─────────────────────────────────────────
+                #  Switch current stress 
                 i_sw_cols = [c for c in df_ss.columns if c.startswith("id(m")]
                 if i_sw_cols:
                     sw_peaks, sw_rms = [], []
@@ -187,15 +187,15 @@ class RawExtractor:
                     row["switch_current_peak_A"] = max(sw_peaks)
                     row["switch_current_rms_A"]  = max(sw_rms)
 
-                # ── Inductor volume surrogate ─────────────────────────────────────
+                #  Inductor volume surrogate 
                 if l_values:
                     row["inductor_volume_cm3"] = K_L * sum(l_values)
 
-                # ── Total converter volume ────────────────────────────────────────
+                #  Total converter volume 
                 if "inductor_volume_cm3" in row and "heatsink_volume_cm3" in row:
                     row["total_volume_cm3"] = V_FIXED + row["inductor_volume_cm3"] + row["heatsink_volume_cm3"]
 
-                # ── Component counts ──────────────────────────────────────────────
+                #  Component counts 
                 row["count_mosfets"]    = counts.get("M", 0)
                 row["count_diodes"]     = counts.get("D", 0)
                 row["count_inductors"]  = counts.get("L", 0)

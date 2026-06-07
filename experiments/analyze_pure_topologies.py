@@ -90,14 +90,14 @@ def analyze_topologies():
     output_lines.append("=== PURE STRUCTURAL TOPOLOGY EXPLORATION COUNTS ===\n")
     output_lines.append("Note: This counts EVERY topology explored (Valid + Invalid), ignoring component values.\n\n")
 
-    print("🔍 Scanning zycos_008 through zycos_010...")
+    print(" Scanning zycos_008 through zycos_010...")
 
     for i in range(8, 11):
         zycos_name = f"zycos_{i:03d}"
         zycos_dir = os.path.join(DATA_DIR, zycos_name)
         
         if not os.path.exists(zycos_dir):
-            print(f"  ⚠️ Skipping {zycos_name} (Directory not found)")
+            print(f"   Skipping {zycos_name} (Directory not found)")
             continue
             
         output_lines.append(f"[ {zycos_name} ]")
@@ -130,7 +130,7 @@ def analyze_topologies():
             output_lines.append(f"  -> {run_name}: {len(run_hashes)} unique structures explored")
             
         output_lines.append(f"  >> GLOBAL FOR {zycos_name}: {len(zycos_global_hashes)} unique structures\n")
-        print(f"  ✅ {zycos_name} processed.")
+        print(f"   {zycos_name} processed.")
 
     output_lines.append("=" * 60)
     output_lines.append(f"GRAND TOTAL UNIQUE STRUCTURES (zycos 5-9): {len(grand_total_hashes)}")
@@ -140,7 +140,7 @@ def analyze_topologies():
     with open(output_path, "w", encoding="utf-8") as f:
         f.write("\n".join(output_lines))
         
-    print(f"\n🎉 Done! Results saved to: {output_path}")
+    print(f"\n Done! Results saved to: {output_path}")
 
 if __name__ == "__main__":
     analyze_topologies()

@@ -37,13 +37,13 @@ from pipeline.llm_topology_generation.prompt_input import (
 from pipeline.llm_topology_generation.net_writer import write_netlists
 
 
-# ────────────────────────────────────────────────────────────────────────
+# 
 # 52 SAMPLES — one entry per netlist, grouped by constraint_idx
-# ────────────────────────────────────────────────────────────────────────
+# 
 
 SAMPLES: list[dict] = [
 
-# ── IDX 0: Vin 12-100V → 5V, 100W (buck) ───────────────────────────────
+#  IDX 0: Vin 12-100V → 5V, 100W (buck) 
 {"idx": 0, "tag": "12V-async",
  "net": """\
 * 12V to 5V async buck, 100W, 100kHz
@@ -112,7 +112,7 @@ Vgate gate 0 PULSE(0 12 0 1n 1n 2u 20u)
 .tran 1n 5m
 .end"""},
 
-# ── IDX 1: Vin 208-400V → 24V, 500W (buck) ─────────────────────────────
+#  IDX 1: Vin 208-400V → 24V, 500W (buck) 
 {"idx": 1, "tag": "240V-async",
  "net": """\
 * 240V to 24V async buck, 500W, 100kHz
@@ -182,7 +182,7 @@ Vgate2 gate2 0 PULSE(0 12 5u 1n 1n 800n 10u)
 .tran 1n 5m
 .end"""},
 
-# ── IDX 2: Vin 220-380V → 12V, 300W (buck) ─────────────────────────────
+#  IDX 2: Vin 220-380V → 12V, 300W (buck) 
 {"idx": 2, "tag": "220V-async",
  "net": """\
 * 220V to 12V async buck, 300W, 100kHz
@@ -251,7 +251,7 @@ Vgate2 gate2 0 PULSE(0 12 5u 1n 1n 480n 10u)
 .tran 1n 5m
 .end"""},
 
-# ── IDX 3: Vin 230-400V → 5V, 150W (buck) ──────────────────────────────
+#  IDX 3: Vin 230-400V → 5V, 150W (buck) 
 {"idx": 3, "tag": "230V-async",
  "net": """\
 * 230V to 5V async buck, 150W
@@ -317,7 +317,7 @@ Vgate2 gate2 0 PULSE(0 12 300n 1n 1n 9.5u  10u)
 .tran 1n 5m
 .end"""},
 
-# ── IDX 4: Vin 208-277V → 3.3V, 100W (buck) ────────────────────────────
+#  IDX 4: Vin 208-277V → 3.3V, 100W (buck) 
 {"idx": 4, "tag": "208V-async",
  "net": """\
 * 208V to 3.3V async buck, 100W
@@ -383,7 +383,7 @@ Vgate2 gate2 0 PULSE(0 12 300n 1n 1n 9.5u  10u)
 .tran 1n 5m
 .end"""},
 
-# ── IDX 5: Vin 12-24V → 380V, 400W (boost) ─────────────────────────────
+#  IDX 5: Vin 12-24V → 380V, 400W (boost) 
 {"idx": 5, "tag": "12V-boost",
  "net": """\
 * 12V to 380V boost, 400W, 100kHz
@@ -452,7 +452,7 @@ Vgate gate 0 PULSE(0 12 0 1n 1n 9.68u 10u)
 .tran 1n 5m
 .end"""},
 
-# ── IDX 6: Vin 9-12V → 220V, 250W (boost) ──────────────────────────────
+#  IDX 6: Vin 9-12V → 220V, 250W (boost) 
 {"idx": 6, "tag": "9V-boost",
  "net": """\
 * 9V to 220V boost, 250W, 100kHz
@@ -520,7 +520,7 @@ Vgate gate 0 PULSE(0 12 0 1n 1n 9.59u 10u)
 .tran 1n 5m
 .end"""},
 
-# ── IDX 7: Vin 5-9V → 208V, 100W (boost) ───────────────────────────────
+#  IDX 7: Vin 5-9V → 208V, 100W (boost) 
 {"idx": 7, "tag": "5V-boost",
  "net": """\
 * 5V to 208V boost, 100W, 100kHz
@@ -588,7 +588,7 @@ Vgate gate 0 PULSE(0 12 0 1n 1n 9.76u 10u)
 .tran 1n 5m
 .end"""},
 
-# ── IDX 8: Vin 12-24V → 400V, 500W (boost) ─────────────────────────────
+#  IDX 8: Vin 12-24V → 400V, 500W (boost) 
 {"idx": 8, "tag": "12V-boost",
  "net": """\
 * 12V to 400V boost, 500W, 100kHz
@@ -656,7 +656,7 @@ Vgate gate 0 PULSE(0 12 0 1n 1n 9.4u 10u)
 .tran 1n 5m
 .end"""},
 
-# ── IDX 9: Vin 9-36V → 24V, 200W (buck-boost, SEPIC) ───────────────────
+#  IDX 9: Vin 9-36V → 24V, 200W (buck-boost, SEPIC) 
 {"idx": 9, "tag": "12V-SEPIC",
  "net": """\
 * 12V to 24V SEPIC buck-boost, 200W, 100kHz
@@ -737,7 +737,7 @@ Vgate gate 0 PULSE(0 12 0 1n 1n 5.71u 10u)
 .tran 1n 5m
 .end"""},
 
-# ── IDX 10: Vin 208-480V → 380V, 450W (buck-boost, SEPIC) ──────────────
+#  IDX 10: Vin 208-480V → 380V, 450W (buck-boost, SEPIC) 
 {"idx": 10, "tag": "240V-SEPIC",
  "net": """\
 * 240V to 380V SEPIC, 450W, 100kHz (boost-mode: Vin < Vout)
@@ -817,7 +817,7 @@ Vgate gate 0 PULSE(0 12 0 1n 1n 5.21u 10u)
 .tran 1n 5m
 .end"""},
 
-# ── IDX 11: Vin 12-48V → 36V, 350W (buck-boost, SEPIC) ─────────────────
+#  IDX 11: Vin 12-48V → 36V, 350W (buck-boost, SEPIC) 
 {"idx": 11, "tag": "24V-SEPIC",
  "net": """\
 * 24V to 36V SEPIC, 350W (boost-ish)
@@ -897,7 +897,7 @@ Vgate gate 0 PULSE(0 12 0 1n 1n 7.5u 10u)
 .tran 1n 5m
 .end"""},
 
-# ── IDX 12: Vin 100-277V → 220V, 300W (buck-boost, SEPIC) ──────────────
+#  IDX 12: Vin 100-277V → 220V, 300W (buck-boost, SEPIC) 
 {"idx": 12, "tag": "150V-SEPIC",
  "net": """\
 * 150V to 220V SEPIC, 300W (boost-mode)
@@ -979,9 +979,9 @@ Vgate gate 0 PULSE(0 12 0 1n 1n 5.24u 10u)
 ]
 
 
-# ────────────────────────────────────────────────────────────────────────
+# 
 # Main: write canonical batches + final JSONL, then run validator
-# ────────────────────────────────────────────────────────────────────────
+# 
 
 def main():
     """Write hand-crafted SFT pairs to disk and run the validator on each batch.
@@ -1006,9 +1006,9 @@ def main():
     for idx, group in sorted(by_idx.items()):
         constraint = constraints[idx]
         batch_id = f"batch_sft_claude_inline_idx{idx}"
-        print(f"\n── idx={idx}  vin {constraint.get('vin_min')}-{constraint.get('vin_max')}V "
+        print(f"\n idx={idx}  vin {constraint.get('vin_min')}-{constraint.get('vin_max')}V "
               f"→ {constraint.get('vout_target')}V, {constraint.get('power_in')}W  "
-              f"({len(group)} samples) ──")
+              f"({len(group)} samples) ")
 
         netlists = [g["net"] for g in group]
         written = write_netlists(netlists=netlists, batchID=batch_id)

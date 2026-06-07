@@ -24,7 +24,7 @@ def process_zycos_run(zycos_name):
     zycos_dir = os.path.join(DATA_DIR, zycos_name)
     
     if not os.path.exists(zycos_dir):
-        print(f"⚠️ Directory not found: {zycos_dir}. Skipping...")
+        print(f" Directory not found: {zycos_dir}. Skipping...")
         return
         
     results_dir = os.path.join(zycos_dir, 'results')
@@ -33,12 +33,12 @@ def process_zycos_run(zycos_name):
     run_folders = sorted(glob.glob(os.path.join(zycos_dir, 'Run_*')), key=lambda x: extract_run_number(os.path.basename(x)))
     
     if not run_folders:
-        print(f"⚠️ No Run folders found in {zycos_name}. Skipping...")
+        print(f" No Run folders found in {zycos_name}. Skipping...")
         return
 
     run_numbers, v_errors, abs_v_errors, v_err_pcts, eff_errors, volumes, components = [], [], [], [], [], [], []
 
-    print(f"\n🔍 Scanning {zycos_name} for Best Candidates:")
+    print(f"\n Scanning {zycos_name} for Best Candidates:")
     for run_folder in run_folders:
         run_idx = extract_run_number(os.path.basename(run_folder))
         history_file = os.path.join(run_folder, 'history_db.json')
@@ -123,7 +123,7 @@ def process_zycos_run(zycos_name):
     if not run_numbers:
         return
         
-    print(f"📊 Generating plots for {zycos_name}...")
+    print(f" Generating plots for {zycos_name}...")
     
     def plot_individual(x, y, title, ylabel, filename, color='blue', is_log=False, hline_y=None, hline_name='Target Met', limit_type='lower', y_max=None, y_min=None):
         plt.figure(figsize=(10, 6))
@@ -168,7 +168,7 @@ def process_zycos_run(zycos_name):
         try:
             plt.savefig(out_path, dpi=300, bbox_inches='tight')
         except PermissionError:
-            print(f"❌ PERMISSION ERROR: Cannot overwrite {filename}. Close the image in VS Code and try again!")
+            print(f" PERMISSION ERROR: Cannot overwrite {filename}. Close the image in VS Code and try again!")
             
         plt.close()
         
@@ -239,9 +239,9 @@ def process_zycos_run(zycos_name):
     out_path_2x2 = os.path.join(results_dir, "cs_summary_2x2.png")
     try:
         plt.savefig(out_path_2x2, dpi=300, bbox_inches='tight')
-        print(f"✅ Constraint Satisfaction plots saved to {results_dir}")
+        print(f" Constraint Satisfaction plots saved to {results_dir}")
     except PermissionError:
-        print(f"❌ PERMISSION ERROR: Cannot overwrite cs_summary_2x2.png! Close it in VS Code and try again.")
+        print(f" PERMISSION ERROR: Cannot overwrite cs_summary_2x2.png! Close it in VS Code and try again.")
         
     plt.close()
 

@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 
-# ── Per-component loss caps ───────────────────────────────────────────────
+#  Per-component loss caps 
 # These define the "worst realistic case" for each loss term.
 # Anything above the cap is treated as equally bad — prevents one runaway
 # term (e.g. volume=20000) from drowning the gradient signal from others.
@@ -53,7 +53,7 @@ class RewardFunctionNorm:
     def __init__(self):
         self.MAX_PENALTY = 10000.0
 
-    # ── Validation reward (invalid topologies) ───────────────────────────
+    #  Validation reward (invalid topologies) 
 
     def validation_reward(self, checks: dict) -> float:
         """Convert a validation checks dict into a scalar reward in [-1.0, -0.5].
@@ -78,7 +78,7 @@ class RewardFunctionNorm:
         # score in [0, 1] → remap to [-1.0, -0.5]
         return -1.0 + (score * 0.5)
 
-    # ── Simulation reward (valid topologies) ─────────────────────────────
+    #  Simulation reward (valid topologies) 
 
     def calculate_loss(self, row, constraints, weights):
         """Compute weighted loss from simulation metrics.
@@ -217,7 +217,7 @@ class RewardFunctionNorm:
 
         return float(reward), details
 
-    # ── Batch normalization for GRPO ─────────────────────────────────────
+    #  Batch normalization for GRPO 
 
     def normalize_group_rewards(self, rewards: dict) -> dict:
         """Normalize a group of rewards for GRPO using z-score, clamped to [-1, 1].
@@ -240,7 +240,7 @@ class RewardFunctionNorm:
 
         return {name: float(normalized[i]) for i, name in enumerate(names)}
 
-    # ── CSV → JSON pipeline step ──────────────────────────────────────────
+    #  CSV → JSON pipeline step 
 
     def process_csv_to_json(
         self,
@@ -347,7 +347,7 @@ class RewardFunctionNorm:
 
         return json_string, output_json_path
 
-    # ── Pipeline entry point ──────────────────────────────────────────────
+    #  Pipeline entry point 
 
     def process_batch(self, batchID, constraints, weights, include_detailed_metrics=True):
         """Standard pipeline entry point. Reads and writes from data/<batchID>/."""

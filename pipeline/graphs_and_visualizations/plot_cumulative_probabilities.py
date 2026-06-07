@@ -33,7 +33,7 @@ def plot_cumulative_probabilities(run_id: str, target_batch: int, temperature: f
     """
     data_dir = Path("pipeline/data") / run_id
     if not data_dir.exists():
-        print(f"❌ Error: {data_dir} not found.")
+        print(f" Error: {data_dir} not found.")
         return
 
     records = {}

@@ -53,4 +53,4 @@ def plot_combined_fitness(master_results: dict, output_dir: str = "experiments")
     filepath = Path(output_dir) / "combined_max_fitness_benchmark.png"
     plt.savefig(filepath, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"📊 Global boxplot successfully saved to: {filepath}")
+    print(f" Global boxplot successfully saved to: {filepath}")

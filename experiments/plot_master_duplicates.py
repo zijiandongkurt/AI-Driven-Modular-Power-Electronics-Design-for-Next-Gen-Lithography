@@ -20,10 +20,10 @@ def generate_master_duplicate_plot(zycos_folder: str):
     run_folders = sorted([d for d in base_dir.iterdir() if d.is_dir() and d.name.startswith("Run_")])
     
     if not run_folders:
-        print(f"❌ No Run_XXX folders found inside {base_dir}")
+        print(f" No Run_XXX folders found inside {base_dir}")
         return
 
-    print(f"🔍 Analyzing mode collapse across {len(run_folders)} runs...")
+    print(f" Analyzing mode collapse across {len(run_folders)} runs...")
 
     # Dictionary to aggregate duplicate counts
     # Structure: { batch_number: [dup_count_run1, dup_count_run2, ...] }
@@ -40,10 +40,10 @@ def generate_master_duplicate_plot(zycos_folder: str):
                 global_duplicates[b_num].append(count)
                 
         except Exception as e:
-            print(f"⚠️ Error reading duplicates for {run_dir.name}: {e}")
+            print(f" Error reading duplicates for {run_dir.name}: {e}")
 
     if not global_duplicates:
-        print("❌ Could not extract any duplicate data.")
+        print(" Could not extract any duplicate data.")
         return
 
     # Sort batches chronologically
@@ -82,7 +82,7 @@ def generate_master_duplicate_plot(zycos_folder: str):
     plt.savefig(out_file, dpi=300, bbox_inches='tight')
     plt.close()
     
-    print(f"✅ Success! Master duplicate plot saved to: {out_file}")
+    print(f" Success! Master duplicate plot saved to: {out_file}")
 
 if __name__ == "__main__":
     # Point this to your main training folder

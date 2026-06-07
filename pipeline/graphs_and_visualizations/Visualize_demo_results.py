@@ -52,7 +52,7 @@ def get_sampled_parents(batch_folder):
 def plot_run_results(run_dir):
     batch_folders = sorted(glob.glob(os.path.join(run_dir, 'batch_*')), key=lambda x: extract_batch_number(os.path.basename(x)))
     if not batch_folders:
-        print(f"  ⚠️ No batch folders found in {run_dir}. Skipping.")
+        print(f"   No batch folders found in {run_dir}. Skipping.")
         return
 
     results_dir = os.path.join(run_dir, 'results')
@@ -297,7 +297,7 @@ def plot_run_results(run_dir):
         plt.savefig(os.path.join(results_dir, '0_summary_yield_rates.png'), dpi=300, bbox_inches='tight')
         plt.close()
     except Exception as e:
-        print(f"  ⚠️ Could not generate yield plot: {e}")
+        print(f"   Could not generate yield plot: {e}")
 
     plt.figure(figsize=(11, 7))
     plt.plot(batches, batch_avg_fitness, label='Batch Avg Fitness', marker='o', linestyle='-', color='royalblue', alpha=0.7)
@@ -315,7 +315,7 @@ def plot_run_results(run_dir):
     plt.savefig(os.path.join(results_dir, '0_summary_fitness.png'), dpi=300, bbox_inches='tight')
     plt.close()
     
-    print(f"  ✅ Completed swarm visualizations for {os.path.basename(run_dir)}")
+    print(f"   Completed swarm visualizations for {os.path.basename(run_dir)}")
 
 if __name__ == '__main__':
     SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -326,13 +326,13 @@ if __name__ == '__main__':
     session_path = os.path.join(DATA_DIR, target_session)
     
     if not os.path.exists(session_path):
-        print(f"❌ Could not find session folder at: {session_path}")
+        print(f" Could not find session folder at: {session_path}")
     else:
-        print(f"🔍 Found session {target_session}. Extracting data from all runs...")
+        print(f" Found session {target_session}. Extracting data from all runs...")
         run_folders = sorted(glob.glob(os.path.join(session_path, 'Run_*')))
         
         for run_dir in run_folders:
             print(f"\n[{os.path.basename(run_dir)}]")
             plot_run_results(run_dir)
             
-        print(f"\n🎉 Done! All {len(run_folders)} runs have been fully visualized.")
+        print(f"\n Done! All {len(run_folders)} runs have been fully visualized.")

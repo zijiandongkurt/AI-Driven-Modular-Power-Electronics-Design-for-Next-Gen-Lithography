@@ -126,11 +126,11 @@ def run_inference(config: dict) -> str:
     )
 
     print(f"\n{'='*50}")
-    print(f"🚀 Starting Iterative Inference Loop: {run_folder_name}")
-    print(f"🧠 Model: {MODEL_ID}")
-    print(f"🎯 Constraint: {custom_label}")
+    print(f" Starting Iterative Inference Loop: {run_folder_name}")
+    print(f" Model: {MODEL_ID}")
+    print(f" Constraint: {custom_label}")
     if LORA_PATH:
-        print(f"🔧 LoRA: {LORA_PATH}")
+        print(f" LoRA: {LORA_PATH}")
     print(f"{'='*50}\n")
 
     run_start_time = time.time()
@@ -219,14 +219,14 @@ def run_inference(config: dict) -> str:
 
     if not UPDATE_PLOTS and plot_run_results:
         t_final_plot = time.time()
-        print("\n📊 Generating final run plots...")
+        print("\n Generating final run plots...")
         plot_run_results(str(run_folder_path))
         profiling["logging_and_plotting"] += (time.time() - t_final_plot)
 
     run_duration = time.time() - run_start_time
 
     print(f"\n{'='*50}")
-    print(f"⏱️  PIPELINE PROFILING REPORT")
+    print(f"PIPELINE PROFILING REPORT")
     print(f"{'='*50}")
     for step, duration in profiling.items():
         percentage = (duration / run_duration) * 100

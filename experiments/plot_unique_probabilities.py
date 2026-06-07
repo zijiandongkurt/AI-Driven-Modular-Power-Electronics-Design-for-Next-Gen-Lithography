@@ -47,7 +47,7 @@ def plot_unique_probabilities(run_folder: str, target_batch: int, temp=0.05, top
     records = get_unique_database(data_dir, target_batch)
     
     if not records:
-        print(f"⚠️ Database empty before Batch {target_batch} in {data_dir.name}")
+        print(f" Database empty before Batch {target_batch} in {data_dir.name}")
         return
 
     # Setup the new output directory
@@ -112,7 +112,7 @@ def plot_unique_probabilities(run_folder: str, target_batch: int, temp=0.05, top
     
     plt.savefig(out_dir / f"cumulative_entering_batch_{target_batch}.png", dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"✅ Generated Unique Probability Plots -> {out_dir.relative_to(PROJECT_ROOT)}")
+    print(f" Generated Unique Probability Plots -> {out_dir.relative_to(PROJECT_ROOT)}")
 
 if __name__ == "__main__":
     TARGET_ZYCOS = PROJECT_ROOT / "pipeline" / "data" / "zycos_006"
@@ -120,7 +120,7 @@ if __name__ == "__main__":
     # Find all Run_XXX folders and sort them
     run_folders = sorted([d for d in TARGET_ZYCOS.iterdir() if d.is_dir() and d.name.startswith("Run_")])
     
-    print(f"🔍 Found {len(run_folders)} runs in {TARGET_ZYCOS.name}. Generating probability plots...")
+    print(f" Found {len(run_folders)} runs in {TARGET_ZYCOS.name}. Generating probability plots...")
     
     for run_dir in run_folders:
         print(f"\n--- Processing {run_dir.name} ---")
@@ -130,7 +130,7 @@ if __name__ == "__main__":
         num_batches = len(batch_folders)
         
         if num_batches == 0:
-            print(f"  ⚠️ No batches found in {run_dir.name}")
+            print(f"   No batches found in {run_dir.name}")
             continue
             
         # Generate a plot for entering Batch 2, 3, 4 ... up to (Total Batches + 1)

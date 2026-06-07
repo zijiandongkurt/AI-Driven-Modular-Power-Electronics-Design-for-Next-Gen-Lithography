@@ -21,7 +21,7 @@ from pipeline.simulation.local.raw_extractor import (
 )
 
 
-# ── Gashi et al. model constants ─────────────────────────────────────────────
+#  Gashi et al. model constants 
 
 class TestVolumeModelConstants:
     def test_inductor_scaling_constant(self):
@@ -39,7 +39,7 @@ class TestVolumeModelConstants:
         assert R_TH_JC == pytest.approx(1.5)
 
 
-# ── Inductor volume surrogate: V_ind = K_L * sum(l_values) ───────────────────
+#  Inductor volume surrogate: V_ind = K_L * sum(l_values) 
 
 class TestInductorVolume:
     def test_single_inductor(self):
@@ -63,7 +63,7 @@ class TestInductorVolume:
         assert v_ind == 0.0
 
 
-# ── Thermal resistance formula: r_th_req = (T_MAX - T_AMB) / p_loss - R_TH_JC ─
+#  Thermal resistance formula: r_th_req = (T_MAX - T_AMB) / p_loss - R_TH_JC 
 
 class TestThermalResistance:
     def _r_th(self, p_loss):
@@ -91,7 +91,7 @@ class TestThermalResistance:
         assert r < 0
 
 
-# ── Heatsink volume surrogate: V_hs = K_H / r_th_req ────────────────────────
+#  Heatsink volume surrogate: V_hs = K_H / r_th_req 
 
 class TestHeatsinkVolume:
     def _r_th(self, p_loss):
@@ -128,7 +128,7 @@ class TestHeatsinkVolume:
         assert heatsink_vol == 0.0
 
 
-# ── Total volume: V_total = V_FIXED + V_ind + V_hs ───────────────────────────
+#  Total volume: V_total = V_FIXED + V_ind + V_hs 
 
 class TestTotalVolume:
     def test_total_is_sum_of_three_terms(self):

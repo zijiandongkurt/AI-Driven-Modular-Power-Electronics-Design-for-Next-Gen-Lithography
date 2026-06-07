@@ -46,7 +46,7 @@ def plot_pareto_scatter(master_results: dict, output_dir: str = "experiments"):
 
     plt.gca().invert_xaxis()
     plt.title('Physical Trade-Off Profile (Pareto Frontier)\nAll Champion Circuits Across All Constraints', fontsize=14, fontweight='bold')
-    plt.xlabel('Absolute Voltage Error (%) ⟵ WORSE | BETTER ⟶', fontsize=12, fontweight='bold')
+    plt.xlabel('Absolute Voltage Error (%)  WORSE | BETTER ', fontsize=12, fontweight='bold')
     plt.ylabel('Power Efficiency (%)', fontsize=12, fontweight='bold')
     
     plt.axvline(x=0, color='red', linestyle='--', alpha=0.5)
@@ -60,4 +60,4 @@ def plot_pareto_scatter(master_results: dict, output_dir: str = "experiments"):
     filepath = Path(output_dir) / "combined_pareto_tradeoffs.png"
     plt.savefig(filepath, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"🎯 Pareto trade-off scatter plot successfully saved to: {filepath}")
+    print(f" Pareto trade-off scatter plot successfully saved to: {filepath}")

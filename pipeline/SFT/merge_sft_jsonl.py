@@ -59,7 +59,7 @@ def main():
                          "guards against pathological tokenizer blowups")
     args = ap.parse_args()
 
-    # ── Load + dedup ──────────────────────────────────────────────────
+    #  Load + dedup 
     all_rows: list[dict] = []
     src_counts = Counter()
     for inp in args.inputs:
@@ -91,7 +91,7 @@ def main():
     print(f"[dedup] unique completions: {len(deduped)} "
           f"(dropped {len(all_rows) - len(deduped)})")
 
-    # ── Stats ─────────────────────────────────────────────────────────
+    #  Stats 
     comp_lens = [len(r["completion"]) for r in deduped]
     if comp_lens:
         comp_lens.sort()
@@ -105,7 +105,7 @@ def main():
         print(f"[stats] {len(with_fitness)} samples have fitness, "
               f"{without_fitness} are validator-only (no fitness)")
 
-    # ── Shuffle + split ───────────────────────────────────────────────
+    #  Shuffle + split 
     rng = random.Random(args.seed)
     rng.shuffle(deduped)
 
@@ -117,7 +117,7 @@ def main():
         val_rows = []
         train_rows = deduped
 
-    # ── Write ─────────────────────────────────────────────────────────
+    #  Write 
     args.out_train.parent.mkdir(parents=True, exist_ok=True)
     with args.out_train.open("w", encoding="utf-8") as f:
         for r in train_rows:

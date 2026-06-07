@@ -70,4 +70,4 @@ def plot_validity_bar_chart(master_results: dict, output_dir: str = "experiments
     filepath = Path(output_dir) / "combined_validity_rates.png"
     plt.savefig(filepath, dpi=300, bbox_inches='tight')
     plt.close(fig) 
-    print(f"✅ Global validity chart successfully saved to: {filepath}")
+    print(f" Global validity chart successfully saved to: {filepath}")

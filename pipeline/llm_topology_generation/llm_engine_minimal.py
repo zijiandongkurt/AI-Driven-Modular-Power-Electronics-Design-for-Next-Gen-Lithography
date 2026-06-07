@@ -26,7 +26,7 @@ from .prompt_input import NAMING_RULES
 logger = logging.getLogger(__name__)
 
 
-# ── Snellius model config ────────────────────────────────────────────────
+#  Snellius model config 
 
 # Shared HuggingFace cache on Snellius — no download needed.
 SNELLIUS_HF_CACHE = "/projects/2/managed_datasets/hf_cache_dir"
@@ -37,7 +37,7 @@ SNELLIUS_HF_CACHE = "/projects/2/managed_datasets/hf_cache_dir"
 DEFAULT_MODEL_ID = "Qwen/Qwen3-14B"
 
 
-# ── Data contracts ───────────────────────────────────────────────────────
+#  Data contracts 
 
 @dataclass
 class Constraint:
@@ -77,7 +77,7 @@ class GenerationOutput:
     time_sec: float = 0.0
 
 
-# ── LLM Engine ─────────────────────────────────────────────────────────
+#  LLM Engine 
 
 class LLMEngine:
     """Load a model, manage LoRA adapters, and generate SPICE netlists.
@@ -162,7 +162,7 @@ class LLMEngine:
 
         logger.info(f"Model loaded: {model_id} ({self._model.num_parameters()/1e9:.1f}B params)")
 
-    # ── Adapter management ───────────────────────────────────────────
+    #  Adapter management 
 
     def load_adapter(self, name: str, path: str) -> None:
         """Load a LoRA adapter from disk. First call wraps model with PEFT."""
@@ -197,7 +197,7 @@ class LLMEngine:
         """Raw tokenizer reference — for external trainers that need direct access."""
         return self._tok
 
-    # ── Generation ───────────────────────────────────────────────────
+    #  Generation 
 
     def generate(
         self,
@@ -256,7 +256,7 @@ class LLMEngine:
         """Generate n candidate netlists for the same constraint."""
         return [self.generate(constraint, **overrides) for _ in range(n)]
 
-    # ── Internals ────────────────────────────────────────────────────
+    #  Internals 
 
     @staticmethod
     def _build_prompt(c: Constraint, feedback: str) -> str:

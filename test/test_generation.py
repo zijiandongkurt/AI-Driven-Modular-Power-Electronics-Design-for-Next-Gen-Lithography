@@ -24,7 +24,7 @@ from pipeline.llm_topology_generation.net_writer import (
 )
 
 
-# ── Shared fixtures ───────────────────────────────────────────────────────────
+#  Shared fixtures 
 
 SAMPLE_CONSTRAINT = {
     "_comment": "Phase 1: Standard 12V to 5V Logic (Buck)",
@@ -47,7 +47,7 @@ def constraint_json(tmp_path):
     return p
 
 
-# ── prompt_input tests ────────────────────────────────────────────────────────
+#  prompt_input tests 
 
 class TestLoadConstraints:
     def test_returns_list(self, constraint_json):
@@ -124,7 +124,7 @@ class TestSlug:
         assert len(s) <= 53
 
 
-# ── net_writer tests ──────────────────────────────────────────────────────────
+#  net_writer tests 
 
 class TestGetLlmOutputDir:
     def test_path_structure(self):

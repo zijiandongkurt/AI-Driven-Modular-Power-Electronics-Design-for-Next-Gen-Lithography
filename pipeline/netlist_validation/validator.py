@@ -10,7 +10,7 @@ class validator():
         self.DATA_DIR  = self.BASE_DIR.parent / "data"
         self.VALID_PREFIXES = set("VRLCDM")
 
-    # ── helpers ──────────────────────────────────────────────────────────────
+    #  helpers 
 
     def _parseLines(self, netlist):
         """Return component lines and directive lines separately, stripping comments and merging multiline statements."""
@@ -96,7 +96,7 @@ class validator():
                 return True
         return False
 
-    # ── public ───────────────────────────────────────────────────────────────
+    #  public 
 
     def validate(self, batchID):
         """Validate all .net files in data/<batchID>/llm_output/.
@@ -182,7 +182,7 @@ class validator():
             "singular_cap_loop":     self._checkSingularCapLoop(netlist),
         }
 
-    # ── checks ────────────────────────────────────────────────────────────────
+    #  checks 
 
     def _checkNetlistSyntax(self, netlist):
         """Every component line must have a valid prefix, at least ref + 2 nodes,
@@ -406,7 +406,7 @@ class validator():
         except nx.NodeNotFound:
             return False
 
-    # ── short circuit checks ──────────────────────────────────────────────────
+    #  short circuit checks 
 
     def _checkShortSameNode(self, netlist):
         """Both terminals of a component must be different nodes."""

@@ -44,14 +44,14 @@ def load_reward_data(batch_id: str) -> Dict:
     path = Path("pipeline") / "data" / batch_id / "reward_results.json"
     
     if not path.exists():
-        print(f"⚠️ Missing reward file: {path}. Treating batch as empty/failed.")
+        print(f" Missing reward file: {path}. Treating batch as empty/failed.")
         return {"circuits": {}}
 
     try:
         with path.open("r", encoding="utf-8") as f:
             return json.load(f)
     except Exception as e:
-        print(f"⚠️ Error reading reward file {path}: {e}")
+        print(f" Error reading reward file {path}: {e}")
         return {"circuits": {}}
 
 
@@ -455,18 +455,18 @@ def run_single(
 
             except RuntimeError as e:
                 if "out of memory" in str(e).lower():
-                    print(f"⚠️ CUDA OOM during LLM generation (Attempt {attempt + 1}/{max_retries}). Clearing cache...")
+                    print(f" CUDA OOM during LLM generation (Attempt {attempt + 1}/{max_retries}). Clearing cache...")
                     if torch.cuda.is_available():
                         torch.cuda.empty_cache()
                 else:
-                    print(f"⚠️ PyTorch error during LLM Generation: {e}")
+                    print(f" PyTorch error during LLM Generation: {e}")
                 time.sleep(5)
             except Exception as e:
-                print(f"⚠️ LLM Generation failed (Attempt {attempt + 1}/{max_retries}): {e}")
+                print(f" LLM Generation failed (Attempt {attempt + 1}/{max_retries}): {e}")
                 time.sleep(5)
                 
         if not generation_success:
-            print(f"❌ LLM failed to generate after {max_retries} attempts. Skipping batch {batch_idx}.")
+            print(f" LLM failed to generate after {max_retries} attempts. Skipping batch {batch_idx}.")
             continue # Allows the loop to skip to the next batch instead of crashing
 
         print(f"Generated {len(written) if written else 0} netlists.")
@@ -501,11 +501,11 @@ def run_single(
                         custom_names=custom_names
                     )
                 except Exception as e:
-                    print(f"⚠️ Error writing netlists for {current_batch_id}: {e}")
+                    print(f" Error writing netlists for {current_batch_id}: {e}")
             else:
-                print(f"⚠️ Mismatch: {len(custom_names)} custom names vs {len(candidate_texts)} texts. Skipping net_writer.")
+                print(f" Mismatch: {len(custom_names)} custom names vs {len(candidate_texts)} texts. Skipping net_writer.")
         else:
-            print("⚠️ No candidate texts found in raw_output.txt to save.")
+            print(" No candidate texts found in raw_output.txt to save.")
 
         try:
             run_eval_pipeline(
@@ -517,7 +517,7 @@ def run_single(
                 weights=weights,
             )
         except Exception as e:
-            print(f"⚠️ Eval pipeline failed for batch {batch_idx}: {e}. Skipping.")
+            print(f" Eval pipeline failed for batch {batch_idx}: {e}. Skipping.")
             continue
 
         print("Running GRPO RL update...")
@@ -528,13 +528,13 @@ def run_single(
             )
         except RuntimeError as e:
             if "out of memory" in str(e).lower():
-                print(f"⚠️ CUDA OOM during GRPO update for batch {batch_idx}. Clearing cache and skipping update.")
+                print(f" CUDA OOM during GRPO update for batch {batch_idx}. Clearing cache and skipping update.")
                 if torch.cuda.is_available():
                     torch.cuda.empty_cache()
             else:
-                print(f"⚠️ GRPO Update failed with PyTorch error: {e}")
+                print(f" GRPO Update failed with PyTorch error: {e}")
         except Exception as e:
-            print(f"⚠️ GRPO Update failed: {e}")
+            print(f" GRPO Update failed: {e}")
 
         add_batch_to_history(
             history=history,
@@ -569,7 +569,7 @@ def run_single(
                 epsilon=EPSILON,
             )
         except Exception as e:
-            print(f"⚠️ Probability plots failed for batch {batch_idx}: {e}")
+            print(f" Probability plots failed for batch {batch_idx}: {e}")
 
         print(f"History size: {len(history)} evaluated netlists")
 
@@ -584,7 +584,7 @@ def run_single(
                     seed=RANDOM_SEED + batch_idx,
                 )
             except RuntimeError as e:
-                print(f"⚠️ Parent selection failed: {e}. Using best available from history.")
+                print(f" Parent selection failed: {e}. Using best available from history.")
                 sorted_history = sorted(history, key=lambda x: x["fitness"], reverse=True)
                 selected_parents = sorted_history[:min(PARENTS_PER_BATCH, len(sorted_history))]
 

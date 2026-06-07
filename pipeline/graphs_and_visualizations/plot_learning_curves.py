@@ -56,4 +56,4 @@ def plot_learning_curves(master_results: dict, output_dir: str = "experiments", 
     filepath = Path(output_dir) / "combined_learning_curves.png"
     plt.savefig(filepath, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"📈 Global learning curves plot successfully saved to: {filepath}")
+    print(f" Global learning curves plot successfully saved to: {filepath}")

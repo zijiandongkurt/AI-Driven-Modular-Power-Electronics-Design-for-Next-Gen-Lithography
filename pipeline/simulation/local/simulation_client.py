@@ -1,6 +1,6 @@
 """
 simulation_client.py
-────────────────────
+
 Runs on your PC. Polls Snellius for pending simulation jobs, runs LTspice
 natively via LTSpiceSimulator, extracts metrics via RawExtractor, and sends
 simulation_results.csv back to Snellius.
@@ -21,7 +21,7 @@ from pathlib import Path
 from ltspice_runner import LTSpiceSimulator
 from raw_extractor import RawExtractor
 
-# ── Load config ───────────────────────────────────────────────────────────────
+#  Load config 
 # simulation/local/ → simulation/ → pipeline/ → repo root
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 CONFIG    = json.loads((REPO_ROOT / "configs/simulation_config.json").read_text())
@@ -37,7 +37,7 @@ SNELLIUS_JOBS   = f"{SNELLIUS_REPO}/pipeline/simulation/snellius/jobs"
 LOCAL_WORK_DIR  = REPO_ROOT / "pipeline" / "simulation" / "output"
 POLL_INTERVAL_S = CONFIG.get("poll_interval_s", 3)
 
-# ── SSH/SFTP helpers ──────────────────────────────────────────────────────────
+#  SSH/SFTP helpers 
 
 def _connect():
     """Open SSH + SFTP connection to Snellius."""
@@ -116,7 +116,7 @@ def _cleanup_local(local_dir: Path):
         print(f"  Cleaned up: {local_dir}")
 
 
-# ── Main loop ─────────────────────────────────────────────────────────────────
+#  Main loop 
 
 def run():
     """Poll Snellius for pending simulation jobs and process them indefinitely.

@@ -43,7 +43,7 @@ def patch_summaries(zycos_folder: str):
             injection = f"\nUnique Topologies: {run_unique}\nExact Duplicates:  {run_dups}\nUniqueness Rate:   {run_u_rate:.1f}%\n"
             new_text = pattern.sub(rf"\1{injection}", text)
             summary_path.write_text(new_text, encoding="utf-8")
-            print(f"🔧 Patched {run_dir.name} -> Unique: {run_unique} ({run_u_rate:.1f}%)")
+            print(f" Patched {run_dir.name} -> Unique: {run_unique} ({run_u_rate:.1f}%)")
 
     # Patch the master training_run_summary.txt
     master_summary_path = zycos_dir / "training_run_summary.txt"
@@ -59,7 +59,7 @@ def patch_summaries(zycos_folder: str):
             injection = f"Total Unique Topologies: {master_unique}\nGlobal Exact Duplicates: {master_dups}\nGlobal Uniqueness Rate: {master_u_rate:.2f}%\n"
             new_text = pattern.sub(rf"\1{injection}", text)
             master_summary_path.write_text(new_text, encoding="utf-8")
-            print(f"🌍 Patched Master Summary -> Global Unique: {master_unique} ({master_u_rate:.1f}%)")
+            print(f" Patched Master Summary -> Global Unique: {master_unique} ({master_u_rate:.1f}%)")
 
 if __name__ == "__main__":
     TARGET_FOLDER = PROJECT_ROOT / "pipeline" / "data" / "zycos_006"

@@ -17,7 +17,7 @@ def process_zycos_folder(zycos_dir: Path):
     if not run_folders:
         return
         
-    print(f"\n{'='*60}\n🔍 Retroactively generating .net files for {zycos_dir.name}\n{'='*60}")
+    print(f"\n{'='*60}\n Retroactively generating .net files for {zycos_dir.name}\n{'='*60}")
 
     for run_dir in run_folders:
         # Sort batches numerically
@@ -43,7 +43,7 @@ def process_zycos_folder(zycos_dir: Path):
                 with open(reward_file, "r", encoding="utf-8") as f:
                     reward_data = json.load(f)
             except Exception as e:
-                print(f"  ⚠️ Error reading JSON in {batch_dir.name}: {e}")
+                print(f"   Error reading JSON in {batch_dir.name}: {e}")
                 continue
                 
             constraint = reward_data.get("active_constraints", {})
@@ -69,7 +69,7 @@ def process_zycos_folder(zycos_dir: Path):
             
             # Ensure 1-to-1 mapping
             if len(custom_names) != len(candidate_texts):
-                print(f"  ⚠️ Mismatch in {run_dir.name}/{batch_dir.name}: {len(custom_names)} names vs {len(candidate_texts)} texts. Truncating to fit.")
+                print(f"   Mismatch in {run_dir.name}/{batch_dir.name}: {len(custom_names)} names vs {len(candidate_texts)} texts. Truncating to fit.")
                 min_len = min(len(custom_names), len(candidate_texts))
                 custom_names = custom_names[:min_len]
                 candidate_texts = candidate_texts[:min_len]
@@ -92,24 +92,24 @@ def process_zycos_folder(zycos_dir: Path):
                     batchID=batch_id,
                     custom_names=custom_names
                 )
-                print(f"  ✅ Restored {len(candidate_texts)} .net files -> {batch_id}/LLM_output")
+                print(f"   Restored {len(candidate_texts)} .net files -> {batch_id}/LLM_output")
             except Exception as e:
-                print(f"  ❌ Error writing netlists for {batch_id}: {e}")
+                print(f"   Error writing netlists for {batch_id}: {e}")
 
 def main():
     data_dir = PROJECT_ROOT / "pipeline" / "data"
     zycos_folders = sorted([d for d in data_dir.iterdir() if d.is_dir() and d.name.startswith("zycos_")])
     
     if not zycos_folders:
-        print(f"❌ No zycos_XXX folders found in {data_dir}")
+        print(f" No zycos_XXX folders found in {data_dir}")
         return
         
-    print(f"🚀 Found {len(zycos_folders)} historical training runs. Reconstructing LLM_output folders...")
+    print(f" Found {len(zycos_folders)} historical training runs. Reconstructing LLM_output folders...")
     
     for zycos_dir in zycos_folders:
         process_zycos_folder(zycos_dir)
         
-    print("\n🎉 Master reconstruction complete! All physical .net files are restored.")
+    print("\n Master reconstruction complete! All physical .net files are restored.")
 
 if __name__ == "__main__":
     main()

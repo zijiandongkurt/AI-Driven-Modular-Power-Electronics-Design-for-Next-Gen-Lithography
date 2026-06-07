@@ -21,7 +21,7 @@ import gradio as gr
 from pipeline.llm_topology_generation.llm_api import TopologyLLM
 from pipeline.llm_topology_generation.prompt_input import load_constraints
 
-# ── Lazy model cache ──────────────────────────────────────────────────────────
+#  Lazy model cache 
 
 _llm: TopologyLLM | None = None
 _loaded_key: tuple | None = None
@@ -46,7 +46,7 @@ def _get_llm(checkpoint_label: str, max_tokens: int, quantization: str) -> Topol
     return _llm
 
 
-# ── Checkpoint scanner ────────────────────────────────────────────────────────
+#  Checkpoint scanner 
 
 def _scan_checkpoints() -> dict[str, str | None]:
     result: dict[str, str | None] = {"Base model (no adapter)": None}
@@ -65,7 +65,7 @@ def _scan_checkpoints() -> dict[str, str | None]:
 _CHECKPOINTS = _scan_checkpoints()
 
 
-# ── Validation ────────────────────────────────────────────────────────────────
+#  Validation 
 
 _REQUIRED = [".end", "Vin ", "Rload ", ".tran", ".model NMOS", ".model DIODE"]
 
@@ -81,7 +81,7 @@ def _validate_html(netlist: str) -> str:
     return '<p class="val-pass">Structurally valid</p>'
 
 
-# ── Preset loader ─────────────────────────────────────────────────────────────
+#  Preset loader 
 
 _PRESET_FILES = {
     "Easy":   "pipeline/data/datasets/constraints_easy.json",
@@ -130,7 +130,7 @@ def apply_preset(label):
     )
 
 
-# ── Generation ────────────────────────────────────────────────────────────────
+#  Generation 
 
 def generate_netlists(
     description, vin_min, vin_max, vout_target, efficiency_target, power_in,
@@ -170,7 +170,7 @@ def generate_netlists(
         )
 
 
-# ── CSS ───────────────────────────────────────────────────────────────────────
+#  CSS 
 
 CSS = """
 footer { display: none !important; }
@@ -237,7 +237,7 @@ footer { display: none !important; }
 """
 
 
-# ── UI ────────────────────────────────────────────────────────────────────────
+#  UI 
 
 with gr.Blocks(title="Zycos Testing Environment", css=CSS, theme=gr.themes.Base()) as demo:
 
@@ -250,7 +250,7 @@ with gr.Blocks(title="Zycos Testing Environment", css=CSS, theme=gr.themes.Base(
 
     with gr.Row():
 
-        # ── Left panel ────────────────────────────────────────────────────────
+        #  Left panel 
         with gr.Column(scale=1, elem_classes="panel-divider"):
 
             gr.HTML('<div class="section-head">Preset</div>')
@@ -293,7 +293,7 @@ with gr.Blocks(title="Zycos Testing Environment", css=CSS, theme=gr.themes.Base(
             generate_btn = gr.Button("Generate", variant="primary", size="lg")
             status_box   = gr.Textbox(label="Status", interactive=False, lines=1)
 
-        # ── Right panel ───────────────────────────────────────────────────────
+        #  Right panel 
         with gr.Column(scale=2):
 
             gr.HTML('<div class="section-head">Output</div>')
@@ -324,7 +324,7 @@ with gr.Blocks(title="Zycos Testing Environment", css=CSS, theme=gr.themes.Base(
                             dl_btns.append((dl_btn, dl_file, i))
                             tabs.append(tab)
 
-    # ── Wiring ────────────────────────────────────────────────────────────────
+    #  Wiring 
     preset_dd.change(
         fn=apply_preset,
         inputs=[preset_dd],

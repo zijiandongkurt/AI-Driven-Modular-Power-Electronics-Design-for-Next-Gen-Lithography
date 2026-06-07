@@ -65,9 +65,9 @@ from pipeline.llm_topology_generation.llm_api import TopologyLLM
 from pipeline.llm_topology_generation.net_writer import write_single_netlist
 
 
-# ────────────────────────────────────────────────────────────────────────
+# 
 # Helpers
-# ────────────────────────────────────────────────────────────────────────
+# 
 
 def load_val_constraints(jsonl_path: Path, n: int) -> List[Dict]:
     """Load the first n samples from a validation JSONL, keeping prompt and constraint.
@@ -253,9 +253,9 @@ def aggregate(per_cand_rows: List[Dict]) -> Dict[str, float]:
     return {"valid_pct": valid_pct, "sim_pct": sim_pct, "mean_reward": mean_r}
 
 
-# ────────────────────────────────────────────────────────────────────────
+# 
 # Main
-# ────────────────────────────────────────────────────────────────────────
+# 
 
 def main():
     sft_adapter   = os.environ.get("SFT_ADAPTER_PATH", "./checkpoints/sft-lora/epoch-3")
@@ -280,14 +280,14 @@ def main():
     print(f"  output dir   : {out_dir}")
     print()
 
-    # ── Load held-out prompts ──────────────────────────────────────────
+    #  Load held-out prompts 
     val_path = REPO_ROOT / "data" / "sft" / "sft_val.jsonl"
     samples = load_val_constraints(val_path, n_prompts)
     print(f"[bench] loaded {len(samples)} held-out prompts")
     if len(samples) < n_prompts:
         print(f"[bench] WARNING: only {len(samples)} samples available — running on what we have")
 
-    # ── Lazy imports — we don't need the simulator until generation is done ─
+    #  Lazy imports — we don't need the simulator until generation is done 
     from pipeline.netlist_validation.validator import validator as ValidatorCls
     from pipeline.simulation.ltspice_runner_snellius import LTSpiceSimulator
     from pipeline.reward_evaluation.reward_function_norm import RewardFunctionNorm
@@ -296,18 +296,18 @@ def main():
     sim_inst = LTSpiceSimulator()
     rew_inst = RewardFunctionNorm()
 
-    # ── Open CSV ────────────────────────────────────────────────────────
+    #  Open CSV 
     csv_fp = csv_path.open("w", encoding="utf-8", newline="")
     csv_w  = csv.writer(csv_fp)
     csv_w.writerow(["model", "prompt_id", "tag", "candidate", "valid", "sim_ok", "reward"])
     csv_fp.flush()
 
-    # ── Outer loop: one model at a time so we don't pay 2× the load cost ─
+    #  Outer loop: one model at a time so we don't pay 2× the load cost 
     all_rows: Dict[str, List[Dict]] = {"base": [], "sft": []}
 
     for model_label, adapter_path in [("base", None), ("sft", sft_adapter)]:
         print()
-        print(f"════════════════════════ Model: {model_label} ════════════════════════")
+        print(f" Model: {model_label} ")
         print(f"[bench] loading TopologyLLM (adapter={adapter_path})")
         llm = TopologyLLM(model_id=model_id, temperature=temp, top_p=0.9)
         if adapter_path is not None:
@@ -362,7 +362,7 @@ def main():
     csv_fp.close()
     print(f"\n[bench] CSV written → {csv_path}")
 
-    # ── Summary ────────────────────────────────────────────────────────
+    #  Summary 
     base_agg = aggregate(all_rows["base"])
     sft_agg  = aggregate(all_rows["sft"])
     delta = {k: sft_agg[k] - base_agg[k] for k in base_agg}

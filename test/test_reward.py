@@ -12,7 +12,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from pipeline.reward_evaluation.reward_function_norm import RewardFunctionNorm, VALIDATION_CHECK_WEIGHTS
 
 
-# ── Shared fixtures ───────────────────────────────────────────────────────────
+#  Shared fixtures 
 
 @pytest.fixture
 def rf():
@@ -45,7 +45,7 @@ WEIGHTS = {
 }
 
 
-# ── validation_reward ─────────────────────────────────────────────────────────
+#  validation_reward 
 
 class TestValidationReward:
     def test_all_pass_gives_minus_half(self, rf):
@@ -72,7 +72,7 @@ class TestValidationReward:
         assert rf.validation_reward(all_pass) < 0.5
 
 
-# ── calculate_loss ────────────────────────────────────────────────────────────
+#  calculate_loss 
 
 class TestCalculateLoss:
     def test_perfect_circuit_has_low_loss(self, rf):
@@ -113,7 +113,7 @@ class TestCalculateLoss:
         assert loss_many >= loss_few
 
 
-# ── calculate_reward ──────────────────────────────────────────────────────────
+#  calculate_reward 
 
 class TestCalculateReward:
     def test_reward_in_valid_range(self, rf):
@@ -149,7 +149,7 @@ class TestCalculateReward:
         assert reward >= 0.0  # must not go negative
 
 
-# ── normalize_group_rewards ───────────────────────────────────────────────────
+#  normalize_group_rewards 
 
 class TestNormalizeGroupRewards:
     def test_output_keys_match_input(self, rf):
@@ -177,7 +177,7 @@ class TestNormalizeGroupRewards:
             assert -4.0 <= v <= 4.0
 
 
-# ── process_csv_to_json ───────────────────────────────────────────────────────
+#  process_csv_to_json 
 
 class TestProcessCsvToJson:
     def test_missing_csv_with_no_validation_returns_error(self, rf, tmp_path):

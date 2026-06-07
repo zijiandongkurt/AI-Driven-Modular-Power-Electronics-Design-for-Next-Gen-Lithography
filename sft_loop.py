@@ -51,9 +51,9 @@ def main():
         output_dir=output_dir,
     )
 
-    print("════════════════════════════════════════════════════════════════")
+    print("")
     print(" SFT runner")
-    print("════════════════════════════════════════════════════════════════")
+    print("")
     print(f"  model_id      : {model_id}")
     print(f"  quantization  : {quant or 'bf16 (full)'}")
     print(f"  train_path    : {train_path}")
@@ -100,11 +100,11 @@ def main():
         json.dump(run_config, f, indent=2)
 
     print()
-    print("════════════════════════════════════════════════════════════════")
+    print("")
     print(f"[sft_loop] final adapter : {final}")
     print(f"[sft_loop] history       : {hist_path}")
     print(f"[sft_loop] run config    : {cfg_path}")
-    print("════════════════════════════════════════════════════════════════")
+    print("")
 
 
 if __name__ == "__main__":

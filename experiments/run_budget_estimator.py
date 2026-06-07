@@ -11,7 +11,7 @@ from run_inference import run_inference
 
 def main():
     print("\n" + "="*60)
-    print("⏱️  RUNNING PIPELINE PROFILING TEST")
+    print("RUNNING PIPELINE PROFILING TEST")
     print("="*60)
 
     # 1. Minimal config for a speed test (2 batches = 16 netlists)
@@ -49,7 +49,7 @@ def main():
     profile_path = Path(run_folder) / "timing_profile.json"
     
     if not profile_path.exists():
-        print("❌ Could not find timing_profile.json. Make sure demo_inference.py is updated with the profiling code!")
+        print(" Could not find timing_profile.json. Make sure demo_inference.py is updated with the profiling code!")
         return
 
     with open(profile_path, "r", encoding="utf-8") as f:
@@ -80,18 +80,18 @@ def main():
     # Build the report string
     report_text = f"""
 ============================================================
-📊 PROFILING RESULTS & COST PROJECTIONS
+ PROFILING RESULTS & COST PROJECTIONS
 ============================================================
 Test Run Folder:       {run_folder}
 Netlists Evaluated:    {total_netlists}
 Total Core Time:       {core_time:.2f} seconds
 Average Time/Netlist:  {time_per_netlist:.2f} seconds
 ------------------------------------------------------------
-🚀 Projection 1: STATIC Search Horizon (15 Batches for all phases)
+ Projection 1: STATIC Search Horizon (15 Batches for all phases)
    Total Netlists: {static_total_netlists:,}
    Estimated Time: {static_hours:.2f} hours
 
-🚀 Projection 2: DYNAMIC Search Horizon (15/25/40 Batches)
+ Projection 2: DYNAMIC Search Horizon (15/25/40 Batches)
    Total Netlists: {dynamic_total_netlists:,}
    Estimated Time: {dynamic_hours:.2f} hours
 ------------------------------------------------------------
@@ -99,10 +99,10 @@ Average Time/Netlist:  {time_per_netlist:.2f} seconds
     print(report_text)
     
     # 5. SBU Cost Estimator
-    print("💰 SBU Compute Budget Estimator")
+    print(" SBU Compute Budget Estimator")
     sbu_rate = 196.0
     
-    cost_text = f"""💰 SBU Compute Budget Estimator
+    cost_text = f""" SBU Compute Budget Estimator
     SBU Rate Applied:   {sbu_rate} SBU/h
     Static Setup Cost:  {static_hours * sbu_rate:.2f} SBUs
     Dynamic Setup Cost: {dynamic_hours * sbu_rate:.2f} SBUs
@@ -125,7 +125,7 @@ transient states. Add a ~10% buffer to these estimates to be safe!
     with open(output_file, "w", encoding="utf-8") as f:
         f.write(full_report)
         
-    print(f"✅ Budget estimation successfully saved to: {output_file}")
+    print(f" Budget estimation successfully saved to: {output_file}")
 
 if __name__ == "__main__":
     main()

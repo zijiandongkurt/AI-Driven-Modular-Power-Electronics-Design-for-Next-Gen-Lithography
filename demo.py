@@ -108,7 +108,7 @@ def main():
 
     # Final Plot Guarantee (runs if UPDATE_PLOTS_PER_BATCH was False)
     if not UPDATE_PLOTS_PER_BATCH and plot_run_results:
-        print("\n📊 Generating final run plots...")
+        print("\n Generating final run plots...")
         plot_run_results(str(run_folder_path))
 
     print(f"\n=== Sequential Run {run_folder_name} Complete ===")

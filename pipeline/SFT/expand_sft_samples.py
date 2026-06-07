@@ -41,7 +41,7 @@ from pipeline.llm_topology_generation.prompt_input import load_constraints, make
 from pipeline.llm_topology_generation.net_writer import write_netlists
 
 
-# ── Format helpers ────────────────────────────────────────────────────────
+#  Format helpers 
 
 def f(v, prec=3):
     """Format a numeric value with reasonable precision + SPICE suffix."""
@@ -68,7 +68,7 @@ def n(x):
     return str(int(x)) if x == int(x) else str(x)
 
 
-# ── Topology templates ────────────────────────────────────────────────────
+#  Topology templates 
 
 def buck_async(vin, vout, p, T, L, C):
     D = vout / vin
@@ -180,7 +180,7 @@ Vgate gate 0 PULSE(0 12 0 1n 1n {f(t_on)} {f(T)})
 .end"""
 
 
-# ── Per-constraint topology + Vin sweep config ────────────────────────────
+#  Per-constraint topology + Vin sweep config 
 #
 # Choose: (topology_class, list of Vin values within [vin_min, vin_max])
 
@@ -211,7 +211,7 @@ LS_SEPIC = [100e-6, 220e-6]                # SEPIC L1 = L2
 CC_SEPIC = [22e-6, 47e-6]                  # SEPIC coupling C
 
 
-# ── Generate per constraint ───────────────────────────────────────────────
+#  Generate per constraint 
 
 def generate_for_constraint(idx: int, constraint: dict) -> list[dict]:
     """Generate all template-driven netlist candidates for one constraint.
@@ -281,7 +281,7 @@ def generate_for_constraint(idx: int, constraint: dict) -> list[dict]:
     return out
 
 
-# ── Validator (lazy import) + JSONL writer ───────────────────────────────
+#  Validator (lazy import) + JSONL writer 
 
 def _run_validator(batch_id: str) -> dict:
     try:
@@ -325,7 +325,7 @@ def main():
         val_results = _run_validator(batch_id)
         n_passed = sum(1 for v in val_results.values() if v.get("passed"))
         total_passed += n_passed
-        print(f"\n── idx={idx}  candidates={len(written)}  passed={n_passed}  ──")
+        print(f"\n idx={idx}  candidates={len(written)}  passed={n_passed}  ")
 
         prompt = make_prompt(constraint)
         for path, sample in zip(written, group):

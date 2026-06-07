@@ -62,7 +62,7 @@ def plot_uniqueness_for_run(run_folder_path: str):
     
     plt.savefig(results_dir / '0_summary_yield_rates.png', dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"✅ Generated Yield/Uniqueness plot -> {data_dir.name}/results/")
+    print(f" Generated Yield/Uniqueness plot -> {data_dir.name}/results/")
 
 if __name__ == "__main__":
     TARGET_ZYCOS = PROJECT_ROOT / "pipeline" / "data" / "zycos_006"
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     # Find all Run_XXX folders and sort them
     run_folders = sorted([d for d in TARGET_ZYCOS.iterdir() if d.is_dir() and d.name.startswith("Run_")])
     
-    print(f"🔍 Found {len(run_folders)} runs in {TARGET_ZYCOS.name}. Generating yield/uniqueness plots...")
+    print(f" Found {len(run_folders)} runs in {TARGET_ZYCOS.name}. Generating yield/uniqueness plots...")
     
     for run_dir in run_folders:
         print(f"\n--- Processing {run_dir.name} ---")

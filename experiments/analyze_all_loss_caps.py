@@ -19,10 +19,10 @@ def analyze_all_caps():
     zycos_folders = sorted([d for d in data_dir.iterdir() if d.is_dir() and d.name.startswith("zycos_")])
     
     if not zycos_folders:
-        print(f"❌ No zycos_XXX folders found in {data_dir}")
+        print(f" No zycos_XXX folders found in {data_dir}")
         return
 
-    print("🔍 Crawling historical data for all unique, valid penalties...")
+    print(" Crawling historical data for all unique, valid penalties...")
     
     global_hashes = set()
     
@@ -98,11 +98,11 @@ def analyze_all_caps():
                         penalties["components"].append(comps)
 
     if not penalties["volume"]:
-        print("❌ No valid data found.")
+        print(" No valid data found.")
         return
 
     print("\n" + "="*60)
-    print(f"📊 LOSS CAP DISTRIBUTION REPORT (Unique Valid: {len(global_hashes)})")
+    print(f" LOSS CAP DISTRIBUTION REPORT (Unique Valid: {len(global_hashes)})")
     print("="*60)
 
     fig, axs = plt.subplots(2, 2, figsize=(16, 12))
@@ -154,7 +154,7 @@ def analyze_all_caps():
     plt.close()
     
     print("\n" + "="*60)
-    print(f"✅ 2x2 Histogram grid saved to: {out_file.relative_to(PROJECT_ROOT)}")
+    print(f" 2x2 Histogram grid saved to: {out_file.relative_to(PROJECT_ROOT)}")
 
 if __name__ == "__main__":
     analyze_all_caps()

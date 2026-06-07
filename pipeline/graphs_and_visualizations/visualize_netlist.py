@@ -120,14 +120,14 @@ def flat_spice_to_json(spice_file_path, json_output_path):
 
     with open(json_output_path, 'w') as f:
         json.dump(netlist_json, f, indent=2)
-    print(f"✅ Found and parsed {len(cells)} components!")
+    print(f" Found and parsed {len(cells)} components!")
 
 def generate_schematic(spice_file, output_svg):
     json_file = "temp_circuit.json"
     
     flat_spice_to_json(spice_file, json_file)
     
-    print(f"🎨 Generating SVG using netlistsvg...")
+    print(f" Generating SVG using netlistsvg...")
     try:
         subprocess.run(f"netlistsvg {json_file} -o {output_svg}", check=True, shell=True)
         
@@ -139,10 +139,10 @@ def generate_schematic(spice_file, output_svg):
         with open(output_svg, 'w') as f:
             f.write(svg_content)
             
-        print(f"🚀 Success! Schematic with white background saved as: {output_svg}")
+        print(f" Success! Schematic with white background saved as: {output_svg}")
         
     except subprocess.CalledProcessError:
-        print("❌ Error: netlistsvg failed to render the image.")
+        print(" Error: netlistsvg failed to render the image.")
     
     if os.path.exists(json_file):
         os.remove(json_file)
@@ -159,15 +159,15 @@ if __name__ == "__main__":
     
     # Check if the directory actually exists to prevent crashes
     if not os.path.exists(netlist_dir):
-        print(f"❌ Error: Cannot find directory at {netlist_dir}")
+        print(f" Error: Cannot find directory at {netlist_dir}")
     else:
-        print(f"🔍 Scanning {netlist_dir} for netlists...\n")
+        print(f" Scanning {netlist_dir} for netlists...\n")
         
         # 2. Loop through every file in that folder
         for filename in os.listdir(netlist_dir):
             # Only process files that end with .net
             if filename.endswith(".net"):
-                print(f"⚙️ Processing: {filename}")
+                print(f" Processing: {filename}")
                 
                 # Construct the full path to the input .net file
                 input_spice = os.path.join(netlist_dir, filename)
@@ -180,4 +180,4 @@ if __name__ == "__main__":
                 generate_schematic(input_spice, output_image)
                 print("-" * 40) # Print a divider line for terminal readability
                 
-        print(f"✅ Batch processing complete! All SVGs generated in: {svg_output_dir}")
+        print(f" Batch processing complete! All SVGs generated in: {svg_output_dir}")

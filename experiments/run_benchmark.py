@@ -114,7 +114,7 @@ def extract_metrics(run_folder: str) -> dict:
                 metrics["components"] = champ.get("raw_components", 0)
                 metrics["target_power"] = champ.get("target_power", 10.0)
         except json.JSONDecodeError:
-            print(f"⚠️ Warning: Corrupted champion_metrics.json found in {run_folder}. Using empty metrics.")
+            print(f" Warning: Corrupted champion_metrics.json found in {run_folder}. Using empty metrics.")
             
     return metrics
 
@@ -146,7 +146,7 @@ def main():
     checkpoint_file = out_path / "benchmark_checkpoint.json"
 
     if checkpoint_file.exists():
-        print(f"🔄 Resuming from existing checkpoint: {checkpoint_file}")
+        print(f" Resuming from existing checkpoint: {checkpoint_file}")
         with open(checkpoint_file, "r", encoding="utf-8") as f:
             master_results = json.load(f)
     else:
@@ -164,10 +164,10 @@ def main():
             for trial in range(1, TRIALS_PER_TASK + 1):
                 # Check if this specific trial is already in the checkpoint
                 if len(master_results[model_name][task["label"]]) >= trial:
-                    print(f"⏩ Skipping {model_name} on '{task['label']}' (Trial {trial}/{TRIALS_PER_TASK}) - Already completed.")
+                    print(f"Skipping {model_name} on '{task['label']}' (Trial {trial}/{TRIALS_PER_TASK}) - already completed.")
                     continue
                     
-                print(f"\n🚀 Running {model_name} on '{task['label']}' (Trial {trial}/{TRIALS_PER_TASK})...")
+                print(f"\n Running {model_name} on '{task['label']}' (Trial {trial}/{TRIALS_PER_TASK})...")
                 
                 run_config = copy.deepcopy(base_config)
                 if isinstance(model_path, dict):
@@ -187,7 +187,7 @@ def main():
                     metrics = extract_metrics(output_folder)
                     master_results[model_name][task['label']].append(metrics)
                 except Exception as e:
-                    print(f"❌ Error evaluating {model_name} on {task['label']}: {e}")
+                    print(f" Error evaluating {model_name} on {task['label']}: {e}")
                     # Appends the safe fallback dictionary to prevent plotting crashes
                     master_results[model_name][task['label']].append(get_empty_metrics())
                     
@@ -201,7 +201,7 @@ def main():
                 os.replace(temp_path, checkpoint_file)
 
     report_text = f"\n\n{'='*120}\n"
-    report_text += f"🏆 COMPREHENSIVE BENCHMARK RESULTS (Mean ± StdDev) 🏆\n"
+    report_text += f" COMPREHENSIVE BENCHMARK RESULTS (Mean ± StdDev) \n"
     report_text += f"{'='*120}\n"
     
     header = f"{'Task (Constraint)':<22} | {'Metric':<16} | " + " | ".join([f"{m:<18}" for m in models.keys()])
@@ -243,7 +243,7 @@ def main():
     with open(report_file, "w", encoding="utf-8") as f:
         f.write(report_text)
     
-    print(f"📝 Benchmark table successfully saved to: {report_file}\n")
+    print(f" Benchmark table successfully saved to: {report_file}\n")
 
     # Triggering Extracted Plotting Modules
     try:

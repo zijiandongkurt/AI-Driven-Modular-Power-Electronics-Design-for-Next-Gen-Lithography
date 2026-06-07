@@ -1,6 +1,6 @@
 """
 simulation_server.py
-────────────────────
+
 Runs on Snellius. Replaces ltspice_runner_snellius.py.
 
 Creates a job file for the PC client, waits for simulation_results.csv

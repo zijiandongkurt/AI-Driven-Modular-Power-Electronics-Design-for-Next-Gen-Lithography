@@ -168,12 +168,12 @@ def generate_for_constraint(llm, constraint_idx, constraint, n, batch_id_prefix,
             ``"completion"``, ``"fitness"``, ``"source"``, and
             ``"constraint"``.
     """
-    print(f"\n══════════════════════════════════════════════════════════════")
+    print(f"\n")
     print(f" Constraint #{constraint_idx}: "
           f"vin={constraint.get('vin_min')}-{constraint.get('vin_max')}V → "
           f"vout={constraint.get('vout_target')}V, "
           f"P={constraint.get('power_in')}W")
-    print(f"══════════════════════════════════════════════════════════════")
+    print(f"")
 
     batch_id = f"{batch_id_prefix}_idx{constraint_idx}"
     if fewshots:
@@ -249,7 +249,7 @@ def main():
                     help="How many top-fitness samples to use as in-context examples")
     args = ap.parse_args()
 
-    # ── Sanity ─────────────────────────────────────────────────────────
+    #  Sanity 
     if not args.constraints.exists():
         print(f"FATAL: {args.constraints} not found", file=sys.stderr)
         sys.exit(1)
@@ -260,7 +260,7 @@ def main():
     print(f"[setup] n_per_constraint={args.n_per_constraint}, "
           f"temperature={args.temperature}, top_p={args.top_p}")
 
-    # ── Load model once, reuse across all constraints ─────────────────
+    #  Load model once, reuse across all constraints 
     kwargs = {
         "quantization":   args.quantization,
         "max_new_tokens": args.max_new_tokens,
@@ -275,7 +275,7 @@ def main():
     llm = TopologyLLM(**kwargs)
     print(f"[model] ready in {time.time() - t0:.1f}s")
 
-    # ── Load few-shot examples ────────────────────────────────────────
+    #  Load few-shot examples 
     fewshots = _load_fewshot_examples(args.fewshot_from, k=args.fewshot_k)
     if fewshots:
         print(f"[fewshot] loaded {len(fewshots)} worked example(s) from "
@@ -285,7 +285,7 @@ def main():
     else:
         print(f"[fewshot] {args.fewshot_from} missing or empty; using 0-shot")
 
-    # ── Generate per constraint ────────────────────────────────────────
+    #  Generate per constraint 
     all_pairs: list[dict] = []
     for idx in args.indices:
         if idx >= len(constraints):
@@ -299,7 +299,7 @@ def main():
         )
         all_pairs.extend(pairs)
 
-    # ── Save ──────────────────────────────────────────────────────────
+    #  Save 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     with args.out.open("w", encoding="utf-8") as f:
         for row in all_pairs:

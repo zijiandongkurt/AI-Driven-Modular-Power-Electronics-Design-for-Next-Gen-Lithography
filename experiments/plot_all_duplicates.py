@@ -26,10 +26,10 @@ def plot_duplicates_for_zycos(zycos_folder: str):
     run_folders = sorted([d for d in zycos_path.iterdir() if d.is_dir() and d.name.startswith("Run_")])
     
     if not run_folders:
-        print(f"❌ No Run_XXX folders found inside {zycos_path}")
+        print(f" No Run_XXX folders found inside {zycos_path}")
         return
 
-    print(f"📊 Generating duplicate topology plots for {len(run_folders)} runs in {zycos_path.name}...\n")
+    print(f" Generating duplicate topology plots for {len(run_folders)} runs in {zycos_path.name}...\n")
 
     for run_dir in run_folders:
         results_dir = run_dir / "results"
@@ -40,7 +40,7 @@ def plot_duplicates_for_zycos(zycos_folder: str):
             dup_data = get_duplicates_per_batch(str(run_dir))
             
             if not dup_data:
-                print(f"  ⚠️ Skipping {run_dir.name} (No batch data found)")
+                print(f"   Skipping {run_dir.name} (No batch data found)")
                 continue
                 
             # Extract and sort batches to ensure X-axis is chronological
@@ -64,12 +64,12 @@ def plot_duplicates_for_zycos(zycos_folder: str):
             plt.savefig(out_path, dpi=300, bbox_inches='tight')
             plt.close()
             
-            print(f"  ✅ Saved duplicate plot -> {run_dir.name}/results/{out_path.name}")
+            print(f"   Saved duplicate plot -> {run_dir.name}/results/{out_path.name}")
             
         except Exception as e:
-            print(f"  ❌ Failed to plot {run_dir.name}: {e}")
+            print(f"   Failed to plot {run_dir.name}: {e}")
 
-    print("\n🎉 Finished plotting all runs!")
+    print("\n Finished plotting all runs!")
 
 if __name__ == '__main__':
     # Point this to the main training folder containing Run_001, Run_002, etc.

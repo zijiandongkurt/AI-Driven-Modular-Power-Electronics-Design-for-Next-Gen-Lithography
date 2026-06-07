@@ -12,10 +12,10 @@ def fix_run_summaries(training_folder_path: str):
     summary_files = list(base_dir.rglob("run_summary.txt"))
     
     if not summary_files:
-        print(f"❌ No 'run_summary.txt' files found inside {base_dir}")
+        print(f" No 'run_summary.txt' files found inside {base_dir}")
         return
 
-    print(f"🔧 Found {len(summary_files)} run_summary.txt files. Beginning patch...")
+    print(f" Found {len(summary_files)} run_summary.txt files. Beginning patch...")
 
     for summary_path in summary_files:
         # summary_path is: pipeline/data/zycos_005/Run_008/results/run_summary.txt
@@ -45,7 +45,7 @@ def fix_run_summaries(training_folder_path: str):
                         else:
                             total_invalid += 1
                 except Exception as e:
-                    print(f"⚠️ Error reading {val_path.name}: {e}")
+                    print(f" Error reading {val_path.name}: {e}")
         
         text = summary_path.read_text(encoding="utf-8")
         
@@ -60,7 +60,7 @@ def fix_run_summaries(training_folder_path: str):
         
         # 3. Save it back to disk
         summary_path.write_text(new_text, encoding="utf-8")
-        print(f"✅ Patched {run_dir.name} -> Valid: {total_valid}, Invalid: {total_invalid}")
+        print(f" Patched {run_dir.name} -> Valid: {total_valid}, Invalid: {total_invalid}")
 
 if __name__ == "__main__":
     # Point this to your main training folder

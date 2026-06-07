@@ -12,7 +12,7 @@ def plot_topologies():
     DATA_DIR = os.path.join(PROJECT_ROOT, 'pipeline', 'data')
 
     if not os.path.exists(txt_path):
-        print(f"❌ Could not find {txt_path}. Make sure analyze_pure_topologies.py has been run!")
+        print(f" Could not find {txt_path}. Make sure analyze_pure_topologies.py has been run!")
         return
 
     data = {}
@@ -34,7 +34,7 @@ def plot_topologies():
                     data[current_zycos]['run_nums'].append(int(run_match.group(1)))
                     data[current_zycos]['counts'].append(int(run_match.group(2)))
 
-    print("📊 Generating Topology Exploration Bar Plots...")
+    print(" Generating Topology Exploration Bar Plots...")
     for zycos_name, runs in data.items():
         if not runs['run_nums']:
             continue
@@ -63,9 +63,9 @@ def plot_topologies():
         out_path = os.path.join(results_dir, "topology_exploration.png")
         try:
             plt.savefig(out_path, dpi=300, bbox_inches='tight')
-            print(f"  ✅ Saved {out_path}")
+            print(f"   Saved {out_path}")
         except PermissionError:
-            print(f"  ❌ PERMISSION ERROR: Close topology_exploration.png in {zycos_name} to allow overwrite.")
+            print(f"   PERMISSION ERROR: Close topology_exploration.png in {zycos_name} to allow overwrite.")
         
         plt.close()
 

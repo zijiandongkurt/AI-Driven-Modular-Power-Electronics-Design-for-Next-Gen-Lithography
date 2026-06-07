@@ -13,9 +13,9 @@ try:
     from pipeline.graphs_and_visualizations.plot_pareto_scatter import plot_pareto_scatter
     from pipeline.graphs_and_visualizations.plot_learning_curves import plot_learning_curves
     from pipeline.graphs_and_visualizations.plot_combined_fitness import plot_combined_fitness
-    print("✅ All plotting modules imported successfully.")
+    print(" All plotting modules imported successfully.")
 except ImportError as e:
-    print(f"❌ Import Error: {e}")
+    print(f" Import Error: {e}")
     sys.exit(1)
 
 def generate_mock_trial(model, phase_power):
@@ -74,7 +74,7 @@ def generate_mock_trial(model, phase_power):
 
 def main():
     print("\n" + "="*50)
-    print("🧪 RUNNING MOCK DATA PLOTTING TEST")
+    print(" RUNNING MOCK DATA PLOTTING TEST")
     print("="*50)
 
     # 3. Define our fake benchmark scope
@@ -102,10 +102,10 @@ def main():
         plot_pareto_scatter(master_results, output_dir=output_directory)
         plot_radar_chart(master_results, output_dir=output_directory)
         plot_validity_bar_chart(master_results, output_dir=output_directory)
-        print(f"\n🎉 SUCCESS! All plots generated perfectly.")
+        print(f"\n SUCCESS! All plots generated perfectly.")
         print(f"Check the folder: {output_directory}")
     except Exception as e:
-        print(f"\n❌ FAILED during plotting execution: {e}")
+        print(f"\n FAILED during plotting execution: {e}")
 
 if __name__ == "__main__":
     main()

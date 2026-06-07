@@ -19,7 +19,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from pipeline.reward_evaluation.reward_function import RewardFunction
 
 
-# ── Fixtures ──────────────────────────────────────────────────────────────────
+#  Fixtures 
 
 @pytest.fixture
 def rf():
@@ -52,7 +52,7 @@ WEIGHTS = {
 }
 
 
-# ── calculate_loss ────────────────────────────────────────────────────────────
+#  calculate_loss 
 
 class TestLegacyCalculateLoss:
     def test_perfect_circuit_near_zero_loss(self, rf):
@@ -97,7 +97,7 @@ class TestLegacyCalculateLoss:
         assert loss_many > loss_few
 
 
-# ── calculate_reward ──────────────────────────────────────────────────────────
+#  calculate_reward 
 
 class TestLegacyCalculateReward:
     def test_reward_is_negative_loss(self, rf):
@@ -128,7 +128,7 @@ class TestLegacyCalculateReward:
         assert 0.5 <= norm_reward <= 1.0
 
 
-# ── process_csv_to_json ───────────────────────────────────────────────────────
+#  process_csv_to_json 
 
 class TestLegacyProcessCsvToJson:
     def test_missing_csv_returns_error(self, rf, tmp_path):

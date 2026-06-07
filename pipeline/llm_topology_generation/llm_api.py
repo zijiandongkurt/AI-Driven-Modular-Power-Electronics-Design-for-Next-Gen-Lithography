@@ -683,7 +683,7 @@ class TopologyLLM:
         )
 
 
-# ── Convenience singleton (lazy-loaded) ────────────────────────────────
+#  Convenience singleton (lazy-loaded) 
 
 _singleton: TopologyLLM | None = None
 

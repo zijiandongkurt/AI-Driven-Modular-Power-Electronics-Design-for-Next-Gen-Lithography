@@ -23,7 +23,7 @@ def process_zycos_run(zycos_name):
     zycos_dir = os.path.join(DATA_DIR, zycos_name)
     
     if not os.path.exists(zycos_dir):
-        print(f"⚠️ Directory not found: {zycos_dir}. Skipping...")
+        print(f" Directory not found: {zycos_dir}. Skipping...")
         return
         
     results_dir = os.path.join(zycos_dir, 'results')
@@ -36,7 +36,7 @@ def process_zycos_run(zycos_name):
     all_valid_data = {}
     top_k_data = {}
 
-    print(f"\n🔍 Scanning {zycos_name} for Spread Analysis:")
+    print(f"\n Scanning {zycos_name} for Spread Analysis:")
     
     for run_folder in run_folders:
         run_idx = extract_run_number(os.path.basename(run_folder))
@@ -135,7 +135,7 @@ def process_zycos_run(zycos_name):
         print(f"  -> Run {run_idx:02d} | Valid Unique: {len(valid_list_sorted)} | Top K Analyzed: {len(top_k_list)}")
         
     if not all_valid_data:
-        print(f"⚠️ No valid data extracted for {zycos_name}")
+        print(f" No valid data extracted for {zycos_name}")
         return
         
     def generate_spread_plots(dataset, file_prefix, master_title):
@@ -240,7 +240,7 @@ def process_zycos_run(zycos_name):
             try:
                 plt.savefig(os.path.join(results_dir, f"{file_prefix}_{filename}"), dpi=300, bbox_inches='tight')
             except PermissionError:
-                print(f"❌ PERMISSION ERROR: Close {filename} to allow overwrite.")
+                print(f" PERMISSION ERROR: Close {filename} to allow overwrite.")
             plt.close()
 
         save_standalone(plot_box, v_err_pcts, "Voltage Error (%)", "Error (%)", "err_voltage_pct.png", color='deepskyblue', hline_y=5, hline_name='Tolerance (+/- 5%)', limit_type='band', y_min=-5)
@@ -265,9 +265,9 @@ def process_zycos_run(zycos_name):
         out_path = os.path.join(results_dir, f"{file_prefix}_summary_2x2.png")
         try:
             plt.savefig(out_path, dpi=300, bbox_inches='tight')
-            print(f"✅ Spread plots saved: {file_prefix}")
+            print(f" Spread plots saved: {file_prefix}")
         except PermissionError:
-            print(f"❌ PERMISSION ERROR: Close {file_prefix}_summary_2x2.png to allow overwrite.")
+            print(f" PERMISSION ERROR: Close {file_prefix}_summary_2x2.png to allow overwrite.")
         plt.close()
 
     # Generate both data subsets!

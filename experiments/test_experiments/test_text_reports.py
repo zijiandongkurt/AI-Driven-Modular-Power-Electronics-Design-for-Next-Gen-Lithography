@@ -7,7 +7,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
 def test_benchmark_report_generation():
     print("\n" + "="*50)
-    print("📝 TESTING BENCHMARK .TXT REPORT GENERATION")
+    print(" TESTING BENCHMARK .TXT REPORT GENERATION")
     print("="*50)
     
     # 1. Mock Data (Simulating a finished run)
@@ -32,7 +32,7 @@ def test_benchmark_report_generation():
 
     # 2. The exact formatting block from run_benchmark.py
     report_text = f"\n\n{'='*100}\n"
-    report_text += f"🏆 COMPREHENSIVE BENCHMARK RESULTS (Mean ± StdDev) 🏆\n"
+    report_text += f" COMPREHENSIVE BENCHMARK RESULTS (Mean ± StdDev) \n"
     report_text += f"{'='*100}\n"
     
     header = f"{'Task (Constraint)':<22} | {'Metric':<14} | " + " | ".join([f"{m:<18}" for m in models.keys()])
@@ -66,19 +66,19 @@ def test_benchmark_report_generation():
         
     # 4. Verify it
     if report_file.exists() and report_file.stat().st_size > 0:
-        print(f"✅ Success! Benchmark report saved to: {report_file}")
+        print(f" Success! Benchmark report saved to: {report_file}")
         print("Preview of generated table:")
         # Print just the first 15 lines so it doesn't flood the terminal
         with open(report_file, "r", encoding="utf-8") as f:
             lines = f.readlines()
             print("".join(lines[:15]))
     else:
-        print("❌ Failed to generate benchmark report.")
+        print(" Failed to generate benchmark report.")
 
 
 def test_budget_report_generation():
     print("\n" + "="*50)
-    print("💰 TESTING BUDGET ESTIMATOR .TXT GENERATION")
+    print(" TESTING BUDGET ESTIMATOR .TXT GENERATION")
     print("="*50)
 
     # 1. Mock variables
@@ -96,24 +96,24 @@ def test_budget_report_generation():
 
     # 2. The exact formatting block from run_budget_estimator.py
     report_text = f"""============================================================
-📊 PROFILING RESULTS & COST PROJECTIONS
+ PROFILING RESULTS & COST PROJECTIONS
 ============================================================
 Test Run Folder:       {run_folder}
 Netlists Evaluated:    {total_netlists}
 Total Core Time:       {core_time:.2f} seconds
 Average Time/Netlist:  {time_per_netlist:.2f} seconds
 ------------------------------------------------------------
-🚀 Projection 1: STATIC Search Horizon (15 Batches for all phases)
+ Projection 1: STATIC Search Horizon (15 Batches for all phases)
    Total Netlists: {static_total_netlists:,}
    Estimated Time: {static_hours:.2f} hours
 
-🚀 Projection 2: DYNAMIC Search Horizon (15/25/40 Batches)
+ Projection 2: DYNAMIC Search Horizon (15/25/40 Batches)
    Total Netlists: {dynamic_total_netlists:,}
    Estimated Time: {dynamic_hours:.2f} hours
 ------------------------------------------------------------
 """
     
-    cost_text = f"""💰 SBU Compute Budget Estimator
+    cost_text = f""" SBU Compute Budget Estimator
    SBU Rate Applied:   {sbu_rate}
    Static Setup Cost:  {static_hours * sbu_rate:.2f} SBUs
    Dynamic Setup Cost: {dynamic_hours * sbu_rate:.2f} SBUs
@@ -135,9 +135,9 @@ transient states. Add a ~10% buffer to these estimates to be safe!
         
     # 4. Verify it
     if report_file.exists() and report_file.stat().st_size > 0:
-        print(f"✅ Success! Budget report saved to: {report_file}")
+        print(f" Success! Budget report saved to: {report_file}")
     else:
-        print("❌ Failed to generate budget report.")
+        print(" Failed to generate budget report.")
 
 if __name__ == "__main__":
     test_benchmark_report_generation()

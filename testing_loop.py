@@ -33,7 +33,7 @@ def main():
     }
 
     print("\n" + "="*60)
-    print("🚀 PHASE 1: RUNNING BASE MODEL BENCHMARK")
+    print(" PHASE 1: RUNNING BASE MODEL BENCHMARK")
     print("="*60)
     base_folder = run_inference(base_config)
 
@@ -44,12 +44,12 @@ def main():
     finetuned_config["run_settings"]["run_prefix"] = "Bench_FineTuned"
 
     print("\n" + "="*60)
-    print("🚀 PHASE 2: RUNNING FINE-TUNED MODEL BENCHMARK")
+    print(" PHASE 2: RUNNING FINE-TUNED MODEL BENCHMARK")
     print("="*60)
     finetuned_folder = run_inference(finetuned_config)
 
     print("\n" + "="*60)
-    print("🏆 BENCHMARK COMPLETE")
+    print(" BENCHMARK COMPLETE")
     print("="*60)
     print(f"Base Model Results saved to:       {base_folder}")
     print(f"Fine-tuned Model Results saved to: {finetuned_folder}")
