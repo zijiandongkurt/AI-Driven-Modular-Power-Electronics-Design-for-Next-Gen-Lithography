@@ -2,9 +2,9 @@
     "trials_per_task": 2,
     "base_config": {
         "run_settings": {
-            "n_batches": 15,
-            "sampled_states_per_batch": 2,
-            "candidates_per_prompt": 4,
+            "n_batches": 10,
+            "sampled_states_per_batch": 4,
+            "candidates_per_prompt": 3,
             "max_tokens": 1536,
             "update_plots_per_batch": false,
             "model_id": "",
@@ -12,8 +12,8 @@
         },
         "mcts_settings": {
             "temperature": 0.05,
-            "top_k": 15,
-            "epsilon": 0.15
+            "top_k": 9,
+            "epsilon": 0.3
         },
         "constraint_settings": {
             "dataset_path": "",
@@ -24,7 +24,7 @@
             "v_out": 20.0,
             "efficiency": 10.0,
             "volume": 2.0,
-            "component_cost": 1.0,
+            "component_cost": 0.05,
             "components": {
                 "mosfet": 1.0,
                 "diode": 1.0,
