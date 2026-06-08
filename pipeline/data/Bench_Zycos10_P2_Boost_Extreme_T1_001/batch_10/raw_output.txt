@@ -1,0 +1,196 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+**Top**
+
+
+### SPICE Netlist:
+* 5V to 24V boost, 120W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 5V to 24V boost, 120W
+Vin in 0 5
+L1 in sw 44u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+ 00_Phase_2_5V_to_24V_High_Current_Boost_g2_cand2_b6
+.tran 10n 1m
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 47u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+ Let's try increasing Vin and adjusting the inductor for a higher duty cycle.
+* 5V to 24V boost, 120W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 47u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+ Try a different approach.
+* 5V to 24V Boost
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+ This is the second time this has happened. Your submission will be penalized.
+* 5V to 24V Boost
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+* 5V to 24V Boost
+Vin in 0 5
+L1 in sw 47u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+* 5V to 24V boost, 120W
+Vin in 0 5
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 5V to 24V boost, 120W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+* 5V to 24V boost, 120W
+Vin in 0 5
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

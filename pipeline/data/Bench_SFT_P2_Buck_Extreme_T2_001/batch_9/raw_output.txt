@@ -1,0 +1,216 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 72V to 12V Buck Converter
+Vin in 0 72
+M1 in gate sw 0 NMOS W=2 L=1
+D1 0 sw DIODE
+L1 sw out 50u
+C1 out 0 220u
+Rload out 0 1.0204
+Vgate gate 0 PULSE(0 72 0 1n 1n 20u 100u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 72V to 12V Buck Converter
+Vin in 0 72
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 72 0 1n 1n 20u 100u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+* 60V to 12V Buck Converter
+Vin in 0 60
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 60 0 1n 1n 20u 100u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 72V to 12V Buck Converter
+Vin in 0 72
+M1 in gate sw 0 NMOS W=2 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.435
+Vgate gate 0 PULSE(0 72 0 1n 1n 1.66667u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+* 72V to 12V Buck Converter
+Vin in 0 72
+M1 in gate sw 0 NMOS W=2 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.435
+Vgate gate 0 PULSE(0 72 0 1n 1n 1.66667u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+* 72V to 12V Buck Converter
+Vin in 0 72
+M1 in gate sw 0 NMOS W=2 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.435
+Vgate gate 0 PULSE(0 72 0 1n 1n 1.66667u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+* 60V to 12V Buck, 2-phase interleaved
+Vin in 0 60
+M1 in gate1 sw1 0 NMOS W=2 L=1
+M2 in gate2 sw2 0 NMOS W=2 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 47u
+L2 sw2 out 47u
+C1 out 0 100u
+Rload out 0 0.48
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+Vgate2 gate2 0 PULSE(0 12 5u 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 60V to 12V Buck, 2-phase interleaved
+Vin in 0 60
+M1 in gate1 sw1 0 NMOS W=2 L=1
+M2 in gate2 sw2 0 NMOS W=2 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 47u
+L2 sw2 out 47u
+C1 out 0 100u
+Rload out 0 0.48
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+Vgate2 gate2 0 PULSE(0 12 5u 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+* 60V to 12V Buck, 2-phase interleaved
+Vin in 0 60
+M1 in gate1 sw1 0 NMOS W=2 L=1
+M2 in gate2 sw2 0 NMOS W=2 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 47u
+L2 sw2 out 47u
+C1 out 0 100u
+Rload out 0 0.48
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+Vgate2 gate2 0 PULSE(0 12 5u 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+* 72V to 12V Buck Converter
+Vin in 0 72
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 72 0 1n 1n 20u 100u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 60V to 12V Buck Converter
+Vin in 0 60
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 60 0 1n 1n 20u 100u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+* 84V to 12V Buck Converter
+Vin in 0 84
+M1 in gate sw 0 NMOS W=2 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 1.0204
+Vgate gate 0 PULSE(0 84 0 1n 1n 1.4286u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end

@@ -1,0 +1,222 @@
+{
+    "active_constraints": {
+        "_comment": "Phase 2: 72V EV Battery to 12V (Buck - 6:1)",
+        "vin_min": 60,
+        "vin_max": 84,
+        "vout_target": 12,
+        "efficiency_target": 0.89,
+        "power_in": 150
+    },
+    "circuits": {
+        "00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand12_b1": {
+            "fitness_score": -0.52,
+            "source": "validation_penalty",
+            "grpo_reward": -3.0518603324890137
+        },
+        "00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand10_b1": {
+            "fitness_score": 0.5293503583955121,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 7.548948829724792,
+                "volume_loss": 0.5738996495692179,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 1.1279016337279189,
+                "efficiency": 0.1351051170275208,
+                "total_volume_cm3": 28.694982478460894,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.48151651226783854,
+            "grpo_reward": 0.0462203323841095
+        },
+        "00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand11_b1": {
+            "fitness_score": 0.5290708024707734,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 7.640816888262346,
+                "volume_loss": 0.9228232168495751,
+                "component_cost_loss": 0.034999999999999996
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 1.891033853993252,
+                "efficiency": 0.1259183111737654,
+                "total_volume_cm3": 46.141160842478754,
+                "total_components": 7
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.5399142642691606,
+            "grpo_reward": 0.045395005494356155
+        },
+        "00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand1_b1": {
+            "fitness_score": 0.525483969478336,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 8.030843190881122,
+                "volume_loss": 0.6713465637523942,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 1.2561612520225125,
+                "efficiency": 0.0869156809118879,
+                "total_volume_cm3": 33.56732818761971,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.4908700686392186,
+            "grpo_reward": 0.03480532392859459
+        },
+        "00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand2_b1": {
+            "fitness_score": 0.5239190774190734,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 8.080094853874806,
+                "volume_loss": 0.5316322267113436,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 0.654866764319119,
+                "efficiency": 0.0819905146125194,
+                "total_volume_cm3": 26.58161133556718,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.44853436185707335,
+            "grpo_reward": 0.030185261741280556
+        },
+        "00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand3_b1": {
+            "fitness_score": 0.9707987465403354,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.4755840472456061,
+                "efficiency_loss": 0.5759293210883354,
+                "volume_loss": 0.8002869784305602,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 10.457949340576636,
+                "efficiency": 0.8324070678911665,
+                "total_volume_cm3": 40.01434892152801,
+                "total_components": 4
+            },
+            "grpo_reward": 1.3495436906814575
+        },
+        "00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand4_b1": {
+            "fitness_score": 0.5212445680776393,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 8.150316971580011,
+                "volume_loss": 0.8264519912627758,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 0.6172662761369967,
+                "efficiency": 0.0749683028419989,
+                "total_volume_cm3": 41.32259956313879,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.4460117158525272,
+            "grpo_reward": 0.022289063781499863
+        },
+        "00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand5_b1": {
+            "fitness_score": 0.5872757208546878,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 14.400645304479937,
+                "efficiency_loss": 7.492308459033586,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.034999999999999996
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 3.514528503235681,
+                "efficiency": 0.1407691540966415,
+                "total_volume_cm3": 10000.0,
+                "total_components": 7
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.6887887047052274,
+            "grpo_reward": 0.21723812818527222
+        },
+        "00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand6_b1": {
+            "fitness_score": 0.804391399765479,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 2.935825481894472,
+                "efficiency_loss": 7.582685793138325,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 8.16866506169555,
+                "efficiency": 0.1317314206861675,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": 0.8582459688186646
+        },
+        "00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand7_b1": {
+            "fitness_score": 0.5762828291672908,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 15.115223670994297,
+                "efficiency_loss": 7.575789369051639,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.034999999999999996
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 3.306547385821242,
+                "efficiency": 0.132421063094836,
+                "total_volume_cm3": 10000.0,
+                "total_components": 7
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.66763217580251,
+            "grpo_reward": 0.1847829520702362
+        },
+        "00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand8_b1": {
+            "fitness_score": 0.5760516681261941,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 15.134544466120367,
+                "efficiency_loss": 7.57257651268949,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.034999999999999996
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 3.300993026178112,
+                "efficiency": 0.1327423487310511,
+                "total_volume_cm3": 10000.0,
+                "total_components": 7
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.6670761670730463,
+            "grpo_reward": 0.18410034477710724
+        },
+        "00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand9_b1": {
+            "fitness_score": 0.5404711662788758,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.4376,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 27.9804723280404,
+                "efficiency": 1.0,
+                "total_volume_cm3": 21.88,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.22378470018942903,
+            "grpo_reward": 0.07905314862728119
+        }
+    }
+}

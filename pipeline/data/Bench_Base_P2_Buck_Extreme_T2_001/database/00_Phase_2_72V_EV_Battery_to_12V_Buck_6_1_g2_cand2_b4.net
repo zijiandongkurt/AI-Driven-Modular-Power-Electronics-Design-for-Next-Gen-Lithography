@@ -1,0 +1,23 @@
+* Generated: 2026-06-07T23:45:32
+* Constraint: Phase 2: 72V EV Battery to 12V (Buck - 6:1)
+*   vin_min = 60
+*   vin_max = 84
+*   vout_target = 12
+*   efficiency_target = 0.89
+*   power_in = 150
+* Candidate: 5 of 12
+* Grouped name: g2_cand2
+*
+* 60V to 12V Buck Converter
+Vin in 0 60
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 150u
+C1 out 0 470u
+Rload out 0 1
+Vgate gate 0 PULSE(0 12 0 1n 1n 2.5u 5u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

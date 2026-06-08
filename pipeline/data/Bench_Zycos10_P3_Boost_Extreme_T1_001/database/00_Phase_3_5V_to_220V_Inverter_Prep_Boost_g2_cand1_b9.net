@@ -1,0 +1,29 @@
+* Generated: 2026-06-08T14:55:55
+* Constraint: Phase 3: 5V to 220V Inverter Prep (Boost)
+*   vin_min = 4.5
+*   vin_max = 5.5
+*   vout_target = 220
+*   efficiency_target = 0.92
+*   power_in = 250
+* Candidate: 4 of 12
+* Grouped name: g2_cand1
+*
+Let's try a SEPIC topology for 5V to 220V conversion. This has lower voltage stress on the switch and is more efficient for such a large step-up.
+
+* 5V to 220V SEPIC, 250W
+Vin in 0 5
+L1 in sw1 22u
+M1 sw1 gate 0 0 NMOS W=1 L=1
+C1 sw1 sw2 22u
+L2 sw2 0 22u
+M2 sw2 gate2 0 0 NMOS W=1 L=1
+D1 sw2 out DIODE
+C2 out 0 100u
+Rload out 0 193.6
+Vgate  gate   0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

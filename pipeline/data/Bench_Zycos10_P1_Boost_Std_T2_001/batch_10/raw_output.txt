@@ -1,0 +1,218 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 3V to 5V Boost, 5W
+Vin in 0 3
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.5
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 3V to 5V Boost, 5W
+Vin in 0 3
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 47u
+Rload out 0 0.5
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 3V to 5V Boost, 5W
+Vin in 0 3
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.5
+Rbleed sw 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+ See the note above.
+
+* 3V to 5V Boost, 5W
+Vin in 0 3
+L1 in sw 47u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.5
+Rbleed sw 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+* 3V to 5V Boost, 5W
+Vin in 0 3
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.5
+Rbleed sw 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+* 3.3V to 5V Boost, 5W
+Vin in 0 3.3
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 5
+Rbleed sw 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 3.4u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 3.3V to 5V Boost, 5W
+Vin in 0 3.3
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 5
+Rbleed sw 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 3.4u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+* 3.3V to 5V Boost, 5W
+Vin in 0 3.3
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 5
+Rbleed sw 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 3.4u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+ The input is 3.3V to 5V Boost, 5W. Your previous attempt was a 10uH inductor, 4.16u on-time, 10u period. You must change at least one of these values. You may need to raise the inductor value or change the switching frequency.
+
+* 3.3V to 5V Boost, 5W
+Vin in 0 3.3
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.5
+Rbleed sw 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 3.3V to 5V Boost, 5W
+Vin in 0 3.3
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.5
+Rbleed sw 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+ For a Boost, consider a different switch position or L1 connection.
+* 3.3V to 5V Boost, 5W
+Vin in 0 3.3
+M1 in gate sw 0 NMOS W=1 L=1
+L1 sw out 10u
+D1 0 out DIODE
+C1 out 0 100u
+Rload out 0 0.5
+Rbleed sw 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

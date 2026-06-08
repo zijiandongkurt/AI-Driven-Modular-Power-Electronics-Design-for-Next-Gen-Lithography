@@ -1,0 +1,155 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+ Try again.
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+ 5V to 24V boost requires D=1-5/24=792m, t_on=7.92u for 100kHz.
+* 5V to 24V boost, 120W
+Vin in 0 5
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 7.92u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+ For a 5V to 24V boost, 120W, consider:
+- Higher inductor value for higher current
+- Longer t_on for higher duty cycle
+- Larger capacitor for lower ripple
+- Lower Rload for higher current
+* 5V to 24V boost, 120W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+* 5V to 24V boost, 120W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+** 10V to 24V boost, 120W
+Vin in 0 10
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+**/home/ai/ai-electrical-engineer/design-simulations/00_Phase_2_5V_to_24V_High_Current_Boost_cand7_b1.sim**
+**/home/ai/ai-electrical-engineer/design-simulations/00_Phase_2_5V_to_24V_High_Current_Boost_cand7_b1.sim**
+
+
+### SPICE Netlist:
+* 5V to 24V boost, 120W
+Vin in 0 5
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+

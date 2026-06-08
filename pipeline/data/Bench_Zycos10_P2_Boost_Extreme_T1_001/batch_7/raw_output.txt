@@ -1,0 +1,183 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+### SPICE Netlist:
+* 5V to 24V boost, 120W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 47u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 5V to 24V boost, 120W
+Vin in 0 5
+L1 in sw 47u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 47u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+ Try a different configuration, such as interleaving, changing the switching frequency, or using a different type of switch. You might need to increase the duty cycle to get a higher output voltage. For a boost converter, the output voltage is Vout = Vin/(1-D), so for Vin=5V and Vout=24V, D=1-5/24=0.7917. Your previous duty cycle was only 5.8u/10u=0.58. You need to increase t_on from 5.8u to 7.917u, and adjust the period accordingly to get 100kHz. Try D=791.7n, T=10u, t_on=791.7n, Rload=24^2/120=4.8, L1=220u, C1=100u, M1=NMOS.
+* 5V to 24V boost, 120W
+Vin in 0 5
+L1 in sw 220u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 791.7n 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+* 5V to 24V boost, 120W
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+* 5V to 24V boost, 120W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 5V to 24V boost, 120W
+Vin in 0 5
+L1 in sw 47u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+* 5V to 24V boost, 120W
+Vin in 0 5
+L1 in sw 47u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+ 240W to 24V from 5V, same as previous. Let's try a 24V to 5V buck instead. Wait, no, input is 5V, need 24V output. Let's increase inductor size and adjust switch timing for a more aggressive boost.
+
+* 5V to 24V boost, 120W
+Vin in 0 5
+L1 in sw 220u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+* 5V to 24V boost, 120W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

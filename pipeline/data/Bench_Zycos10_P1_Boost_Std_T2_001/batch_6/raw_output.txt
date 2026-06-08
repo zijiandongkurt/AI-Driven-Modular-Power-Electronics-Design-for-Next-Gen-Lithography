@@ -1,0 +1,137 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 3.3V to 5V Boost, 5W
+Vin in 0 3.3
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.5
+Rbleed sw 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 3.3V to 5V Boost, 5W
+Vin in 0 3.3
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.5
+Rbleed sw 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+ 3.0V to 5V boost, 5W
+Vin in 0 3.0
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.5
+Rbleed sw 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+ Try a different switching configuration. Try changing the gate timing (t_on, period) to change the duty cycle. Try a different component size for the inductor or capacitor. Or use a different circuit topology. Do not submit the same netlist again. You will be scored as 0 for this attempt.
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+* 3V to 5V Boost, 5W
+Vin in 0 3
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.5
+Rbleed sw 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 3V to 5V Boost, 5W
+Vin in 0 3
+L1 in sw 47u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.5
+Rbleed sw 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+

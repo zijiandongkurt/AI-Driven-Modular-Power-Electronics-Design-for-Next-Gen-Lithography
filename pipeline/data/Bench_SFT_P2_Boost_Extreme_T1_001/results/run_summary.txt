@@ -1,0 +1,78 @@
+=== MCTS INFERENCE SUMMARY: Bench_SFT_P2_Boost_Extreme_T1_001 ===
+Batches Completed: 10 / 10
+Total Time Elapsed: 1693.33 sec (28.22 min)
+Average Time per Batch: 169.33 sec
+Average Time per Netlist: 14.23 sec
+Netlists Generated per Batch: 12
+
+--- SIMULATION PARAMETERS ---
+Sampled States per Batch: 4
+Candidates per Prompt: 3
+MCTS Temperature: 0.05
+LLM Max Tokens: 1536
+
+--- TOPOLOGY YIELD ---
+Total Candidates Generated: 119
+Valid Topologies: 116
+Invalid Topologies: 3
+Validity Rate: 97.5%
+
+Unique Topologies (Globally): 8
+Exact Duplicates (Globally):  111
+Global Uniqueness Rate: 6.7%
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.6544 (00_Phase_2_5V_to_24V_High_Current_Boost_cand12_b1)
+  Batch 1 Best DB Score: 0.6544 (00_Phase_2_5V_to_24V_High_Current_Boost_cand12_b1)
+  Batch 2 Best DB Score: 0.6544 (00_Phase_2_5V_to_24V_High_Current_Boost_cand12_b1)
+  Batch 3 Best DB Score: 0.6544 (00_Phase_2_5V_to_24V_High_Current_Boost_cand12_b1)
+  Batch 4 Best DB Score: 0.6544 (00_Phase_2_5V_to_24V_High_Current_Boost_cand12_b1)
+  Batch 5 Best DB Score: 0.6544 (00_Phase_2_5V_to_24V_High_Current_Boost_cand12_b1)
+  Batch 6 Best DB Score: 0.6544 (00_Phase_2_5V_to_24V_High_Current_Boost_cand12_b1)
+  Batch 7 Best DB Score: 0.6544 (00_Phase_2_5V_to_24V_High_Current_Boost_cand12_b1)
+  Batch 8 Best DB Score: 0.6544 (00_Phase_2_5V_to_24V_High_Current_Boost_cand12_b1)
+  Batch 9 Best DB Score: 0.6544 (00_Phase_2_5V_to_24V_High_Current_Boost_cand12_b1)
+  Batch 10 Best DB Score: 0.6544 (00_Phase_2_5V_to_24V_High_Current_Boost_cand12_b1)
+
+=========================================
+--- BEST NETLIST METRICS ---
+Output Voltage: 10.9831 V
+Efficiency:     0.9223
+Total Volume:   25.0351 cm^3
+
+--- COMPONENT BREAKDOWN ---
+MOSFETs (M): 1
+Diodes (D): 1
+Inductors (L): 1
+Capacitors (C): 1
+Resistors (R): 1
+Voltage Sources (V): 2
+----------------------
+Total Components: 7
+
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-06-08T04:09:15
+* Constraint: Phase 2: 5V to 24V High Current (Boost)
+*   vin_min = 4.5
+*   vin_max = 5.5
+*   vout_target = 24
+*   efficiency_target = 0.88
+*   power_in = 120
+* Candidate: 12 of 12
+*
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=10 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.save V(*) I(*)
+.end
+
+

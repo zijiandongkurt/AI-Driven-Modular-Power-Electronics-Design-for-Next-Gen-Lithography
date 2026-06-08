@@ -1,0 +1,216 @@
+{
+    "active_constraints": {
+        "_comment": "Phase 3: 277V Lighting to 3.3V Logic (Buck)",
+        "vin_min": 250,
+        "vin_max": 300,
+        "vout_target": 3.3,
+        "efficiency_target": 0.92,
+        "power_in": 200
+    },
+    "circuits": {
+        "00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_g1_cand1_b3": {
+            "fitness_score": -0.96,
+            "source": "validation_penalty",
+            "grpo_reward": -3.306683301925659
+        },
+        "00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_g1_cand2_b3": {
+            "fitness_score": 0.7986715179778843,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.8092290890026588,
+                "efficiency_loss": 9.00912548896495,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 1.2884967201087405,
+                "efficiency": 0.0190874511035051,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.9472184922417494,
+            "grpo_reward": 0.32332876324653625
+        },
+        "00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_g1_cand3_b3": {
+            "fitness_score": 0.7764517328944065,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 1.144451806778488,
+                "efficiency_loss": 9.07837840628602,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 0.9078756232393682,
+                "efficiency": 0.012162159371398,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.8946536162990667,
+            "grpo_reward": 0.2774655818939209
+        },
+        "00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_g2_cand1_b3": {
+            "fitness_score": 0.8267537385055568,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.0013039519561589346,
+                "efficiency_loss": 9.08378140983765,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 3.2192549705505367,
+                "efficiency": 0.011621859016235,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": 0.3812922239303589
+        },
+        "00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_g2_cand2_b3": {
+            "fitness_score": 0.8267537385055568,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.0013039519561589346,
+                "efficiency_loss": 9.08378140983765,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 3.2192549705505367,
+                "efficiency": 0.011621859016235,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": 0.3812922239303589
+        },
+        "00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_g2_cand3_b3": {
+            "fitness_score": 0.8267537385055568,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.0013039519561589346,
+                "efficiency_loss": 9.08378140983765,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 3.2192549705505367,
+                "efficiency": 0.011621859016235,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": 0.3812922239303589
+        },
+        "00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_g3_cand1_b3": {
+            "fitness_score": 0.727446459812275,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 2.1716082084521284,
+                "efficiency_loss": 9.198487235264658,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 0.0048458242047847,
+                "efficiency": 0.0001512764735342,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.7813179338614377,
+            "grpo_reward": 0.1763155311346054
+        },
+        "00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_g3_cand2_b3": {
+            "fitness_score": 0.7503907734927453,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 1.6579621550469856,
+                "efficiency_loss": 9.072283862227264,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 0.4207968506486158,
+                "efficiency": 0.0127716137772735,
+                "total_volume_cm3": 108.38379140724184,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.8316193354200564,
+            "grpo_reward": 0.22367411851882935
+        },
+        "00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_g3_cand3_b3": {
+            "fitness_score": 0.727446459812275,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 2.1716082084521284,
+                "efficiency_loss": 9.198487235264658,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 0.0048458242047847,
+                "efficiency": 0.0001512764735342,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.7813179338614377,
+            "grpo_reward": 0.1763155311346054
+        },
+        "00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_g4_cand1_b3": {
+            "fitness_score": 0.8267537385055568,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.0013039519561589346,
+                "efficiency_loss": 9.08378140983765,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 3.2192549705505367,
+                "efficiency": 0.011621859016235,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": 0.3812922239303589
+        },
+        "00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_g4_cand2_b3": {
+            "fitness_score": 0.8189239522121091,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.5185681485242934,
+                "efficiency_loss": 9.05340651467951,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.034999999999999996
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 1.6897699721401702,
+                "efficiency": 0.014659348532049,
+                "total_volume_cm3": 10000.0,
+                "total_components": 7
+            },
+            "grpo_reward": 0.36513105034828186
+        },
+        "00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_g4_cand3_b3": {
+            "fitness_score": 0.7579532404400777,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 1.4955439567714537,
+                "efficiency_loss": 9.078588255988576,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 0.5654580303353781,
+                "efficiency": 0.0121411744011425,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.8498620001444115,
+            "grpo_reward": 0.2392835170030594
+        }
+    }
+}

@@ -1,0 +1,125 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+ You have 5 remaining retries.
+.tran 10n 1m
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+ This is not a valid solution. Try again.
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+ The system will not score this response as a new attempt. Please try again.
+.top
+.tran 10n 1m
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+Vin in 0 5
+L1 in sw 44u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 10u 20u)
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+ Let's try a different approach for the 5V to 220V boost. Instead of a single switch, let's use a higher inductance and adjust the duty cycle for higher voltage gain.
+
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+ Please try again.
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+ Try interleaving two-phase boost, or using a different switching frequency.
+
+* 5V to 220V Boost, 250W
+Vin in 0 5
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 58u 100u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end

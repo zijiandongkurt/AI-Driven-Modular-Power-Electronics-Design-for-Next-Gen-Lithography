@@ -1,0 +1,213 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 60V to 12V Buck, 150W
+Vin in 0 60
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 22u
+C1 out 0 220u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 60V to 12V Interleaved 2-Phase Buck
+Vin in 0 60
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 47u
+L2 sw2 out 47u
+C1 out 0 470u
+Rload out 0 0.96
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+ 1/3 attempts remaining.
+* 60V to 12V Buck
+Vin in 0 60
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 10u
+C1 out 0 220u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 60V to 12V Interleaved 2-Phase Buck
+Vin in 0 60
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 47u
+L2 sw2 out 47u
+C1 out 0 220u
+Rload out 0 0.96
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+ The original submission had these parameters:
+Vin=60V, D=58u, Rload=0.96
+You must change at least one of these parameters.
+* 60V to 12V Interleaved 2-Phase Buck
+Vin in 0 60
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 10u
+L2 sw2 out 10u
+C1 out 0 100u
+Rload out 0 0.96
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+* 60V to 12V Buck, 150W
+Vin in 0 60
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 10u
+C1 out 0 100u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 8.33u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+* 60V to 12V Buck, 150W
+Vin in 0 60
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 8.33u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+ The netlist is unchanged from the previous submission. This is invalid, and will not be scored. The previous attempt is shown above, and you must avoid it. Please try again. Your response will be scored only if it is different from previous attempts. You may change the topology (e.g. from 2-phase to 1-phase), or change component values.
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+* 60V to 12V Buck, 150W
+Vin in 0 60
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 22u
+C1 out 0 100u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+ The previous netlist had:
+  - 60V to 12V Buck, 150W
+  - L1 sw out 47u
+  - Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+
+You must modify the circuit to produce a different Vout. The previous circuit was a 60V to 12V buck with 4.7995V output. You must change the topology, duty cycle, or component values to get a different Vout. You can try a different switching frequency, a different inductor value, or a different topology like a SEPIC or boost. You must avoid outputting the same netlist again.
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 60V to 12V Buck, 150W
+Vin in 0 60
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 220u
+C1 out 0 100u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+* 60V to 12V Buck, 150W
+Vin in 0 60
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 470u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

@@ -1,0 +1,214 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=2 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=2 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+ The system will now terminate and not score your new attempt. You must start a new iteration. Please change your design. For example, you could:
+  - Change the topology (e.g. from boost to SEPIC)
+  - Adjust the duty cycle or switching frequency
+  - Modify inductor or capacitor values
+  - Use a different MOSFET model (if allowed)
+  - Adjust the gate drive timing parameters
+  - Change the number of phases or parallel devices
+  - Use a different configuration for the same topology
+  - Try a different approach to meet the constraints
+
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 220u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=2 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=2 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=2 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end

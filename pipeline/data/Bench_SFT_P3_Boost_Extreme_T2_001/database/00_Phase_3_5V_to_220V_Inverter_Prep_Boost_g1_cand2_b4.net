@@ -1,0 +1,23 @@
+* Generated: 2026-06-08T06:56:54
+* Constraint: Phase 3: 5V to 220V Inverter Prep (Boost)
+*   vin_min = 4.5
+*   vin_max = 5.5
+*   vout_target = 220
+*   efficiency_target = 0.92
+*   power_in = 250
+* Candidate: 2 of 12
+* Grouped name: g1_cand2
+*
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 47u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.save V(*) I(*)
+.end

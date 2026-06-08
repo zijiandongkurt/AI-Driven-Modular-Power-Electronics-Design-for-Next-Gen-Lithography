@@ -1,0 +1,169 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+ The SEPIC topology is not suitable for this buck conversion.
+* 20V to 12V Buck, 30W
+Vin in 0 24
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+ The previous circuit was a SEPIC, try a different topology like buck instead. Also, the gate drive timing was 5.8u, which is 100kHz — you might need a different frequency for better performance. The previous circuit had 100u inductor, 47u cap, etc. You need to change component values to match the 20V to 12V buck conversion. The new netlist must be a different topology, not SEPIC, and have different component values and gate timing.
+* 24V to 12V Buck, 30W
+Vin in 0 24
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 100u
+Rload out 0 4.8
+Rbleed sw 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+* 20V to 12V Buck, 30W
+Vin in 0 20
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+ This is not acceptable. Try again.
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+* 20V to 12V Buck, 60V/12V interleaved 2-phase
+Vin in 0 20
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 10u
+L2 sw2 out 10u
+C1 out 0 220u
+Rload out 0 0.48
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 20V to 12V Buck, 30W
+Vin in 0 20
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.48
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+* 20V to 12V Buck, 30W
+Vin in 0 20
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 100u
+Rload out 0 0.48
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+* 20V to 12V SEPIC, 30W
+Vin in 0 20
+L1 in sw1 220u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+C1 sw1 sw2 47u
+L2 sw2 0 220u
+M2 sw2 gate2 0 0 NMOS W=1 L=1
+D1 sw2 out DIODE
+C2 out 0 100u
+Rload out 0 4.8
+Rbleed sw1 0 1Meg
+Rbleed1 sw2 0 1Meg
+Vgate  gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate1 gate2 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+

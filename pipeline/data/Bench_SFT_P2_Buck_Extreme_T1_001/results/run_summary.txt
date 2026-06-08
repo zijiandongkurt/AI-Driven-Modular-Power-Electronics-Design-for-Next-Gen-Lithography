@@ -1,0 +1,79 @@
+=== MCTS INFERENCE SUMMARY: Bench_SFT_P2_Buck_Extreme_T1_001 ===
+Batches Completed: 10 / 10
+Total Time Elapsed: 1530.63 sec (25.51 min)
+Average Time per Batch: 153.06 sec
+Average Time per Netlist: 12.76 sec
+Netlists Generated per Batch: 12
+
+--- SIMULATION PARAMETERS ---
+Sampled States per Batch: 4
+Candidates per Prompt: 3
+MCTS Temperature: 0.05
+LLM Max Tokens: 1536
+
+--- TOPOLOGY YIELD ---
+Total Candidates Generated: 120
+Valid Topologies: 117
+Invalid Topologies: 3
+Validity Rate: 97.5%
+
+Unique Topologies (Globally): 31
+Exact Duplicates (Globally):  89
+Global Uniqueness Rate: 25.8%
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.8199 (00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_g3_cand1_b4)
+  Batch 1 Best DB Score: 0.8044 (00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand11_b1)
+  Batch 2 Best DB Score: 0.8149 (00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_g3_cand2_b2)
+  Batch 3 Best DB Score: 0.8177 (00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_g3_cand2_b3)
+  Batch 4 Best DB Score: 0.8199 (00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_g3_cand1_b4)
+  Batch 5 Best DB Score: 0.8199 (00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_g3_cand1_b4)
+  Batch 6 Best DB Score: 0.8199 (00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_g3_cand1_b4)
+  Batch 7 Best DB Score: 0.8199 (00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_g3_cand1_b4)
+  Batch 8 Best DB Score: 0.8199 (00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_g3_cand1_b4)
+  Batch 9 Best DB Score: 0.8199 (00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_g3_cand1_b4)
+  Batch 10 Best DB Score: 0.8199 (00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_g3_cand1_b4)
+
+=========================================
+--- BEST NETLIST METRICS ---
+Output Voltage: 8.9924 V
+Efficiency:     0.1184
+Total Volume:   10000.0000 cm^3
+
+--- COMPONENT BREAKDOWN ---
+MOSFETs (M): 1
+Diodes (D): 1
+Inductors (L): 1
+Capacitors (C): 1
+Resistors (R): 1
+Voltage Sources (V): 2
+----------------------
+Total Components: 7
+
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-06-08T03:22:04
+* Constraint: Phase 2: 72V EV Battery to 12V (Buck - 6:1)
+*   vin_min = 60
+*   vin_max = 84
+*   vout_target = 12
+*   efficiency_target = 0.89
+*   power_in = 150
+* Candidate: 7 of 12
+* Grouped name: g3_cand1
+*
+* 72V to 12V Buck, 150W
+Vin in 0 72
+M1 in gate sw 0 NMOS W=2 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 0.14285714285714285 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+

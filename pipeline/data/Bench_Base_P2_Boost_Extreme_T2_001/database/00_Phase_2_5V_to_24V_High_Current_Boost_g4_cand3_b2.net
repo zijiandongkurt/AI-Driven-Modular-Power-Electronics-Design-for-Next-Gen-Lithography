@@ -1,0 +1,23 @@
+* Generated: 2026-06-08T00:08:50
+* Constraint: Phase 2: 5V to 24V High Current (Boost)
+*   vin_min = 4.5
+*   vin_max = 5.5
+*   vout_target = 24
+*   efficiency_target = 0.88
+*   power_in = 120
+* Candidate: 12 of 12
+* Grouped name: g4_cand3
+*
+* 5V to 24V Boost Converter
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 470u
+Rload out 0 1
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

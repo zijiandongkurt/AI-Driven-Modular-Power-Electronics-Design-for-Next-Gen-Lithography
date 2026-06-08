@@ -1,0 +1,234 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+ You may not submit the same netlist again.
+[SYSTEM WARNING]: You have already outputted this netlist. You are not allowed to repeat it.
+
+Okay, let's tackle this problem. The user wants a non-isolated DC/DC converter that steps down from 60-84V to 12V with high efficiency. The previous attempt had issues with floating nodes and current paths. Let me figure out what went wrong.
+
+First, looking at the previous netlist, there were two MOSFETs (M1 and M2) and two gate drives. But the topology might have been incorrect. The user mentioned a Buck-Boost converter, but maybe the correct topology is a Buck since the output is lower than the input. Wait, the original constraint says "Buck - 6:1", so it's a Buck converter. The previous attempt might have used a wrong configuration.
+
+In the previous netlist, M1 was connected from in to gate to sw, and M2 from sw to gate2 to 0. That looks like a half-bridge configuration, but for a Buck converter, you only need one MOSFET and a diode. The presence of two MOSFETs might have caused issues with the current path and floating nodes. Also, the inductor was connected from in to sw, which is correct for a Buck, but the diode was from 0 to out, which might not be the right placement. In a Buck converter, the diode is usually in parallel with the inductor, allowing current to flow when the MOSFET is off.
+
+Another problem was the floating nodes. The previous netlist had sw as a node connected to the inductor and the MOSFETs. Since it's connected to reactive components (inductor and MOSFETs), it needed an Rbleed resistor. The user's feedback mentioned that the floating_nodes test failed, which probably means that the sw node wasn't properly bled to ground. So, adding Rbleed to sw would fix that.
+
+Also, the gate drives for both MOSFETs were set to the same pulse, which might not be correct. In a Buck converter, only one MOSFET is used, so having two might be unnecessary. The previous attempt might have mistakenly used a half-bridge configuration instead of a simple Buck.
+
+So, the correct approach is to use a single MOSFET, a diode, an inductor, and a capacitor. The inductor should be between the input and the switch node (sw), the MOSFET between sw and GND, the diode from sw to output, and the capacitor from output to GND. The gate drive should control the MOSFET's on/off state.
+
+Calculating component values: The duty cycle for a Buck converter is D = Vout / Vin. Since Vin varies from 60V to 84V, and Vout is 12V, the duty cycle would be around 12/60=0.2 to 12/84≈0.143. Let's average it to around 0.17 or 0.18. Let's choose a switching frequency, say 100kHz, which is common. The period is 10uS, so t_on would be 0.17*10uS = 1.7uS. But the previous example used 4.16uS for a 10uS period, which gives a 41.6% duty cycle. Wait, that's not right. Oh, in the example given, the duty cycle was 4.16u/10u = 41.6%, but that's for a different voltage. So I need to adjust that.
+
+Wait, for this case, the duty cycle should be around 12/60=0.2 (20%) to 12/84≈14.3%. Let's pick a switching frequency, say 100kHz (period 10uS). For the minimum input voltage (60V), duty cycle D = 12/60 = 0.2, so t_on = 0.2 * 10uS = 2uS. Let's set the period to 10uS and t_on to 2uS. That would give a 20% duty cycle at 100kHz.
+
+Next, inductor value: The inductor value can be calculated using the formula L = (Vin * D) / (Iripple * f_sw). Assuming a 30% ripple current, and power in is 150W. The output current is 150W / 12V = 12.5A. The ripple current is 0.3*12.5A = 3.75A. So L = (60V * 0.2) / (3.75A * 100kHz) = 12 / 375000 = 32uH. Let's round to 33uH.
+
+Capacitor value: C = Iripple / (8 * f_sw * Vripple). Assuming Vripple of 0.1V, C = 3.75A / (8 * 100kHz * 0.1V) = 3.75 / 8000 = 468.75uF. Let's use 470uF.
+
+The load resistor is Rload = Vout^2 / Power_out. Power_out is efficiency * power_in = 0.89 * 150 = 133.5W. So Rload = (12^2)/133.5 ≈ 144/133.5 ≈ 1.08 ohms. So 1.08 ohms.
+
+Now, ensuring all nodes are properly bled. The switch node (sw) is connected to the inductor and the MOSFET. Since it's a floating node, add Rbleed to ground. Let's use 1Meg ohm.
+
+Putting it all together: Vin is 72V (midpoint of 60-84), Rload is 1.08 ohms, inductor 33uH, capacitor 470uF, MOSFET with gate drive of 2uS on, 10uS period. The diode is from sw to out, and capacitor from out to 0.
+
+Also, check the gate drive parameters: Vgate should be PULSE(0 12 0 1n 1n 2u 10u). The previous example had 4.16u for a 10u period, but here we need 2u.
+
+So the corrected netlist would be:
+
+* 60-84V to 12V Buck Converter
+Vin in 0 72
+M1 in gate sw 0 NMOS W=1 L=1
+D1 sw out DIODE
+L1 in sw 33u
+C1 out 0 470u
+Rload out 0 1.08
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 60-84V to 12V Buck Converter
+Vin in 0 72
+M1 in gate sw 0 NMOS W=1 L=1
+D1 sw out DIODE
+L1 in sw 47u
+C1 out 0 220u
+Rload out 0 1
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+* 60-84V to 12V Buck Converter
+Vin in 0 72
+M1 in gate sw 0 NMOS W=1 L=1
+D1 sw out DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 1
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 60V to 12V Buck Converter
+Vin in 0 72
+M1 in gate sw 0 NMOS W=1 L=1
+D1 sw out DIODE
+L1 sw out 100u
+C1 out 0 1000u
+Rload out 0 0.1
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+* 60V to 12V Buck-Boost Converter
+Vin in 0 72
+M1 in gate sw 0 NMOS W=1 L=1
+M2 sw gate2 0 0 NMOS W=1 L=1
+D1 out 0 DIODE
+L1 in sw 100u
+C1 out 0 1000u
+Rload out 0 0.1
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+Vgate2 gate2 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+* 60V to 12V Buck Converter
+Vin in 0 72
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 1000u
+Rload out 0 0.1
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+* 60V to 12V Buck Converter
+Vin in 0 60
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 330u
+C1 out 0 470u
+Rload out 0 1
+Vgate gate 0 PULSE(0 12 0 1n 1n 2.5u 5u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 60V to 12V Buck Converter
+Vin in 0 60
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 470u
+C1 out 0 1000u
+Rload out 0 1
+Vgate gate 0 PULSE(0 12 0 1n 1n 2.5u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+* 60V to 12V Buck Converter
+Vin in 0 60
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 150u
+C1 out 0 470u
+Rload out 0 1
+Vgate gate 0 PULSE(0 12 0 1n 1n 2.5u 5u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+* 60V to 12V Buck Converter
+Vin in 0 60
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 470u
+Rload out 0 1
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 60V to 12V Buck Converter
+Vin in 0 60
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 470u
+Rload out 0 1
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+* 60V to 12V Buck Converter
+Vin in 0 72
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 470u
+Rload out 0 1
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end

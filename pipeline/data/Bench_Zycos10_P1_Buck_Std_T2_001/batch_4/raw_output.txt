@@ -1,0 +1,131 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+ For a buck converter, try adjusting Rload and L1 to match the new Vout and power level.
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+ Try a different switching frequency, inductor size, or duty cycle to get a better match. If you can't find a better option, at least change the component values. Do not copy the same netlist again.
+* 24V to 12V Buck, 30W
+Vin in 0 24
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+ Do not repeat the same netlist.
+* 24V to 12V Buck, 30W
+Vin in 0 20
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+ Do not copy from previous iterations. This is your only chance to fix this. Please start over and output a new netlist.
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+**top**
+
+
+### SPICE Netlist:
+* 20V to 12V Buck, 30W
+Vin in 0 20
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 100u
+Rload out 0 0.48
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+ This is not a valid solution. Try again.
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+ Please try again with different parameters. Do not repeat the same circuit. This is a new design iteration. Your previous design was a SEPIC, try a different topology like a buck or buck-boost instead. Make sure to calculate new values for components and Vgate pulse timing. You must also make sure that the new netlist has a different number of components and different node names. Do not copy any values from the previous netlist.
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+* 20V to 12V SEPIC, 30W
+Vin in 0 20
+L1 in sw1 100u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+C1 sw1 sw2 47u
+L2 sw2 0 100u
+M2 sw2 gate2 0 0 NMOS W=1 L=1
+D1 sw2 out DIODE
+C2 out 0 220u
+Rload out 0 4.8
+Rbleed sw1 0 1Meg
+Rbleed1 sw2 0 1Meg
+Vgate  gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate1 gate2 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

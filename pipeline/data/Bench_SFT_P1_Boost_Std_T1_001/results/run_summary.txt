@@ -1,0 +1,80 @@
+=== MCTS INFERENCE SUMMARY: Bench_SFT_P1_Boost_Std_T1_001 ===
+Batches Completed: 10 / 10
+Total Time Elapsed: 1439.43 sec (23.99 min)
+Average Time per Batch: 143.94 sec
+Average Time per Netlist: 12.52 sec
+Netlists Generated per Batch: 12
+
+--- SIMULATION PARAMETERS ---
+Sampled States per Batch: 4
+Candidates per Prompt: 3
+MCTS Temperature: 0.05
+LLM Max Tokens: 1536
+
+--- TOPOLOGY YIELD ---
+Total Candidates Generated: 115
+Valid Topologies: 112
+Invalid Topologies: 3
+Validity Rate: 97.4%
+
+Unique Topologies (Globally): 9
+Exact Duplicates (Globally):  106
+Global Uniqueness Rate: 7.8%
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.9891 (00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g4_cand1_b2)
+  Batch 1 Best DB Score: 0.9540 (00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_cand3_b1)
+  Batch 2 Best DB Score: 0.9891 (00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g4_cand1_b2)
+  Batch 3 Best DB Score: 0.9891 (00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g4_cand1_b2)
+  Batch 4 Best DB Score: 0.9891 (00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g4_cand1_b2)
+  Batch 5 Best DB Score: 0.9891 (00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g4_cand1_b2)
+  Batch 6 Best DB Score: 0.9891 (00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g4_cand1_b2)
+  Batch 7 Best DB Score: 0.9891 (00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g4_cand1_b2)
+  Batch 8 Best DB Score: 0.9891 (00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g4_cand1_b2)
+  Batch 9 Best DB Score: 0.9891 (00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g4_cand1_b2)
+  Batch 10 Best DB Score: 0.9891 (00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g4_cand1_b2)
+
+=========================================
+--- BEST NETLIST METRICS ---
+Output Voltage: 4.2360 V
+Efficiency:     0.7497
+Total Volume:   28.0322 cm^3
+
+--- COMPONENT BREAKDOWN ---
+MOSFETs (M): 1
+Diodes (D): 1
+Inductors (L): 1
+Capacitors (C): 1
+Resistors (R): 2
+Voltage Sources (V): 2
+----------------------
+Total Components: 8
+
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-06-08T02:29:38
+* Constraint: Phase 1: 3.3V Logic to 5V Rail (Boost)
+*   vin_min = 3.0
+*   vin_max = 3.6
+*   vout_target = 5
+*   efficiency_target = 0.75
+*   power_in = 5
+* Candidate: 10 of 12
+* Grouped name: g4_cand1
+*
+* 3.3V to 5V Boost, 5W
+Vin in 0 3.3
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.5
+Rbleed sw 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.save V(*) I(*)
+.end
+
+

@@ -1,0 +1,216 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 250V to 3.3V Sync buck (M2 replaces D1), 200W
+Vin in 0 250
+M1 in gate sw 0 NMOS W=2 L=1
+M2 sw gate2 0 0 NMOS W=2 L=1
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.054
+Vgate  gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+Vgate2 gate2 0 PULSE(0 12 5u 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 250V to 3.3V Buck, 200W
+Vin in 0 250
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.05445
+Vgate gate 0 PULSE(0 250 0 1n 1n 13.2u 100u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1n 10m
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+* 250V to 3.3V Interleaved 2-Phase Buck, 200W
+Vin in 0 250
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 47u
+L2 sw2 out 47u
+C1 out 0 220u
+Rload out 0 0.054
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 13.5u 50u)
+Vgate2 gate2 0 PULSE(0 12 25u 1n 1n 13.5u 50u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 250V to 3.3V Interleaved 2-Phase Buck, 200W
+Vin in 0 250
+M1 in gate1 sw1 0 NMOS W=2 L=1
+M2 in gate2 sw2 0 NMOS W=2 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 47u
+L2 sw2 out 47u
+C1 out 0 220u
+Rload out 0 0.05445
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 13.5u 50u)
+Vgate2 gate2 0 PULSE(0 12 25u 1n 1n 13.5u 50u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+* 250V to 3.3V Sync buck (M2 replaces D1), 200W
+Vin in 0 250
+M1 in gate1 sw 0 NMOS W=1 L=1
+M2 sw gate2 0 0 NMOS W=1 L=1
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.0549
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 1.32u 10u)
+Vgate2 gate2 0 PULSE(0 12 1.65u 1n 1n 8.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+* 250V to 3.3V Sync buck (M2 replaces D1), 200W
+Vin in 0 250
+M1 in gate sw 0 NMOS W=1 L=1
+M2 sw gate2 0 0 NMOS W=1 L=1
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.054
+Vgate  gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+Vgate2 gate2 0 PULSE(0 12 5u 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+* 250V to 3.3V Interleaved 2-Phase Buck, 200W
+Vin in 0 250
+M1 in gate1 sw1 0 NMOS W=2 L=1
+M2 in gate2 sw2 0 NMOS W=2 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 100u
+L2 sw2 out 100u
+C1 out 0 220u
+Rload out 0 0.05445
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 13.5u 100u)
+Vgate2 gate2 0 PULSE(0 12 50u 1n 1n 13.5u 100u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 250V to 3.3V Buck, 200W
+Vin in 0 250
+M1 in gate sw 0 NMOS W=2 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.05445
+Vgate gate 0 PULSE(0 12 0 1n 1n 13.5u 50u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1n 10m
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+* 250V to 3.3V async buck, 200W
+Vin in 0 250
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.054
+Vgate gate 0 PULSE(0 12 0 1n 1n 1.66u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+* 250V to 3.3V async buck, 200W
+Vin in 0 250
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.05445
+Vgate gate 0 PULSE(0 12 0 1n 1n 13.5u 10m)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 250V to 3.3V Sync Buck (M2 replaces D1)
+Vin in 0 250
+M1 in gate sw 0 NMOS W=1 L=1
+M2 sw gate2 0 0 NMOS W=1 L=1
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.054
+Vgate  gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+Vgate2 gate2 0 PULSE(0 12 5u 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+* 250V to 3.3V async buck, 200W
+Vin in 0 250
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.05445
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end

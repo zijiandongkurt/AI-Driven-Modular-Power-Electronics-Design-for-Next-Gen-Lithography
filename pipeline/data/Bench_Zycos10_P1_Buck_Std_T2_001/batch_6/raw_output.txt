@@ -1,0 +1,214 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 20V to 12V Buck Converter
+Vin in 0 20
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 470u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 24V to 12V Buck Converter
+Vin in 0 20
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 470u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+* 24V to 12V Buck Converter
+Vin in 0 24
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 470u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+ 00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g2_cand1_b5
+.tran 10n 1m
+.save V(*) I(*)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+Vin in 0 20
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+* 24V to 12V Buck, 30W
+Vin in 0 24
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+ Re-try with different values. Your score was 0.8645. You must improve it. 0.8645 is below the threshold of 0.95 for this constraint.
+.tran 10n 1m
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+Vin in 0 20
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 24V to 12V Buck, 30W
+Vin in 0 20
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+* 20V to 12V SEPIC, 30W
+Vin in 0 20
+L1 in sw1 100u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+C1 sw1 sw2 47u
+L2 sw2 0 100u
+M2 sw2 gate2 0 0 NMOS W=1 L=1
+D1 sw2 out DIODE
+C2 out 0 100u
+Rload out 0 4.8
+Rbleed sw1 0 1Meg
+Rbleed1 sw2 0 1Meg
+Vgate gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate1 gate2 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+ Try a different approach.
+
+* 20V to 12V SEPIC, 30W
+Vin in 0 20
+L1 in sw1 220u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+C1 sw1 sw2 47u
+L2 sw2 0 220u
+M2 sw2 gate2 0 0 NMOS W=1 L=1
+D1 sw2 out DIODE
+C2 out 0 100u
+Rload out 0 4.8
+Rbleed sw1 0 1Meg
+Rbleed1 sw2 0 1Meg
+Vgate  gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate1 gate2 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+ Do not copy your previous attempt.
+
+* 24V to 12V SEPIC, 30W
+Vin in 0 24
+L1 in sw1 100u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+C1 sw1 sw2 47u
+L2 sw2 0 100u
+M2 sw2 gate2 0 0 NMOS W=1 L=1
+D1 sw2 out DIODE
+C2 out 0 220u
+Rload out 0 4.8
+Rbleed sw1 0 1Meg
+Rbleed1 sw2 0 1Meg
+Vgate  gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate1 gate2 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

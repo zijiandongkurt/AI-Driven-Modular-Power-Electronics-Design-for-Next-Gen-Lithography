@@ -1,0 +1,19 @@
+* Generated: 2026-06-08T00:48:52
+* Constraint: Phase 3: 277V Lighting to 3.3V Logic (Buck)
+*   vin_min = 250
+*   vin_max = 300
+*   vout_target = 3.3
+*   efficiency_target = 0.92
+*   power_in = 200
+* Candidate: 12 of 12
+* Grouped name: g4_cand3
+*
+Let me look up the standard inductor calculation for a buck converter. The inductor value is typically calculated as L = (Vout * (Vin - Vout)) / (f * ΔI * Vin). Or perhaps L = (Vout / (f * ΔI)) * (1 / (1 - D)). Wait, maybe I should use the formula:
+
+ΔI = (Vin * D) / (f * L) - (Vout * (1 - D)) / (f * L) ?
+
+No, that doesn't seem right. Let me think again. During the on-time, the voltage across the inductor is Vin - Vout, and during the off-time, it's -Vout. The average over the switching period is zero. The ripple current is determined by the slope during on and off times.
+
+The peak-to-peak ripple current ΔI is (Vin - Vout) * D / (f * L) + Vout * (1 - D) / (f * L). Combining terms, ΔI = [ (Vin - Vout) * D + Vout * (1 - D) ] / (f * L) = [ Vin * D - Vout * D + Vout - Vout * D ] / (f * L) = [ Vin * D + Vout (1 - 2D) ] / (f * L). But this seems complicated. Alternatively, if we assume that the duty cycle D is small, then 1 - D ≈ 1, and the term simplifies to ΔI ≈ (Vin * D) / (f * L) + Vout / (f * L). But since D is small (0.012), maybe the first term is negligible compared to the second? Wait, no, because Vin is 275V and D is 0.012, so Vin * D = 3.3V, which is the same as Vout. So the two terms would be 3.3V / (f * L) + 3.3V / (f * L) = 6.6V / (f * L). Therefore, ΔI = 6.6 / (f * L). So solving for L: L = 6.6 / (f * ΔI).
+
+If I want a ripple current of 20% of the average current, which is 11.15A, then ΔI = 0.2 * 55.76 ≈ 11.15A. Let's say we want a smaller ripple, maybe 10%? Let's take 10% as 5.58

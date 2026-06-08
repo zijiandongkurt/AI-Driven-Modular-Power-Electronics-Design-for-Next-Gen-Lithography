@@ -1,0 +1,204 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 60V to 12V Buck, 150W
+Vin in 0 60
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 0.08333333333333334 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 60V to 12V Buck, 150W
+Vin in 0 60
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 0.08333333333333334 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+* 60V to 12V Buck, 150W
+Vin in 0 60
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 0.08333333333333334 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 72V to 12V Buck, 150W
+Vin in 0 72
+M1 in gate sw 0 NMOS W=2 L=1
+D1 0 sw DIODE
+L1 sw out 22u
+C1 out 0 100u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 0.16666666666666666 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+* 84V to 12V Buck, 150W
+Vin in 0 84
+M1 in gate sw 0 NMOS W=2 L=1
+D1 0 sw DIODE
+L1 sw out 10u
+C1 out 0 220u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 0.16666666666666666 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+* 72V to 12V Buck, 150W
+Vin in 0 72
+M1 in gate sw 0 NMOS W=2 L=1
+D1 0 sw DIODE
+L1 sw out 22u
+C1 out 0 100u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 0.16666666666666666 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+* 72V to 12V Buck, 150W
+Vin in 0 72
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 0.16666666666666666 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 72V to 12V Buck, 150W
+Vin in 0 72
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 0.16666666666666666 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+* 84V to 12V Buck, 150W
+Vin in 0 84
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 0.16666666666666666 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+* 72V to 12V Buck, 150W
+Vin in 0 72
+M1 in gate sw 0 NMOS W=2 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 2.78u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+ Do not repeat previous attempts. This will not pass validation.
+
+Topologies are categorized as:
+- Buck: Vin > Vout
+- Boost: Vin < Vout
+- SEPIC: Vin can be > or < Vout
+- Cuk: Vin can be > or < Vout
+- Inverting: Vin to -Vout
+
+You must choose a different topology or adjust the parameters to meet the requirements. Let's try a Buck topology this time.
+
+* 75V to 12V Buck, 150W
+Vin in 0 75
+M1 in gate sw 0 NMOS W=2 L=1
+D1 0 sw DIODE
+L1 sw out 220u
+C1 out 0 220u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+ Topology '00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand9_b1' was rejected in the previous iteration for the reason: validation_penalty. You must change something (topology, timing, duty cycle, or component values) to generate a new netlist. Topology '00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand9_b1' was rejected in the previous iteration for the reason: validation_penalty. You must change something (topology, timing, duty cycle, or component values) to generate a new netlist. Topology '00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand9_b1' was rejected in the previous iteration for the reason: validation_penalty. You must change something (topology, timing, duty cycle, or component values) to generate a new netlist. Topology '00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand9_b1' was rejected in the previous iteration for the reason: validation_penalty. You must change something (topology, timing, duty cycle, or component values) to generate a new netlist. Topology '00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand9_b1' was rejected in the previous iteration for the reason: validation_penalty. You must change something (topology, timing, duty cycle, or component values) to generate a new netlist. Topology '00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand9_b1' was rejected in the previous iteration for the reason: validation_penalty. You must change something (topology, timing, duty cycle, or component values) to generate a new netlist. Topology '00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand9_b1' was rejected in the previous iteration for the reason: validation_penalty. You must change something (topology, timing, duty cycle, or component values) to generate a new netlist. Topology '00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand9_b1' was rejected in the previous iteration for the reason: validation_penalty. You must change something (topology, timing, duty cycle, or component values) to generate a new netlist. Topology '00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand9_b1' was rejected in the previous iteration for the reason: validation_penalty. You must change something (topology, timing, duty cycle, or component values) to generate a new netlist. Topology '00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand9_b1' was rejected in the previous iteration for the reason: validation_penalty. You must change something (topology, timing, duty cycle, or component values) to generate a new netlist. Topology '00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand9_b1' was rejected in the previous iteration for the reason: validation_penalty. You must change something (topology, timing, duty cycle, or component values) to generate a new netlist. Topology '00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand9_b1' was rejected in the previous iteration for the reason: validation_penalty. You must change something (topology, timing, duty cycle, or component values) to generate a new netlist. Topology '00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand9_b1' was rejected in the previous iteration for the reason: validation_penalty. You must change something (topology, timing, duty cycle, or component values) to generate a new netlist. Topology '00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand9_b1' was rejected in the previous iteration for the reason: validation_penalty. You must change something (topology, timing, duty cycle, or component values) to generate a new netlist. Topology '00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand9_b1' was rejected in the previous iteration for the reason: validation_penalty. You must change something (topology, timing, duty cycle, or component values) to generate a new netlist. Topology '00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand9_b1' was rejected in the previous iteration for the reason: validation_penalty. You must change something (topology, timing, duty cycle, or component values) to generate a new netlist. Topology '00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand9_b1' was rejected in the previous iteration for the reason: validation_penalty. You must change something (topology, timing, duty cycle, or component values) to generate a new netlist. Topology '00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand9_b1' was rejected in the previous iteration for the reason: validation_penalty. You must change something (topology, timing, duty cycle, or component values) to generate a new netlist. Topology '00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand9_b1' was rejected in the previous iteration for the reason: validation_penalty. You must change something (topology, timing, duty cycle, or component values) to generate a new netlist. Topology '00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand9_b1' was rejected in the previous iteration for the reason: validation_penalty. You must change something (topology, timing, duty cycle, or component values) to generate a new netlist. Topology '00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand9_b1' was rejected in the previous iteration for the reason: validation_penalty. You must change something (topology, timing, duty cycle, or component values) to generate a new netlist. Topology '00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_cand9_b1' was rejected in the previous iteration for the reason: validation_penalty. You must change something (topology, timing, duty cycle, or component values) to generate a

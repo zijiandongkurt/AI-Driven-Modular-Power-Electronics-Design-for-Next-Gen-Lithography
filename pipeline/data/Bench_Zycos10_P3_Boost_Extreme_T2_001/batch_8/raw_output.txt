@@ -1,0 +1,160 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+ Try a different approach. For 5V to 220V conversion, consider a 220V half-bridge or boost topology with a larger inductor and more suitable duty cycle. Ensure your Vgate timing matches the required D=1-5/220=977m, t_on=9.77u, T=10u for 100kHz.
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 9.77u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+ 5V to 220V is a 44:1 step-up, which requires a 44:1 turns ratio transformer or a 44:1 boost. 44:1 boost requires 44V per H, which would be 1.88A for 250W. You need a larger inductor for a 10uH inductor at 5V to 220V.
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+ Try a 5V to 220V boost again, but this time with a different inductor value. Let's try 100uH instead of 47uH, and adjust the gate timing for 100kHz.
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+ 5V to 220V is a 44x boost, but your 5V->16.7V is only 3.3x. The switching time is 5.8u with 10u period (580kHz), but a 44x boost needs a 100kHz-1MHz switch. The inductor is 47u, but you need 10u-100u for 250W. The diode is a 1A D1, but you need a 5A D1. You need a bigger L1, bigger M1, and a bigger D1. The Rload is 193.6, but you need 220/220^2=0.045.
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.045
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 220u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+ 00_Phase_3_5V_to_220V_Inverter_Prep_Boost_g3_cand1_b5
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 47u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+

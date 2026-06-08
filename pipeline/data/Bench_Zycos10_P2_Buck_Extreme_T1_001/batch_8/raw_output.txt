@@ -1,0 +1,136 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+ No credit for repeating the same failed design. Try again.
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 60V to 12V Buck, 150W
+Vin in 0 60
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 10u
+C1 out 0 220u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+* 60V to 12V Buck, 100W
+Vin in 0 60
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 1.44
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+ Your netlist is identical to the previous attempt. The toplogy and component values must be changed. You must attempt a different design.
+* 84V to 12V Buck, 150W
+Vin in 0 84
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 10u
+C1 out 0 220u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+ Try a different approach, not the same netlist.
+* 72V to 12V Buck, 150W
+Vin in 0 72
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+ Your new netlist should be a distinct design. The old one had 4 components, this one has 4. You did not change the circuit at all.
+
+[SYSTEM WARNING]: Your new netlist is identical to the previous one, which is not allowed. You must change the topology, component values, or switching timing. Try using a different switching frequency or component values.
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+* 60V to 12V Buck, 150W
+Vin in 0 60
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.96
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

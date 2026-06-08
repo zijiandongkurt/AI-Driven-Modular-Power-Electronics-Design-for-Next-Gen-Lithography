@@ -1,0 +1,23 @@
+* Generated: 2026-06-08T12:43:25
+* Constraint: Phase 3: 277V Lighting to 3.3V Logic (Buck)
+*   vin_min = 250
+*   vin_max = 300
+*   vout_target = 3.3
+*   efficiency_target = 0.92
+*   power_in = 200
+* Candidate: 4 of 12
+* Grouped name: g2_cand1
+*
+* 250V to 3.3V Buck, 200W
+Vin in 0 250
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 100u
+Rload out 0 0.0545
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

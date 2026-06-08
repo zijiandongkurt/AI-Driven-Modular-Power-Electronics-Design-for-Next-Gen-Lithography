@@ -1,0 +1,175 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+ Rebooting solver...* 5V to 220V boost, 250W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+ 00_Phase_3_5V_to_220V_Inverter_Prep_Boost_cand5_b1
+.top
+.tran
+.model
+.save
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+ Try a different topology, or adjust the duty cycle and switching frequency to get a better Vout. The previous netlist had Vin=5V, L1=100u, D1=DIODE, C1=100u, Rload=193.6, Vgate=5.8u, 10u.
+
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+ 5V to 220V is a 44x boost. Your netlist used a 5.8u on-time in 10u period (58% duty). 5.8u/10u = 58% D, which is a 1.43x boost. Not a 44x boost. You must change the duty cycle to achieve a 44x boost, not a 1.43x boost. The gate pulse must be adjusted to get a high duty cycle (97.5% D) for a 44x boost. 4.5V to 220V is 44x boost. 220/4.5 = 48.89, so D should be 1 - 4.5/220 = 0.9773 (97.73% D). 97.73% D requires t_on = 9.77u, period = 10u. 10u period is 100kHz, which is reasonable for 5V to 220V boost. Rload = 220^2 / 250 = 193.6, which is correct. L1 in sw 100u is correct for 5V to 220V. M1 sw gate 0 0 NMOS is correct. D1 sw out DIODE is correct. C1 out 0 100u is correct. Vgate gate 0 PULSE(0 12 0 1n 1n 9.77u 10u) is the correct gate timing for 97.73% D. Your previous netlist used 5.8u/10u = 58% D, which was a 1.43x boost. You must change the gate pulse timing to 9.77u/10u = 97.73% D for a 44x boost. This will cause the circuit to work correctly and achieve the 220V output.
+.tran 10n 1m
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 9.77u 10u)
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+

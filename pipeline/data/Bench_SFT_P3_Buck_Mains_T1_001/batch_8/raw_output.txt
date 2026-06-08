@@ -1,0 +1,223 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 277V to 3.3V async buck, 200W
+Vin in 0 277
+M1 in gate sw 0 NMOS W=2 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.05445
+Vgate gate 0 PULSE(0 12 0 1n 1n 11.6u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 250V to 3.3V async buck, 200W
+Vin in 0 250
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.05445
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+* 250V to 3.3V async buck, 200W
+Vin in 0 250
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.05445
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 250V to 3.3V Buck, 200W
+Vin in 0 250
+M1 in gate1 sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.0549
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 1.32u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+* 277V to 3.3V Buck, 200W
+Vin in 0 277
+M1 in gate1 sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.0549
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 1.32u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+ Your previous netlist had a topological error: floating_nodes.
+* 277V to 3.3V Buck, 200W
+Vin in 0 277
+M1 in gate1 sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.0549
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 1.32u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+* 277V to 3.3V Buck, 200W
+Vin in 0 277
+M1 in gate sw 0 NMOS W=2 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.05445
+Vgate gate 0 PULSE(0 12 0 1n 1n 11.6u 50u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1n 10m
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+ You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle, or component values. You may need to increase the size of the inductor or the MOSFET, adjust the gate pulse width, or change the switching frequency.
+[SYSTEM WARNING]: You outputted the exact same circuit. You MUST change topology, timing, duty cycle,
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+* 277V to 3.3V Buck, 200W
+Vin in 0 277
+M1 in gate sw 0 NMOS W=2 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.05445
+Vgate gate 0 PULSE(0 12 0 1n 1n 11.6u 50u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1n 10m
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+* 277V to 3.3V Buck, 200W
+Vin in 0 277
+M1 in gate sw 0 NMOS W=10 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.05445
+Vgate gate 0 PULSE(0 12 0 1n 1n 11.6u 50u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1n 10m
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+ The system will penalize identical circuits.
+* 277V to 3.3V Buck, 200W
+Vin in 0 277
+M1 in gate sw 0 NMOS W=10 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.05445
+Vgate gate 0 PULSE(0 12 0 1n 1n 11.6u 50u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1n 10m
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+* 277V to 3.3V Buck, 200W
+Vin in 0 277
+M1 in gate sw 0 NMOS W=10 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.05445
+Vgate gate 0 PULSE(0 12 0 1n 1n 11.6u 50u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1n 10m
+.end

@@ -1,0 +1,170 @@
+{
+    "active_constraints": {
+        "_comment": "Phase 1: 24V Industrial to 12V Bus (Buck)",
+        "vin_min": 20,
+        "vin_max": 28,
+        "vout_target": 12,
+        "efficiency_target": 0.82,
+        "power_in": 30
+    },
+    "circuits": {
+        "00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g2_cand1_b2": {
+            "fitness_score": -0.89,
+            "source": "validation_penalty",
+            "grpo_reward": -1.1795897483825684
+        },
+        "00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g4_cand3_b2": {
+            "fitness_score": -0.89,
+            "source": "validation_penalty",
+            "grpo_reward": -1.1795897483825684
+        },
+        "00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g4_cand2_b2": {
+            "fitness_score": -0.89,
+            "source": "validation_penalty",
+            "grpo_reward": -1.1795897483825684
+        },
+        "00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g1_cand3_b2": {
+            "fitness_score": -0.89,
+            "source": "validation_penalty",
+            "grpo_reward": -1.1795897483825684
+        },
+        "00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g2_cand3_b2": {
+            "fitness_score": -0.89,
+            "source": "validation_penalty",
+            "grpo_reward": -1.1795897483825684
+        },
+        "00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g1_cand1_b2": {
+            "fitness_score": 0.7063125365141147,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 13.309210926934647,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.4424308522149658,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 3.842423482757074,
+                "efficiency": 0.8580935755859356,
+                "total_volume_cm3": 22.12154261074829,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.7235132078475859,
+            "grpo_reward": 0.8718222975730896
+        },
+        "00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g1_cand2_b2": {
+            "fitness_score": 0.771809009097563,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 8.601689522158976,
+                "efficiency_loss": 3.9541312520761855,
+                "volume_loss": 0.5299165462873713,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 5.44191738304595,
+                "efficiency": 0.4245868747923814,
+                "total_volume_cm3": 26.49582731436856,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.9196957294109035,
+            "grpo_reward": 0.9559913873672485
+        },
+        "00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g2_cand2_b2": {
+            "fitness_score": 0.7648560101599091,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 8.533774905327554,
+                "efficiency_loss": 4.5051229651276525,
+                "volume_loss": 0.6031320132649618,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 5.467858350690964,
+                "efficiency": 0.3694877034872347,
+                "total_volume_cm3": 30.15660066324809,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.9232813705858325,
+            "grpo_reward": 0.9470561146736145
+        },
+        "00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g3_cand1_b2": {
+            "fitness_score": 0.6974768243898699,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 10.569458920898892,
+                "efficiency_loss": 4.131770083126373,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.034999999999999996
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.7303855257314735,
+                "efficiency": 0.4068229916873627,
+                "total_volume_cm3": 10000.0,
+                "total_components": 7
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.8265935573098172,
+            "grpo_reward": 0.8604675531387329
+        },
+        "00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g3_cand2_b2": {
+            "fitness_score": 0.6667503703391962,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 11.817267663584056,
+                "efficiency_loss": 4.446735329837987,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.313236160911389,
+                "efficiency": 0.3753264670162013,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.7764565642165242,
+            "grpo_reward": 0.8209812045097351
+        },
+        "00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g3_cand3_b2": {
+            "fitness_score": 0.6633787881312843,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 11.94208213474474,
+                "efficiency_loss": 4.518099087531341,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.272748828093932,
+                "efficiency": 0.3681900912468659,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.7717553558200064,
+            "grpo_reward": 0.8166483640670776
+        },
+        "00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g4_cand1_b2": {
+            "fitness_score": 0.5142328396146998,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 5.887648874445786,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.034999999999999996
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 28.06263199219564,
+                "efficiency": 0.2312351125554213,
+                "total_volume_cm3": 10000.0,
+                "total_components": 7
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.22104371340098933,
+            "grpo_reward": 0.6249817609786987
+        }
+    }
+}

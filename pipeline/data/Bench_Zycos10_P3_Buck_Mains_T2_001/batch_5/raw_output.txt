@@ -1,0 +1,184 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+ Try a different configuration or adjust parameters. No progress will be made otherwise.
+* 250V to 3.3V Buck, 200W
+Vin in 0 250
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 10u
+C1 out 0 100u
+Rload out 0 0.0545
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+  3.3V output is too low, check L1 and Rload values. 200W into 3.3V is 19.4A, which requires 194A ripple in 10u inductor, leading to 1.94V drop. You need smaller inductor and lower Rload.
+* 250V to 3.3V Interleaved 2-Phase Buck, 200W
+Vin in 0 250
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 47u
+L2 sw2 out 47u
+C1 out 0 100u
+Rload out 0 0.0545
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 250V to 3.3V Buck, 200W
+Vin in 0 250
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 22u
+C1 out 0 470u
+Rload out 0 0.0545
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 10m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+* 250V to 3.3V Buck, 200W
+Vin in 0 250
+M1 in gate1 sw1 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+L1 sw1 out 22u
+C1 out 0 470u
+Rload out 0 0.0545
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 10m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+ Let's try a different approach. For a 250V to 3.3V buck, we need a much smaller duty cycle. Let's try a single-phase buck with larger L1 and a lower Rload for higher current.
+
+* 250V to 3.3V Buck, 200W
+Vin in 0 250
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 470u
+C1 out 0 100u
+Rload out 0 0.0545
+Vgate gate 0 PULSE(0 12 0 1n 1n 10u 20u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 10m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+* 250V to 3.3V interleaved 2-phase buck, 200W
+Vin in 0 250
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 10u
+L2 sw2 out 10u
+C1 out 0 100u
+Rload out 0 0.0545
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 10m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 250V to 3.3V Buck, 200W
+Vin in 0 250
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.0545
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 10m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+ This is a repeat of the previous submission.
+.tran 10n 10m
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.save V(*) I(*)
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 10u
+L2 sw2 out 10u
+C1 out 0 220u
+Rload out 0 0.0545
+Vin in 0 250
+.end

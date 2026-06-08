@@ -1,0 +1,155 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+ This is a repeat of the previous attempt. Try a different design approach, component value selection, or switch configuration. Do not copy the same netlist again.
+
+* 3.3V to 5V Boost, D=606m, t_on=6.06u, Rload=0.5
+Vin in 0 3.3
+L1 in sw 47u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.5
+Vgate gate 0 PULSE(0 12 0 1n 1n 6.06u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+* 3.3V to 5V Boost, 5W
+Vin in 0 3.3
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.5
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+ Try again. (3V to 5V Boost, 5W)
+* 3V to 5V Boost, 5W
+Vin in 0 3
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.5
+Rbleed sw 0 1Meg
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+* 3.3V to 5V Boost, 5W
+Vin in 0 3.3
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.5
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 3.3V to 5V Boost, 5W
+Vin in 0 3.3
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.5
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+* 3.3V to 5V Boost, 5W
+Vin in 0 3.3
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.5
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+ Try a different switch configuration, component values, or gate drive timing. Your previous submission was:
+Vin in 0 3
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 0.5
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)

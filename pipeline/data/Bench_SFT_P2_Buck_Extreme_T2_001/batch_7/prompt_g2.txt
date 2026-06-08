@@ -1,0 +1,142 @@
+You are an AI electrical engineer that designs non-isolated DC/DC converters.
+Given a set of design constraints, output a single SPICE netlist that attempts to meet them.
+
+ALLOWED COMPONENTS:
+  Voltage sources : Vin (input), Vgate / Vgate1..N (gate drives)
+  MOSFETs         : M1, M2, ...   — switching elements
+  Diodes          : D1, D2, ...   — freewheeling or rectification
+  Inductors       : L1, L2, ...   — energy storage
+  Capacitors      : C1, C2, ...   — filtering or energy transfer
+  Resistors       : Rload (mandatory load), Rbleed / Rbleed1..N (floating nodes only)
+
+FIXED RULES — do not deviate:
+  - Input source   : Vin in 0 <vin>
+  - Load resistor  : Rload out 0 <value>
+  - MOSFET model   : .model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+  - MOSFET pins    : M<n> drain gate source bulk NMOS
+      High-side    : drain=in,  gate=gate,  source=sw,  bulk=0
+      Low-side     : drain=sw,  gate=gate2, source=0,   bulk=0
+  - Gate drive     : Vgate gate 0 PULSE(0 12 0 1n 1n [t_on] [period])
+                     — exactly 7 parameters, choose t_on and period to meet switching frequency
+  - Floating nodes : any node connected only to reactive elements needs Rbleed <node> 0 1Meg
+  - Simulation     : .tran 10n 1m
+  CRITICAL SYNTAX RULE: DO NOT output placeholders like <vin>, [value], or formulas like <vin/20000>. You MUST output concrete floating point numbers or SPICE notation (e.g., 10u, 220).
+
+REQUIRED NODES:
+  in   — positive terminal of Vin
+  out  — output node, positive terminal of Rload
+  sw   — switch node (use sw1, sw2, ... for multiple switches)
+  gate — gate drive node (use gate1, gate2, ... for multiple switches)
+  0    — GND reference
+
+OUTPUT FORMAT:
+  Output raw SPICE netlist text only.
+  Output exactly ONE netlist for this candidate. Do NOT provide multiple options, alternate versions, or multiple candidates in a single response.
+  No markdown fences, no explanation, no prose.
+  Start with an optional single-line title comment (* <title>).
+  End the file with exactly: .end
+  DO NOT write any words on the same line as .end
+  DO NOT output a single character after .end
+  NO EXPLANATIONS, NO PROSE, NO CHAT.
+  NEVER EXPLAIN YOURSELF. JUST RAW SPICE NETLIST TEXT.
+  
+  CRITICAL RULE: DO NOT copy component values or topologies directly from the examples below. You MUST calculate new component values (Vin, Rload, inductor/capacitor sizing, and Vgate pulse timing) and select the correct topology to satisfy the exact constraints given to you.
+
+=== EXAMPLES OF PERFECT RESPONSES ===
+
+--- START EXAMPLE 1 (Step-Down / Buck) ---
+### SPICE Netlist:
+* 12V to 5V Buck Converter
+Vin in 0 12
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.278
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+--- END EXAMPLE 1 ---
+
+--- START EXAMPLE 2 (Step-Up / Boost) ---
+### SPICE Netlist:
+* 5V to 12V Boost Converter
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+--- END EXAMPLE 2 ---
+
+
+### Constraint:
+{
+  "vin_min": 60,
+  "vin_max": 84,
+  "vout_target": 12,
+  "efficiency_target": 0.89,
+  "power_in": 150
+}
+
+
+
+=== FEEDBACK FROM PREVIOUS ITERATION ===
+Review the selected previous attempt below. Generate a corrected or improved netlist. Higher fitness scores are better.
+
+Topology '00_Phase_2_72V_EV_Battery_to_12V_Buck_6_1_g1_cand3_b3'
+  - Status: validation_penalty
+  - Fitness Score: -0.6850
+  - Submitted Netlist:
+      * Generated: 2026-06-08T03:49:34
+      * Constraint: Phase 2: 72V EV Battery to 12V (Buck - 6:1)
+      *   vin_min = 60
+      *   vin_max = 84
+      *   vout_target = 12
+      *   efficiency_target = 0.89
+      *   power_in = 150
+      * Candidate: 3 of 12
+      * Grouped name: g1_cand3
+      *
+      Let's try a different topology, such as a buck-boost, for this 72V to 12V conversion. The buck-boost topology can step down or up, which fits this scenario.
+      
+      Given the input range of 60V to 84V and a target output of 12V, the buck-boost topology is suitable. The duty cycle $ D $ for a buck-boost is given by $ D = \frac{V_{out}}{V_{in} + V_{out}} $, which for $ V_{in} = 72V $ and $ V_{out} = 12V $ gives $ D = \frac{12}{72 + 12} = 0.143 $.
+      
+      We need to ensure the MOSFET is sized appropriately, the inductor value is suitable for the current, and the capacitor and load resistor match the power requirements. Also, we need to adjust the gate drive timing for the new duty cycle and ensure all floating nodes are properly bled.
+      
+      Let's calculate the component values:
+      
+      - The input power $ P_{in} = 150W $, so the input current $ I_{in} = \frac{P_{in}}{V_{in}} = \frac{150}{72} \approx 2.083A $.
+      - The inductor value for a buck-boost is typically chosen based on the ripple current, say $ \Delta I_L = 0.2 \times I_{in} = 0.417A $.
+      - The inductance $ L = \frac{V_{in} \times D \times T}{\Delta I_L} $, where $ T $ is the period. Let's assume a switching frequency $ f = 10kHz $, so $ T = 100u $, $ D = 0.143 $.
+      - $ L = \frac{72 \times 0.143 \times 100u}{0.417} \approx 255m $.
+      - The capacitor $ C $ is chosen to filter the output, say $ C = 100u $.
+      - The load resistor $ R_{load} = \frac{V_{out}^2}{P_{out}} = \frac{144}{150} \approx 0.96 $, but since the efficiency is 89%, the actual $ P_{out} = 150 \times 0.89 = 133.5W $, so $ R_{load} = \frac{144}{133.5} \approx 1.08 $.
+      - The gate drive pulse should have a duty cycle of 0.143, so $ t_{on} = 1.43u $, $ T = 10u $.
+      
+      Now, we can construct the netlist with these values.
+      ### SPICE Netlist:
+      * 72V to 12V Buck-Boost Converter
+      Vin in 0 72
+      L1 in sw 255m
+      M1 sw gate 0 0 NMOS W=1 L=1
+      C1 sw out 100u
+      D1 out 0 DIODE
+      Rload out 0 1.08
+      Vgate gate 0 PULSE(0 12 0 1n 1n 1.43u 10u)
+      .model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+      .model DIODE D
+      .tran 1u 10m
+      .end
+  - FAILED TESTS: netlist_syntax, invalid_components, duplicate_refs, component_values, connected_graph, floating_nodes, cl_loops
+  - FIX: Ensure your new netlist resolves these violations.
+
+
+### SPICE Netlist:

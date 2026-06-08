@@ -1,0 +1,174 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+ Try a different approach. Maybe a SEPIC or flyback, or change component values. Your previous netlist had a 250V to 3.3V interleaved 2-phase buck, which failed. Try a different topology or adjust component values. For example, you could try a 250V to 3.3V buck, but with a much larger inductor and higher Rload. Or try a SEPIC or flyback topology.
+* 250V to 3.3V SEPIC, 200W
+Vin in 0 250
+L1 in sw1 10u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+C1 sw1 sw2 22u
+L2 sw2 0 10u
+M2 sw2 gate2 0 0 NMOS W=1 L=1
+D1 sw2 out DIODE
+C2 out 0 100u
+Rload out 0 0.0545
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 10m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+* 250V to 3.3V Buck, 200W
+Vin in 0 250
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 10u
+C1 out 0 220u
+Rload out 0 0.0545
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 10m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 250V to 3.3V Buck, 200W
+Vin in 0 250
+M1 in gate1 sw1 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+L1 sw1 out 100u
+C1 out 0 470u
+Rload out 0 0.0545
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 10m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+ 00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_g4_cand3_b4
+.tran 10n 10m
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+Vin in 0 250
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 47u
+L2 sw2 out 47u
+C1 out 0 470u
+Rload out 0 0.0545
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+ For a buck, check D=Vout/(Vin+Vdrop), Rload=Vout²/P. Your previous design had 47u inductors, 12V gate drives, and 0.0545 ohm load. Try different values, different topologies, or different switching arrangements. You might need to use a larger inductor to avoid large ripple. You might need to use a lower Rload to draw more current. You might need to change the switching frequency to reduce losses. You might need to change the gate drive timing. You might need to use a different topology like SEPIC or interleaved. You might need to increase the inductor size to reduce ripple. You might need to change the switching frequency to reduce losses. You might need to change the gate drive timing. You might need to use a different topology like SEPIC or interleaved.
+* 250V to 3.3V Interleaved 2-Phase Buck, 200W
+Vin in 0 250
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 100u
+L2 sw2 out 100u
+C1 out 0 470u
+Rload out 0 0.0545
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 10m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+* 250V to 3.3V Buck, 200W
+Vin in 0 250
+M1 in gate 0 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 10u
+C1 out 0 220u
+Rload out 0 0.0545
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 10m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 250V to 3.3V Interleaved 2-Phase Buck, 200W
+Vin in 0 250
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 22u
+L2 sw2 out 22u
+C1 out 0 100u
+Rload out 0 0.0545
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 10m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+

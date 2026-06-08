@@ -1,0 +1,23 @@
+* Generated: 2026-06-07T23:13:07
+* Constraint: Phase 1: 3.3V Logic to 5V Rail (Boost)
+*   vin_min = 3.0
+*   vin_max = 3.6
+*   vout_target = 5
+*   efficiency_target = 0.75
+*   power_in = 5
+* Candidate: 8 of 12
+* Grouped name: g3_cand2
+*
+* 3.3V to 5V Boost Converter
+Vin in 0 3.3
+L1 in sw 12u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 6
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.4u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.save V(*) I(*)
+.end

@@ -1,0 +1,139 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+ You must also make sure all nodes have Rbleed for floating nodes. This is a critical rule. Your previous netlist had Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u) with t_on=5.8u and period=10u. You must change these values, and you must ensure that any floating nodes have Rbleed.
+* 250V to 3.3V interleaved 2-phase buck, 200W
+Vin in 0 250
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 100u
+L2 sw2 out 100u
+C1 out 0 470u
+Rload out 0 0.0545
+Rbleed sw1 0 1Meg
+Rbleed sw2 0 1Meg
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 10m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+* 250V to 3.3V interleaved 2-phase buck, 200W
+Vin in 0 250
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 22u
+L2 sw2 out 22u
+C1 out 0 470u
+Rload out 0 0.0545
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 10m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 250V to 3.3V interleaved 2-phase buck, 200W
+Vin in 0 250
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 47u
+L2 sw2 out 47u
+C1 out 0 220u
+Rload out 0 0.0545
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 10m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+* 250V to 3.3V interleaved 2-phase buck, 200W
+Vin in 0 250
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 47u
+L2 sw2 out 47u
+C1 out 0 100u
+Rload out 0 0.0545
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 10m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+ The new netlist should be different from the previous one, even if it's similar. Use a different switching approach, component values, or a different number of phases. Do not re-use the same exact M1, L1, D1, etc. in the same configuration.
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+

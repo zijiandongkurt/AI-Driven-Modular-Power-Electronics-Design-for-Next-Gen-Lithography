@@ -1,0 +1,24 @@
+* Generated: 2026-06-08T05:29:13
+* Constraint: Phase 3: 277V Lighting to 3.3V Logic (Buck)
+*   vin_min = 250
+*   vin_max = 300
+*   vout_target = 3.3
+*   efficiency_target = 0.92
+*   power_in = 200
+* Candidate: 8 of 12
+* Grouped name: g3_cand2
+*
+Let me try to fix this. I need to change the circuit topology or component values. Maybe I can try a different approach, like changing the duty cycle or the component values. Let me think about what went wrong. The previous netlist had a 250V to 3.3V Buck, 200W. The output voltage was too low (0.2072V instead of 3.3V), which means the duty cycle was not correct. The efficiency was also very low (0.0062 instead of 0.92), indicating high losses. The input power was 200W, but the output power was only 0.2072V * 0.0549 = 0.0114W, which is 57mW. The missing power is 199.94W, which is a huge loss. This is likely due to the MOSFET being on for too long, causing excessive conduction loss, and the inductor and capacitor not being sized correctly. Let me try a different approach. Maybe I should increase the duty cycle to get a higher output voltage, but I need to ensure that the MOSFET is not on for too long. Also, the component values might be incorrect. Let me recalculate the required duty cycle and component values. The target output voltage is 3.3V, so the duty cycle D should be Vout / Vin = 3.3 / 250 = 0.0132. The previous netlist had a duty cycle of 1.32u / 10u = 0.132, which is 10 times larger than needed. That explains why the output voltage was 10 times too low. Wait, no. If the duty cycle is 0.132, the expected output voltage would be 250 * 0.132 = 33V, not 3.3V. There is a mistake here. The user's target is 3.3V, but the previous netlist had a duty cycle that would produce 33V. That's a major error. The correct duty cycle should be 3.3 / 250 = 0.0132. Let me fix that. The gate pulse should be 132n instead of 1.32u. Let me recalculate the component values. The inductor should be chosen based on the current ripple. Let's assume a 50mV ripple on the output. The inductance can be calculated as L = Vout / (Rload * (1 - D) * delta_I). But maybe I should use a different approach. Let me try using the standard formula for a buck converter. The output voltage is Vout = D * Vin. So D = Vout / Vin = 3.3 / 250 = 0.0132. The previous netlist had D = 0.132, which is 10 times too large. The input power is 200W, so the input current is 200 / 250 = 0.8A. The output power is 3.3 / Rload. So Rload = 3.3^2 / 200 = 0.0549 ohms, which matches the previous netlist. But the output voltage was too low because the duty cycle was too high. Wait, no. If the duty cycle is 0.0132, the output voltage should be 3.3V, but in the previous netlist, the output was 0.2072V, which is 10 times smaller. This suggests that the simulation might have had an error, or the circuit was not built correctly. Alternatively, maybe the inductor value was too large, causing the output voltage to be too low. Let me try changing the inductor value. Instead of 100u, I'll use 10u. That might reduce the output voltage to a more reasonable level. Also, I need to adjust the gate pulse to 132n instead of 1.32u. Let me put this into a new netlist. The new netlist should have a 250V input, 10u inductor, 100n capacitor, and a gate pulse of 132n. Let's see if that works. The new netlist would be:
+* 250V to 3.3V Buck, 200W
+Vin in 0 250
+M1 in gate1 sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 10u
+C1 out 0 100n
+Rload out 0 0.0549
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 132n 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

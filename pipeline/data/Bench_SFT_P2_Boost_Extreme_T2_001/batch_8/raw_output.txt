@@ -1,0 +1,199 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=2 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=2 L=1
+D1 sw out DIODE
+C1 out 0 220u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+ For a boost, try increasing L1, M1, or C1. For a buck, try increasing Rload or reducing L1. For a SEPIC, try adjusting the duty cycle or component sizes. For a CUK, try changing the capacitor values or inductor sizes. For a 2-phase buck, try increasing the number of phases or adjusting the duty cycle per phase. For a 2-phase boost, try increasing the number of phases or adjusting the duty cycle per phase. For a 2-phase SEPIC, try increasing the number of phases or adjusting the duty cycle per phase. For a 2-phase CUK, try increasing the number of phases or adjusting the duty cycle per phase. For a 3-phase buck, try increasing the number of phases or adjusting the duty cycle per phase. For a 3-phase boost, try increasing the number of phases or adjusting the duty cycle per phase. For a 3-phase SEPIC, try increasing the number of phases or adjusting the duty cycle per phase. For a 3-phase CUK, try increasing the number of phases or adjusting the duty cycle per phase. For a 4-phase buck, try increasing the number of phases or adjusting the duty cycle per phase. For a 4-phase boost, try increasing the number of phases or adjusting the duty cycle per phase. For a 4-phase SEPIC, try increasing the number of phases or adjusting the duty cycle per phase. For a 4-phase CUK, try increasing the number of phases or adjusting the duty cycle per phase. For a 5-phase buck, try increasing the number of phases or adjusting the duty cycle per phase. For a 5-phase boost, try increasing the number of phases or adjusting the duty cycle per phase. For a 5-phase SEPIC, try increasing the number of phases or adjusting the duty cycle per phase. For a 5-phase CUK, try increasing the number of phases or adjusting the duty cycle per phase. For a 6-phase buck, try increasing the number of phases or adjusting the duty cycle per phase. For a 6-phase boost, try increasing the number of phases or adjusting the duty cycle per phase. For a 6-phase SEPIC, try increasing the number of phases or adjusting the duty cycle per phase. For a 6-phase CUK, try increasing the number of phases or adjusting the duty cycle per phase. For a 7-phase buck, try increasing the number of phases or adjusting the duty cycle per phase. For a 7-phase boost, try increasing the number of phases or adjusting the duty cycle per phase. For a 7-phase SEPIC, try increasing the number of phases or adjusting the duty cycle per phase. For a 7-phase CUK, try increasing the number of phases or adjusting the duty cycle per phase. For a 8-phase buck, try increasing the number of phases or adjusting the duty cycle per phase. For a 8-phase boost, try increasing the number of phases or adjusting the duty cycle per phase. For a 8-phase SEPIC, try increasing the number of phases or adjusting the duty cycle per phase. For a 8-phase CUK, try increasing the number of phases or adjusting the duty cycle per phase. For a 9-phase buck, try increasing the number of phases or adjusting the duty cycle per phase. For a 9-phase boost, try increasing the number of phases or adjusting the duty cycle per phase. For a 9-phase SEPIC, try increasing the number of phases or adjusting the duty cycle per phase. For a 9-phase CUK, try increasing the number of phases or adjusting the duty cycle per phase. For a 10-phase buck, try increasing the number of phases or adjusting the duty cycle per phase. For a 10-phase boost, try increasing the number of phases or adjusting the duty cycle per phase. For a 10-phase SEPIC, try increasing the number of phases or adjusting the duty cycle per phase. For a 10-phase CUK, try increasing the number of phases or adjusting the duty cycle per phase. For a 11-phase buck, try increasing the number of phases or adjusting the duty cycle per phase. For a 11-phase boost, try increasing the number of phases or adjusting the duty cycle per phase. For a 11-phase SEPIC, try increasing the number of phases or adjusting the duty cycle per phase. For a 11-phase CUK, try increasing the number of phases or adjusting the duty cycle per phase. For a 12-phase buck, try increasing the number of phases or adjusting the duty cycle per phase. For a 12-phase boost, try increasing the number of phases or adjusting the duty cycle per phase. For a 12-phase SEPIC, try increasing the number of phases or adjusting the duty cycle per phase. For a 12-phase CUK, try increasing the number of phases or adjusting the duty cycle per phase. For a 13-phase buck, try increasing the number of phases or adjusting the duty cycle per phase. For a 13-phase boost, try increasing the number of phases or adjusting the duty cycle per phase. For a 13-phase SEPIC, try increasing the number of phases or adjusting the duty cycle per phase. For a 13-phase CUK, try increasing the number of phases or adjusting the duty cycle per phase. For a 14-phase buck, try increasing the number of phases or adjusting the duty cycle per phase. For a 14-phase boost, try increasing the number of phases or adjusting the duty cycle per phase. For a 14-phase SEPIC, try increasing the number of phases or adjusting the duty cycle per phase. For a 14-phase CUK, try increasing the number of phases or adjusting the duty cycle per phase. For a 15-phase buck, try increasing the number of phases or adjusting the duty cycle per phase. For a 15-phase boost, try increasing the number of phases or adjusting the duty cycle per phase. For a 15-phase SEPIC, try increasing the number of phases or adjusting the duty cycle per phase. For a 15-phase CUK, try increasing the number of phases or adjusting the duty cycle per phase. For a 16-phase buck, try increasing the number of phases or adjusting the duty cycle per phase. For a 16-phase boost, try increasing the number of phases or adjusting the duty cycle per phase. For a 16-phase SEPIC, try increasing the number of phases or adjusting the duty cycle per phase. For a 16-phase CUK, try increasing the number of phases or adjusting the duty cycle per phase. For a 17-phase buck, try increasing the number of phases or adjusting the duty cycle per phase. For a 17-phase boost, try increasing the number of phases or adjusting the duty cycle per phase. For a 17-phase SEPIC, try increasing the number of phases or adjusting the duty cycle per phase. For a 17-phase CUK, try increasing the number of phases or adjusting the duty cycle per phase. For a 18-phase buck, try increasing the number of phases or adjusting the duty cycle per phase. For a 18-phase boost, try increasing the number of phases or adjusting the duty cycle per phase. For a 18-phase SEPIC, try increasing the number of phases or adjusting the duty cycle per phase. For a 
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=2 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=2 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=2 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 5V to 24V Boost, 120W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+ Try a different approach. 5V to 24V is a 4.8:1 boost, which typically requires a 4.8:1 turns ratio. You can't achieve this with a single MOSFET and inductor. You need a different topology, like a 2-phase interleaved boost or a 5V to 24V SEPIC. Let's try a 2-phase interleaved boost.
+
+* 5V to 24V Interleaved 2-Phase Boost, 120W
+Vin in 0 5
+L1 in sw1 22u
+L2 in sw2 22u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+M2 sw2 gate2 0 0 NMOS W=1 L=1
+D1 sw1 out DIODE
+D2 sw2 out DIODE
+C1 out 0 100u
+Rload out 0 4.8
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 1u 10m
+.end

@@ -1,0 +1,198 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+ No credit for repeating the same failed design.
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+ For a 5V to 220V boost, try increasing L1 and D1's voltage rating, or use a different topology like a SEPIC or flyback. You could also change the switching frequency and duty cycle.
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+ This is a topological error: your 5V to 220V boost circuit is only generating 16.3V, not 220V. This is a serious issue. The circuit is not even in the right topology for the required voltage conversion ratio.
+
+You have a 5V to 220V boost, which is a 44:1 step-up. The 5V to 16V boost in your previous netlist is only an 8:1 step-up. You need to change the topology or component values to get the required 44:1 step-up.
+
+You may need to:
+- Use a 2-stage boost (e.g., 5V to 20V then 20V to 220V)
+- Use a higher switching frequency (100kHz instead of 16.6kHz in previous example)
+- Or use a different topology like SEPIC or CUK
+- Or use a larger inductor and duty cycle for a single-stage boost
+
+Let me try a 2-stage boost solution. I'll go with 5V to 20V boost (4:1), then 20V to 220V boost (11:1) for a total 44:1 step-up.
+
+* 5V to 220V 2-Stage Boost, 250W
+Vin in 0 5
+L1 in sw1 47u
+M1 sw1 gate1 0 0 NMOS W=1 L=1
+D1 sw1 sw2 DIODE
+C1 sw2 0 100u
+L2 sw2 sw3 47u
+M2 sw3 gate2 0 0 NMOS W=1 L=1
+D2 sw3 out DIODE
+C2 out 0 220u
+Rload out 0 193.6
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+* 5V to 220V boost, 250W
+Vin in 0 5
+L1 in sw 22u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 10u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

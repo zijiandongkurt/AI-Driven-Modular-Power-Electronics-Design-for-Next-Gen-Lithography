@@ -1,0 +1,79 @@
+=== MCTS INFERENCE SUMMARY: Bench_Zycos10_P3_Boost_Extreme_T2_001 ===
+Batches Completed: 10 / 10
+Total Time Elapsed: 2830.92 sec (47.18 min)
+Average Time per Batch: 283.09 sec
+Average Time per Netlist: 23.99 sec
+Netlists Generated per Batch: 12
+
+--- SIMULATION PARAMETERS ---
+Sampled States per Batch: 4
+Candidates per Prompt: 3
+MCTS Temperature: 0.05
+LLM Max Tokens: 1536
+
+--- TOPOLOGY YIELD ---
+Total Candidates Generated: 118
+Valid Topologies: 66
+Invalid Topologies: 52
+Validity Rate: 55.9%
+
+Unique Topologies (Globally): 24
+Exact Duplicates (Globally):  94
+Global Uniqueness Rate: 20.3%
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.5000 (00_Phase_3_5V_to_220V_Inverter_Prep_Boost_g4_cand1_b2)
+  Batch 1 Best DB Score: 0.5000 (00_Phase_3_5V_to_220V_Inverter_Prep_Boost_cand10_b1)
+  Batch 2 Best DB Score: 0.5000 (00_Phase_3_5V_to_220V_Inverter_Prep_Boost_g4_cand1_b2)
+  Batch 3 Best DB Score: 0.5000 (00_Phase_3_5V_to_220V_Inverter_Prep_Boost_g4_cand1_b2)
+  Batch 4 Best DB Score: 0.5000 (00_Phase_3_5V_to_220V_Inverter_Prep_Boost_g4_cand1_b2)
+  Batch 5 Best DB Score: 0.5000 (00_Phase_3_5V_to_220V_Inverter_Prep_Boost_g4_cand1_b2)
+  Batch 6 Best DB Score: 0.5000 (00_Phase_3_5V_to_220V_Inverter_Prep_Boost_g4_cand1_b2)
+  Batch 7 Best DB Score: 0.5000 (00_Phase_3_5V_to_220V_Inverter_Prep_Boost_g4_cand1_b2)
+  Batch 8 Best DB Score: 0.5000 (00_Phase_3_5V_to_220V_Inverter_Prep_Boost_g4_cand1_b2)
+  Batch 9 Best DB Score: 0.5000 (00_Phase_3_5V_to_220V_Inverter_Prep_Boost_g4_cand1_b2)
+  Batch 10 Best DB Score: 0.5000 (00_Phase_3_5V_to_220V_Inverter_Prep_Boost_g4_cand1_b2)
+
+=========================================
+--- BEST NETLIST METRICS ---
+Output Voltage: 16.9209 V
+Efficiency:     1.0000
+Total Volume:   24.0000 cm^3
+
+--- COMPONENT BREAKDOWN ---
+MOSFETs (M): 1
+Diodes (D): 1
+Inductors (L): 1
+Capacitors (C): 1
+Resistors (R): 1
+Voltage Sources (V): 2
+----------------------
+Total Components: 7
+
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-06-08T15:08:06
+* Constraint: Phase 3: 5V to 220V Inverter Prep (Boost)
+*   vin_min = 4.5
+*   vin_max = 5.5
+*   vout_target = 220
+*   efficiency_target = 0.92
+*   power_in = 250
+* Candidate: 10 of 12
+* Grouped name: g4_cand1
+*
+* 5V to 220V Boost, 250W
+Vin in 0 5
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=1 L=1
+D1 sw out DIODE
+C1 out 0 100u
+Rload out 0 193.6
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+

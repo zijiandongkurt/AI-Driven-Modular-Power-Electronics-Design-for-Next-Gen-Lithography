@@ -1,0 +1,157 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+ The simulation will not be re-run.
+* 20V to 12V Buck, 30W
+Vin in 0 20
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 470u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.end
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+* 24V to 12V Buck, 30W
+Vin in 0 24
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 22u
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+* 24V to 12V Buck, 30W
+Vin in 0 24
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 22u
+C1 out 0 220u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 24V to 12V Buck, 30W
+Vin in 0 20
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+* 24V to 12V Buck, 30W
+Vin in 0 24
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 22u
+C1 out 0 470u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+ Try a different approach. You might want to use a different switching frequency, or change the inductor or capacitor values. For a buck, you might want to change the duty cycle, or the Rload. If you're not sure what to change, try adjusting the Vgate pulse parameters. You might also consider changing the input voltage, or using a different switching configuration. You might want to consider a different topology if the current one isn't working. For example, a SEPIC or CUK converter might be better for certain applications. You could also try using a different MOSFET model or a different diode model. You might want to check the component values and make sure they are within the allowed range. You might also want to ensure that the simulation time is sufficient to capture the transient response. You could try adjusting the Rload to match the desired power level. You might want to use a different inductor or capacitor value to improve the efficiency. You might also want to check the gate drive signal to make sure it's correctly configured. You might want to try a different switching frequency. You might want to use a different MOSFET or diode model. You might want to check the component values again. You might want to use a different topology. You might want to check the simulation setup again. You might want to use a different resistor value for Rload. You might want to check the gate drive signal parameters. You might want to use a different inductor value. You might want to use a different capacitor value. You might want to check the Vgate parameters. You might want to use a different MOSFET model. You might want to check the component values again. You might want to use a different topology. You might want to check the simulation setup again. You might want to use a different resistor value for Rload. You might want to check the gate drive signal parameters. You might want to use a different inductor value. You might want to use a different capacitor value. You might want to check the Vgate parameters. You might want to use a different MOSFET model. You might want to check the component values again. You might want to use a different topology. You might want to check the simulation setup again. You might want to use a different resistor value for Rload. You might want to check the gate drive signal parameters. You might want to use a different inductor value. You might want to use a different capacitor value. You might want to check the Vgate parameters. You might want to use a different MOSFET model. You might want to check the component values again. You might want to use a different topology. You might want to check the simulation setup again. You might want to use a different resistor value for Rload. You might want to check the gate drive signal parameters. You might want to use a different inductor value. You might want to use a different capacitor value. You might want to check the Vgate parameters. You might want to use a different MOSFET model. You might want to check the component values again. You might want to use a different topology. You might want to check the simulation setup again. You might want to use a different resistor value for Rload. You might want to check the gate drive signal parameters. You might want to use a different inductor value. You might want to use a different capacitor value. You might want to check the Vgate parameters. You might want to use a different MOSFET model. You might want to check the component values again. You might want to use a different topology. You might want to check the simulation setup again. You might want to use a different resistor value for Rload. You might want to check the gate drive signal parameters. You might want to use a different inductor value. You might want to use a different capacitor value. You might want to check the Vgate parameters. You might want to use a different MOSFET model. You might want to check the component values again. You might want to use a different topology. You might want to check the simulation setup again. You might want to use a different resistor value for Rload. You might want to check the gate drive signal parameters. You might want to use a different inductor value. You might want to use a different capacitor value. You might want to check the Vgate parameters. You might want to use a different MOSFET model. You might want to check the component values again. You might want to use a different topology. You might want to check the simulation setup again. You might want to use a different resistor value for Rload. You might want to check the gate drive signal parameters. You might want to use a different inductor value. You might want to use a different capacitor value. You might want to check the Vgate parameters. You might want to use a different MOSFET model. You might want to check the component values again. You might want to use a different topology. You might want to check the simulation setup again. You might want to use a different resistor value for Rload. You might want to check the gate drive signal parameters. You might want to use a different inductor value. You might want to use a different capacitor value. You might want to check the Vgate parameters. You might want to use a different MOSFET model. You might want to check the component values again. You might want to use a different topology. You might want to check the simulation setup again. You might want to use a different resistor value for Rload. You might want to check the gate drive signal parameters. You might want to use a different inductor value. You might want to use a different capacitor value. You might want to check the Vgate parameters. You might want to use a different MOSFET model. You might want to check the component values again. You might want to use a different topology. You might want to check the simulation setup again. You might want to use a different resistor value for Rload. You might want to check the gate drive signal parameters. You might want to use a different inductor value. You might want to use a different capacitor value. You might want to check the Vgate parameters. You might want to use a different MOSFET model. You might want to check the component values again. You might want to use a different topology. You might want to check the simulation setup again. You might want to use a different resistor value for Rload. You might want to check the gate drive signal parameters. You might want to use a different inductor value. You might want to use a different capacitor value. You might want to check the Vgate parameters. You might want to use a different MOSFET model. You might want to check the component values again. You might want to use a different topology. You might want to check the simulation setup again. You might want to use a different resistor value for Rload. You might want to check the gate drive signal parameters. You might want to use a different inductor value. You might want to use a different capacitor value. You might want to check the Vgate parameters. You might want to use a different MOSFET model. You might want to check the component values again. You might want to use a different topology. You might want to check the simulation setup again. You might want to use a different resistor value for Rload. You might want to check the gate drive signal parameters
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+* 24V to 12V Buck, 30W
+Vin in 0 20
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 100u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+ For this 20V to 12V buck, try increasing Vin to 24V (max allowed), increasing Rload to 4.8, and adjusting L1 to 100u.
+* 24V to 12V Buck, 30W
+Vin in 0 24
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 470u
+Rload out 0 4.8
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+

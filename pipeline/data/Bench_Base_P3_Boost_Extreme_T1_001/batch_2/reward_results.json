@@ -1,0 +1,240 @@
+{
+    "active_constraints": {
+        "_comment": "Phase 3: 5V to 220V Inverter Prep (Boost)",
+        "vin_min": 4.5,
+        "vin_max": 5.5,
+        "vout_target": 220,
+        "efficiency_target": 0.92,
+        "power_in": 250
+    },
+    "circuits": {
+        "00_Phase_3_5V_to_220V_Inverter_Prep_Boost_g1_cand1_b2": {
+            "fitness_score": 0.5000000227618668,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 1.2622326017875651,
+                "volume_loss": 0.5709105071565502,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.93457087912175,
+                "efficiency": 0.7937767398212435,
+                "total_volume_cm3": 28.54552535782751,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 1.4308680424875e-07,
+            "grpo_reward": 0.0
+        },
+        "00_Phase_3_5V_to_220V_Inverter_Prep_Boost_g1_cand2_b2": {
+            "fitness_score": 0.5000000118238388,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 5.615107828757702,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 6.1487523127145645,
+                "efficiency": 0.3584892171242299,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 1.7167079905202216e-07,
+            "grpo_reward": 0.0
+        },
+        "00_Phase_3_5V_to_220V_Inverter_Prep_Boost_g1_cand3_b2": {
+            "fitness_score": 0.500000044076221,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 1.2379195834612922,
+                "volume_loss": 0.7691869816823216,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 9.45484757993854,
+                "efficiency": 0.7962080416538708,
+                "total_volume_cm3": 38.45934908411608,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 2.818832488205647e-07,
+            "grpo_reward": 1.732050895690918
+        },
+        "00_Phase_3_5V_to_220V_Inverter_Prep_Boost_g2_cand1_b2": {
+            "fitness_score": 0.5000000340418712,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.41759999999999997,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 6.751308720650187,
+                "efficiency": 1.0,
+                "total_volume_cm3": 20.88,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 1.8790981589393005e-07,
+            "grpo_reward": 1.732050895690918
+        },
+        "00_Phase_3_5V_to_220V_Inverter_Prep_Boost_g2_cand2_b2": {
+            "fitness_score": 0.5000000098464347,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 4.264650103542316,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 3.1494807046551188,
+                "efficiency": 0.4935349896457685,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 1.0947409464081e-07,
+            "grpo_reward": 0.0
+        },
+        "00_Phase_3_5V_to_220V_Inverter_Prep_Boost_g2_cand3_b2": {
+            "fitness_score": 0.5000000289030552,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 1.1877212556814765,
+                "volume_loss": 0.6009451507559944,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 6.497959916533028,
+                "efficiency": 0.8012278744318524,
+                "total_volume_cm3": 30.047257537799723,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 1.809027916748843e-07,
+            "grpo_reward": 0.0
+        },
+        "00_Phase_3_5V_to_220V_Inverter_Prep_Boost_g3_cand1_b2": {
+            "fitness_score": 0.5000000346304938,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 1.417779373850302,
+                "volume_loss": 0.7275489844841718,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 7.939519374958695,
+                "efficiency": 0.7782220626149698,
+                "total_volume_cm3": 36.37744922420859,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 2.2457141043871922e-07,
+            "grpo_reward": 1.732050895690918
+        },
+        "00_Phase_3_5V_to_220V_Inverter_Prep_Boost_g3_cand2_b2": {
+            "fitness_score": 0.5000000084272068,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 6.089955511995752,
+                "volume_loss": 1.4510886936452243,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 3.780158639706981,
+                "efficiency": 0.3110044488004248,
+                "total_volume_cm3": 72.55443468226122,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 1.203362169441518e-07,
+            "grpo_reward": 0.0
+        },
+        "00_Phase_3_5V_to_220V_Inverter_Prep_Boost_g3_cand3_b2": {
+            "fitness_score": 0.5000000346304938,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 1.417779373850302,
+                "volume_loss": 0.7275489844841718,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 7.939519374958695,
+                "efficiency": 0.7782220626149698,
+                "total_volume_cm3": 36.37744922420859,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 2.2457141043871922e-07,
+            "grpo_reward": 1.732050895690918
+        },
+        "00_Phase_3_5V_to_220V_Inverter_Prep_Boost_g4_cand1_b2": {
+            "fitness_score": 0.5000000201591654,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 1.0475084139006419,
+                "volume_loss": 0.7108106799375693,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.076312621405017,
+                "efficiency": 0.8152491586099359,
+                "total_volume_cm3": 35.540533996878466,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 1.2580243876870437e-07,
+            "grpo_reward": 0.0
+        },
+        "00_Phase_3_5V_to_220V_Inverter_Prep_Boost_g4_cand2_b2": {
+            "fitness_score": 0.5000000098597559,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 5.057389837694444,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.144633686923791,
+                "efficiency": 0.4142610162305556,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 1.2709831107967584e-07,
+            "grpo_reward": 0.0
+        },
+        "00_Phase_3_5V_to_220V_Inverter_Prep_Boost_g4_cand3_b2": {
+            "fitness_score": 0.5000000098597559,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 5.057389837694444,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 4.144633686923791,
+                "efficiency": 0.4142610162305556,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 1.2709831107967584e-07,
+            "grpo_reward": 0.0
+        }
+    }
+}

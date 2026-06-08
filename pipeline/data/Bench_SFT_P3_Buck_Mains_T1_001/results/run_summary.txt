@@ -1,0 +1,79 @@
+=== MCTS INFERENCE SUMMARY: Bench_SFT_P3_Buck_Mains_T1_001 ===
+Batches Completed: 10 / 10
+Total Time Elapsed: 2079.79 sec (34.66 min)
+Average Time per Batch: 207.98 sec
+Average Time per Netlist: 17.33 sec
+Netlists Generated per Batch: 12
+
+--- SIMULATION PARAMETERS ---
+Sampled States per Batch: 4
+Candidates per Prompt: 3
+MCTS Temperature: 0.05
+LLM Max Tokens: 1536
+
+--- TOPOLOGY YIELD ---
+Total Candidates Generated: 120
+Valid Topologies: 102
+Invalid Topologies: 18
+Validity Rate: 85.0%
+
+Unique Topologies (Globally): 35
+Exact Duplicates (Globally):  85
+Global Uniqueness Rate: 29.2%
+
+--- FITNESS PROGRESSION ---
+Overall Best Fitness: 0.8281 (00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_g4_cand2_b5)
+  Batch 1 Best DB Score: 0.8195 (00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_cand12_b1)
+  Batch 2 Best DB Score: 0.8195 (00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_cand12_b1)
+  Batch 3 Best DB Score: 0.8195 (00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_cand12_b1)
+  Batch 4 Best DB Score: 0.8195 (00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_cand12_b1)
+  Batch 5 Best DB Score: 0.8281 (00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_g4_cand2_b5)
+  Batch 6 Best DB Score: 0.8281 (00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_g4_cand2_b5)
+  Batch 7 Best DB Score: 0.8281 (00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_g4_cand2_b5)
+  Batch 8 Best DB Score: 0.8281 (00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_g4_cand2_b5)
+  Batch 9 Best DB Score: 0.8281 (00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_g4_cand2_b5)
+  Batch 10 Best DB Score: 0.8281 (00_Phase_3_277V_Lighting_to_3_3V_Logic_Buck_g4_cand2_b5)
+
+=========================================
+--- BEST NETLIST METRICS ---
+Output Voltage: 2.7480 V
+Efficiency:     0.0264
+Total Volume:   10000.0000 cm^3
+
+--- COMPONENT BREAKDOWN ---
+MOSFETs (M): 1
+Diodes (D): 1
+Inductors (L): 1
+Capacitors (C): 1
+Resistors (R): 1
+Voltage Sources (V): 2
+----------------------
+Total Components: 7
+
+OVERALL BEST SPICE NETLIST:
+=========================================
+* Generated: 2026-06-08T05:31:28
+* Constraint: Phase 3: 277V Lighting to 3.3V Logic (Buck)
+*   vin_min = 250
+*   vin_max = 300
+*   vout_target = 3.3
+*   efficiency_target = 0.92
+*   power_in = 200
+* Candidate: 11 of 12
+* Grouped name: g4_cand2
+*
+* 250V to 3.3V Buck Converter
+Vin in 0 250
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 47u
+C1 out 0 220u
+Rload out 0 0.278
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+

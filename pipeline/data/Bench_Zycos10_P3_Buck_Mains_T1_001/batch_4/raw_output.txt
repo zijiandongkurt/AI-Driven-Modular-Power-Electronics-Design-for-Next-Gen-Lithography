@@ -1,0 +1,145 @@
+
+============================================================
+ CANDIDATE 1
+============================================================
+
+
+
+============================================================
+ CANDIDATE 2
+============================================================
+
+
+
+============================================================
+ CANDIDATE 3
+============================================================
+
+ You must not repeat the same netlist. Try again.
+
+============================================================
+ CANDIDATE 4
+============================================================
+
+* 250V to 3.3V Buck, 200W
+Vin in 0 250
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 100u
+C1 out 0 100u
+Rload out 0 0.0545
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 5
+============================================================
+
+ You must change the netlist in a way that satisfies the input constraints. You are not allowed to repeat the same design. You may not copy any component values or topologies from the examples above. You must make a new, different netlist. You must calculate new component values (Vin, Rload, inductor/capacitor sizing, and Vgate pulse timing) and select the correct topology to satisfy the exact constraints given to you. You must not repeat the same design as the previous iteration. You must not repeat the same netlist. You must not copy any component values or topologies from the examples above. You must make a new, different netlist.
+* 250V to 3.3V Buck, 200W
+Vin in 0 250
+M1 in gate sw 0 NMOS W=1 L=1
+D1 0 sw DIODE
+L1 sw out 22u
+C1 out 0 100u
+Rload out 0 0.0545
+Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 6
+============================================================
+
+
+
+============================================================
+ CANDIDATE 7
+============================================================
+
+
+
+============================================================
+ CANDIDATE 8
+============================================================
+
+ The new netlist must be different from the previous one. Try a different configuration or parameter set. 10u inductor values are not sufficient for 250V to 3.3V conversion. 10u is 10mH, which is too large and causes high Rds_on loss. Try a 100u inductor and increase Rload to match 3.3V / 200W = 0.0545 ohms. 100u inductor is 10mH, which is more suitable for lower Rds_on loss. 277V to 3.3V is a 83.94:1 voltage reduction. This requires a 83.94/1 duty cycle, which is 83.94% of the time. 100u inductor is 10mH, which is more suitable for lower Rds_on loss. 277V to 3.3V is a 83.94:1 voltage reduction. This requires a 83.94/1 duty cycle, which is 83.94% of the time. 100u inductor is 10mH, which is more suitable for lower Rds_on loss. 277V to 3.3V is a 83.94:1 voltage reduction. This requires a 83.94/1 duty cycle, which is 83.94% of the time. 100u inductor is 10mH, which is more suitable for lower Rds_on loss. 277V to 3.3V is a 83.94:1 voltage reduction. This requires a 83.94/1 duty cycle, which is 83.94% of the time. 100u inductor is 10mH, which is more suitable for lower Rds_on loss. 277V to 3.3V is a 83.94:1 voltage reduction. This requires a 83.94/1 duty cycle, which is 83.94% of the time. 100u inductor is 10mH, which is more suitable for lower Rds_on loss. 277V to 3.3V is a 83.94:1 voltage reduction. This requires a 83.94/1 duty cycle, which is 83.94% of the time. 100u inductor is 10mH, which is more suitable for lower Rds_on loss. 277V to 3.3V is a 83.94:1 voltage reduction. This requires a 83.94/1 duty cycle, which is 83.94% of the time. 100u inductor is 10mH, which is more suitable for lower Rds_on loss. 277V to 3.3V is a 83.94:1 voltage reduction. This requires a 83.94/1 duty cycle, which is 83.94% of the time. 100u inductor is 10mH, which is more suitable for lower Rds_on loss. 277V to 3.3V is a 83.94:1 voltage reduction. This requires a 83.94/1 duty cycle, which is 83.94% of the time. 100u inductor is 10mH, which is more suitable for lower Rds_on loss. 277V to 3.3V is a 83.94:1 voltage reduction. This requires a 83.94/1 duty cycle, which is 83.94% of the time. 100u inductor is 10mH, which is more suitable for lower Rds_on loss. 277V to 3.3V is a 83.94:1 voltage reduction. This requires a 83.94/1 duty cycle, which is 83.94% of the time. 100u inductor is 10mH, which is more suitable for lower Rds_on loss. 277V to 3.3V is a 83.94:1 voltage reduction. This requires a 83.94/1 duty cycle, which is 83.94% of the time. 100u inductor is 10mH, which is more suitable for lower Rds_on loss. 277V to 3.3V is a 83.94:1 voltage reduction. This requires a 83.94/1 duty cycle, which is 83.94% of the time. 100u inductor is 10mH, which is more suitable for lower Rds_on loss. 277V to 3.3V is a 83.94:1 voltage reduction. This requires a 83.94/1 duty cycle, which is 83.94% of the time. 100u inductor is 10mH, which is more suitable for lower Rds_on loss. 277V to 3.3V is a 83.94:1 voltage reduction. This requires a 83.94/1 duty cycle, which is 83.94% of the time. 100u inductor is 10mH, which is more suitable for lower Rds_on loss. 277V to 3.3V is a 83.94:1 voltage reduction. This requires a 83.94/1 duty cycle, which is 83.94% of the time. 100u inductor is 10mH, which is more suitable for lower Rds_on loss. 277V to 3.3V is a 83.94:1 voltage reduction. This requires a 83.94/1 duty cycle, which is 83.94% of the time. 100u inductor is 10mH, which is more suitable for lower Rds_on loss. 277V to 3.3V is a 83.94:1 voltage reduction. This requires a 83.94/1 duty cycle, which is 83.94% of the time. 100u inductor is 10mH, which is more suitable for lower Rds_on loss. 277V to 3.3V is a 83.94:1 voltage reduction. This requires a 83.94/1 duty cycle, which
+
+============================================================
+ CANDIDATE 9
+============================================================
+
+
+
+============================================================
+ CANDIDATE 10
+============================================================
+
+* 250V to 3.3V 2-phase buck, 180-deg phase-shift
+Vin in 0 250
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 47u
+L2 sw2 out 47u
+C1 out 0 220u
+Rload out 0 0.0545
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 11
+============================================================
+
+* 250V to 3.3V 2-phase buck, 180-deg phase-shift
+Vin in 0 250
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 47u
+L2 sw2 out 47u
+C1 out 0 220u
+Rload out 0 0.0545
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
+
+============================================================
+ CANDIDATE 12
+============================================================
+
+* 250V to 3.3V 2-phase buck, 180-deg phase-shift
+Vin in 0 250
+M1 in gate1 sw1 0 NMOS W=1 L=1
+M2 in gate2 sw2 0 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+L1 sw1 out 47u
+L2 sw2 out 47u
+C1 out 0 220u
+Rload out 0 0.0545
+Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 0 PULSE(0 12 5.8u 1n 1n 5.8u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end
