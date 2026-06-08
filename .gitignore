@@ -13,4 +13,19 @@ __pycache__/
 
 # Checkpoints tracked via git LFS (*.safetensors, tokenizer.json)
 
+# Intermediate GRPO step checkpoints (only final/ is kept)
+checkpoints/grpo-lora/step-*/
+
+# Old training runs no longer needed
+checkpoints/zycos_004/
+checkpoints/zycos_005/
+checkpoints/zycos_006/
+checkpoints/zycos_007/
+
 # LLM_output folders tracked via Git LFS (see .gitattributes)
+
+# LLM outputs from old training runs (not tracked)
+pipeline/data/zycos_004/**/LLM_output/
+pipeline/data/zycos_005/**/LLM_output/
+pipeline/data/zycos_006/**/LLM_output/
+pipeline/data/zycos_007/**/LLM_output/
