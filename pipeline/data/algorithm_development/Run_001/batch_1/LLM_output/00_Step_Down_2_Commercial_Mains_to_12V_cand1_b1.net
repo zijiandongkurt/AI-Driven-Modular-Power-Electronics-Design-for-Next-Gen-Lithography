@@ -1,25 +1,3 @@
-* Generated: 2026-05-17T21:17:00
-* Constraint: Step-Down 2: Commercial Mains to 12V
-*   vin_min = 220
-*   vin_max = 380
-*   vout_target = 12
-*   efficiency_target = 0.92
-*   power_in = 300
-* Candidate: 1 of 2
-*
-* 220-380V to 12V Buck-Boost Converter
-Vin in 0 220
-M1 in gate sw 0 NMOS W=1 L=1
-M2 sw gate2 0 0 NMOS W=1 L=1
-D1 0 sw DIODE
-D2 sw out DIODE
-L1 sw out 100u
-C1 out 0 220u
-Rload out 0 0.1
-Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
-Vgate2 gate2 0 PULSE(0 12 0 1n 1n 4.16u 10u)
-.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
-.model DIODE D
-.tran 10n 1m
-.save V(*) I(*)
-.end
+version https://git-lfs.github.com/spec/v1
+oid sha256:62d4eed750bc475f833fd6a83c4dc3e966494b1d85dd173f16cc43b2f841fb5a
+size 596

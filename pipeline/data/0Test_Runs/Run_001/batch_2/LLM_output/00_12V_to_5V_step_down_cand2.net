@@ -1,18 +1,3 @@
-* Generated: 2026-05-12T17:05:06
-* Constraint: 12V to 5V step-down
-*   vin_min = 12
-*   vin_max = 100
-*   vout_target = 5
-*   efficiency_target = 0.9
-*   power_in = 100
-* Candidate: 2 of 4
-*
-* 00_12V_to_5V_step_down_cand4
-Vin in 0 12
-Rload out 0 5
-M1 drain in gate source bulk NMOS
-M2 drain out gate source bulk NMOS
-Vgate1 gate 0 PULSE(0 12 0 1n 1n 20ns 100ns)
-Rbleed1 sw 0 1Meg
-Rbleed2 gate1 0 1Meg
-.end
+version https://git-lfs.github.com/spec/v1
+oid sha256:3307853d98b9f55decb8537b5a09bf108461c5fb4d5d9b45e18c920b69cbf653
+size 424

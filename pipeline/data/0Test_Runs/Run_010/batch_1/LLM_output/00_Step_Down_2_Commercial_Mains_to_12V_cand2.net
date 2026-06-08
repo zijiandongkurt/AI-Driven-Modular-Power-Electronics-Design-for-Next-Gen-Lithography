@@ -1,22 +1,3 @@
-* Generated: 2026-05-17T13:13:00
-* Constraint: Step-Down 2: Commercial Mains to 12V
-*   vin_min = 220
-*   vin_max = 380
-*   vout_target = 12
-*   efficiency_target = 0.92
-*   power_in = 300
-* Candidate: 2 of 3
-*
-* 220V to 12V Step-Down (Buck) Converter
-Vin in 0 220
-M1 in gate sw 0 NMOS W=2 L=2
-D1 0 sw DIODE
-L1 sw out 22u
-C1 out 0 470u
-Rload out 0 0.47
-Vgate gate 0 PULSE(0 220 0 1n 1n 5.8u 10u)
-.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
-.model DIODE D
-.tran 1u 10m
-.save V(*) I(*)
-.end
+version https://git-lfs.github.com/spec/v1
+oid sha256:a7b6bc0f343f21f03aa132a78ef6a6319f86d48fcd2f20229ae7fb5022a5a7fb
+size 505

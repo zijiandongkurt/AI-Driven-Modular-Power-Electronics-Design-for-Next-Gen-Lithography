@@ -1,22 +1,3 @@
-* Generated: 2026-05-23T20:59:53
-* Constraint: Phase 1: Standard 12V to 5V Logic (Buck)
-*   vin_min = 10
-*   vin_max = 14
-*   vout_target = 5
-*   efficiency_target = 0.8
-*   power_in = 15
-* Candidate: 1 of 8
-*
-* 12V to 5V Boost Converter
-Vin in 0 12
-M1 in gate sw 0 NMOS W=1 L=1
-D1 0 sw DIODE
-L1 sw out 22u
-C1 out 0 100u
-Rload out 0 1.93
-Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
-.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
-.model DIODE D
-.tran 1u 10m
-.save V(*) I(*)
-.end
+version https://git-lfs.github.com/spec/v1
+oid sha256:f0452379bff54af99543767c7a3f1031292452fceee13fe045b86cd3fcafcae2
+size 489

@@ -1,22 +1,3 @@
-* Generated: 2026-05-17T13:49:21
-* Constraint: Step-Down 2: Commercial Mains to 12V
-*   vin_min = 220
-*   vin_max = 380
-*   vout_target = 12
-*   efficiency_target = 0.92
-*   power_in = 300
-* Candidate: 2 of 2
-*
-* Design a non-isolated DC/DC converter using a buck converter topology
-Vin in 0 220
-M1 in gate sw 0 NMOS W=1 L=1
-D1 0 sw DIODE
-L1 sw out 47u
-C1 out 0 220u
-Rload out 0 3.63
-Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
-.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
-.model DIODE D
-.tran 1n 5m
-.save V(*) I(*)
-.end
+version https://git-lfs.github.com/spec/v1
+oid sha256:71e2d2b3e9b7d6b6c3b7b4624d89d2908b542b529bd0d891f840a777f64da7f2
+size 535

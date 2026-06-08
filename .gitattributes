@@ -1,3 +1,4 @@
 *.safetensors filter=lfs diff=lfs merge=lfs -text
 *.pptx filter=lfs diff=lfs merge=lfs -text
 checkpoints/**/tokenizer.json filter=lfs diff=lfs merge=lfs -text
+pipeline/data/**/LLM_output/*.net filter=lfs diff=lfs merge=lfs -text

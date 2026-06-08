@@ -1,23 +1,3 @@
-* Generated: 2026-05-17T15:36:45
-* Constraint: Step-Down 2: Commercial Mains to 12V
-*   vin_min = 220
-*   vin_max = 380
-*   vout_target = 12
-*   efficiency_target = 0.92
-*   power_in = 300
-* Candidate: 1 of 2
-*
----
-
-* 300W Adjustable Step-Down / Buck Converter
-Vin in 0 220
-M1 in gate sw NMOS W=1 L=1
-D1 0 sw DIODE
-L1 sw out 100u
-C1 out 0 100u
-Rload out 0 0.478
-Vgate gate 0 PULSE(0 220 0 1n 220 4.16u 100)
-.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
-.model DIODE D
-.tran 1n 5m
-.end
+version https://git-lfs.github.com/spec/v1
+oid sha256:52fc1041fdfe03bb29000c72b5352e23ac3db535019f388fe04dc9713e200d63
+size 500

@@ -1,30 +1,3 @@
-* Generated: 2026-05-12T16:31:39
-* Constraint: 12V to 5V step-down
-*   vin_min = 12
-*   vin_max = 100
-*   vout_target = 5
-*   efficiency_target = 0.9
-*   power_in = 100
-* Candidate: 3 of 4
-*
-* Non-Isolated DC/DC Converter Design
-Vin 1 0 DC 12
-Rload 2 0 1k
-Vgate1 3 0 PULSE(0 12 0 1n 1n 1us 100us)
-M1 4 3 2 0 NMOS
-M2 6 5 4 0 NMOS
-sw1 4 5 0 through
-Rbleed1 5 0 1meg
-.tran 1n 5m
-.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
-
-Explanation of the netlist:
-- **Vin**: A DC voltage source from 12V to 100V, as specified by vin_min and vin_max.
-- **Rload**: A 1kΩ resistor as the load, matching the required value for the power output target.
-- **Vgate1**: A gate drive pulse signal at 12V for 1µs, with a 100µs period, suitable for a switching frequency of 50kHz.
-- **M1 and M2**: Two NMOS switches, one high-side and one low-side, driving the switch node `sw1`.
-- **Rbleed1**: Ensures floating node isolation on `sw1`, connecting it to ground with a 1Meg resistor.
-- **.tran 1n 5m**: Defines a transient analysis simulation time step of 1ns and duration of 5ms.
-- **.model NMOS**: Defines the MOSFET model parameters.
-- **Efficiency Target**: Not directly achievable with this simple configuration but can be adjusted by modifying the switch timing.
-- **Power In**: The input power is 100W, which can be verified by the current and voltage at the load.
+version https://git-lfs.github.com/spec/v1
+oid sha256:be4b16697ef4e69d6b23142a285727e60118859a986d486bea8444e2d89f82b6
+size 1372

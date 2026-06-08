@@ -1,26 +1,3 @@
-* Generated: 2026-05-29T22:54:09
-* Constraint: 12V to 5V step-down
-*   vin_min = 12
-*   vin_max = 100
-*   vout_target = 5
-*   efficiency_target = 0.9
-*   power_in = 100
-* Candidate: 2 of 4
-* Grouped name: g1_cand2
-*
-* 100V to 5V Buck-Boost Converter
-Vin in 0 100
-M1 in gate sw 0 NMOS W=1 L=1
-M2 sw gate2 0 0 NMOS W=1 L=1
-D1 sw out DIODE
-L1 in sw 22u
-C1 out 0 470u
-Rload out 0 10
-Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
-Vgate2 gate2 0 PULSE(0 12 0 1n 1n 4.16u 10u)
-.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
-.model DIODE D
-Rbleed sw 0 1Meg
-.tran 10n 1m
-.save V(*) I(*)
-.end
+version https://git-lfs.github.com/spec/v1
+oid sha256:4d676a21ece646a20241260a3bd7584f257f6c53294b045add4fd7ba61732d3c
+size 597
