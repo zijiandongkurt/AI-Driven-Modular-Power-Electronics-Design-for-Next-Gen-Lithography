@@ -18,7 +18,7 @@ def _normalize_spice_value(val_str: str) -> str:
     # Extract the numeric part and the scale/unit part (e.g., '47' and 'uf')
     match = re.match(r"^([+-]?\d*\.?\d+(?:[eE][+-]?\d+)?)(.*)$", val_str)
     if not match:
-        return val_str # Fallback for non-numeric labels (like 'DIODE' or 'NMOS')
+        return val_str # Fallback for non-numeric labels (like 'PULSE(0' or 'NMOS')
         
     number_part, suffix = match.groups()
     try:
@@ -88,7 +88,6 @@ def get_topological_hash(netlist_text: str) -> str:
         comp_type = parts[0][0]
         
         if comp_type not in allowed_prefixes:
-            print(f"[topology_hasher] WARNING: skipping unrecognised line: '{line[:80]}'")
             continue
         
         # Intelligently extract pins and mathematically normalize values
@@ -99,8 +98,12 @@ def get_topological_hash(netlist_text: str) -> str:
             value = "_".join(params)
         elif comp_type in ['r', 'l', 'c', 'd', 'v']: 
             nets = parts[1:3]
-            # Normalize SPICE values (47u -> 4.7000e-05)
-            value = _normalize_spice_value(parts[3]) if len(parts) > 3 else ""
+            # FIX: Normalize and capture ALL parameters after the nets (e.g. PULSE args)
+            if len(parts) > 3:
+                normalized_params = [_normalize_spice_value(p) for p in parts[3:]]
+                value = "_".join(normalized_params)
+            else:
+                value = ""
         else:
             continue
             

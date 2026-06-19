@@ -8,52 +8,22 @@
         "power_in": 400
     },
     "circuits": {
-        "00_Phase_3_12V_to_380V_DC_Bus_Boost_g2_cand3_b3": {
-            "fitness_score": -0.89,
+        "cand_3": {
+            "fitness_score": -0.6799999999999999,
             "source": "validation_penalty",
-            "grpo_reward": -0.5773501396179199
+            "grpo_reward": -0.5816484093666077
         },
-        "00_Phase_3_12V_to_380V_DC_Bus_Boost_g2_cand1_b3": {
-            "fitness_score": -0.89,
+        "cand_8": {
+            "fitness_score": -0.915,
             "source": "validation_penalty",
-            "grpo_reward": -0.5773501396179199
+            "grpo_reward": -0.9394687414169312
         },
-        "00_Phase_3_12V_to_380V_DC_Bus_Boost_g3_cand2_b3": {
-            "fitness_score": -0.89,
+        "cand_9": {
+            "fitness_score": -0.895,
             "source": "validation_penalty",
-            "grpo_reward": -0.5773501396179199
+            "grpo_reward": -0.909015953540802
         },
-        "00_Phase_3_12V_to_380V_DC_Bus_Boost_g2_cand2_b3": {
-            "fitness_score": -0.89,
-            "source": "validation_penalty",
-            "grpo_reward": -0.5773501396179199
-        },
-        "00_Phase_3_12V_to_380V_DC_Bus_Boost_g3_cand1_b3": {
-            "fitness_score": -0.89,
-            "source": "validation_penalty",
-            "grpo_reward": -0.5773501396179199
-        },
-        "00_Phase_3_12V_to_380V_DC_Bus_Boost_g3_cand3_b3": {
-            "fitness_score": -0.89,
-            "source": "validation_penalty",
-            "grpo_reward": -0.5773501396179199
-        },
-        "00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand3_b3": {
-            "fitness_score": -0.89,
-            "source": "validation_penalty",
-            "grpo_reward": -0.5773501396179199
-        },
-        "00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand2_b3": {
-            "fitness_score": -0.89,
-            "source": "validation_penalty",
-            "grpo_reward": -0.5773501396179199
-        },
-        "00_Phase_3_12V_to_380V_DC_Bus_Boost_g4_cand1_b3": {
-            "fitness_score": -0.89,
-            "source": "validation_penalty",
-            "grpo_reward": -0.5773501396179199
-        },
-        "00_Phase_3_12V_to_380V_DC_Bus_Boost_g1_cand1_b3": {
+        "cand_1": {
             "fitness_score": 0.5000000000023148,
             "source": "simulation",
             "loss_breakdown": {
@@ -70,9 +40,9 @@
             },
             "fatal_penalty_applied": true,
             "voltage_decay_factor": 1.451442852884469e-10,
-            "grpo_reward": 1.7320506572723389
+            "grpo_reward": 1.2150665521621704
         },
-        "00_Phase_3_12V_to_380V_DC_Bus_Boost_g1_cand2_b3": {
+        "cand_2": {
             "fitness_score": 0.500000000006671,
             "source": "simulation",
             "loss_breakdown": {
@@ -89,26 +59,7 @@
             },
             "fatal_penalty_applied": true,
             "voltage_decay_factor": 1.4476980007777232e-10,
-            "grpo_reward": 1.7320506572723389
-        },
-        "00_Phase_3_12V_to_380V_DC_Bus_Boost_g1_cand3_b3": {
-            "fitness_score": 0.5000000000296567,
-            "source": "simulation",
-            "loss_breakdown": {
-                "voltage_tracking_loss": 20.0,
-                "efficiency_loss": 2.971092391402949,
-                "volume_loss": 0.4629800607181418,
-                "component_cost_loss": 0.020000000000000004
-            },
-            "raw_metrics": {
-                "simulation_output_voltage": 41.7854836129352,
-                "efficiency": 0.6328907608597052,
-                "total_volume_cm3": 23.14900303590709,
-                "total_components": 4
-            },
-            "fatal_penalty_applied": true,
-            "voltage_decay_factor": 2.2115054260424166e-10,
-            "grpo_reward": 1.7320506572723389
+            "grpo_reward": 1.2150665521621704
         }
     }
 }

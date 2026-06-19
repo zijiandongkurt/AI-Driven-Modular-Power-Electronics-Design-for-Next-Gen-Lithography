@@ -1,24 +1,30 @@
-* OVERALL BEST CANDIDATE: 00_Phase_1_Standard_12V_to_5V_Logic_Buck_g2_cand3_b3
-* FITNESS SCORE: 0.9514
+* === GLOBAL BEST TOPOLOGY ===
+* Candidate: cand_7
+* Fitness: 0.9918
 *
-* Generated: 2026-05-31T19:52:37
-* Constraint: Phase 1: Standard 12V to 5V Logic (Buck)
-*   vin_min = 10
-*   vin_max = 14
-*   vout_target = 5
-*   efficiency_target = 0.8
-*   power_in = 15
-* Candidate: 7 of 8
-* Grouped name: g2_cand3
+* --- Active Constraints ---
+* _comment: Phase 1: Standard 12V to 5V Logic (Buck)
+* vin_min: 10
+* vin_max: 14
+* vout_target: 5
+* efficiency_target: 0.8
+* power_in: 15
 *
+* --- Raw Metrics & Components ---
+* simulation_output_voltage: 5.198721
+* efficiency: 0.891670
+* total_volume_cm3: 24.982429
+* total_components: 4
+* ============================
+
 * 10V to 5V Buck Converter
 Vin in 0 10
-M1 in gate sw 0 NMOS W=1 L=1
+M1 in gate sw sw NMOS W=1 L=1
 D1 0 sw DIODE
 L1 sw out 47u
 C1 out 0 100u
 Rload out 0 0.556
-Vgate gate 0 PULSE(0 12 0 1n 1n 5.83u 10u)
+Vgate gate sw PULSE(0 12 0 1n 1n 5.83u 10u)
 .model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
 .model DIODE D
 .tran 10n 1m

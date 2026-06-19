@@ -1,24 +1,30 @@
-* OVERALL BEST CANDIDATE: 00_Phase_2_80V_to_9V_Specialized_Buck_g2_cand1_b9
-* FITNESS SCORE: 0.7241
+* === GLOBAL BEST TOPOLOGY ===
+* Candidate: cand_3
+* Fitness: 0.9757
 *
-* Generated: 2026-06-01T01:17:15
-* Constraint: Phase 2: 80V to 9V Specialized (Buck)
-*   vin_min = 70
-*   vin_max = 90
-*   vout_target = 9
-*   efficiency_target = 0.86
-*   power_in = 80
-* Candidate: 5 of 8
-* Grouped name: g2_cand1
+* --- Active Constraints ---
+* _comment: Phase 2: 80V to 9V Specialized (Buck)
+* vin_min: 70
+* vin_max: 90
+* vout_target: 9
+* efficiency_target: 0.86
+* power_in: 80
 *
-* 70V to 9V D=100m, Rload=900m
+* --- Raw Metrics & Components ---
+* simulation_output_voltage: 7.151743
+* efficiency: 0.880556
+* total_volume_cm3: 42.867351
+* total_components: 4
+* ============================
+
+* 70V to 9V Buck, 80W
 Vin in 0 70
-M1 in gate sw 0 NMOS W=1 L=1
+M1 in gate sw sw NMOS W=1 L=1
 D1 0 sw DIODE
 L1 sw out 47u
 C1 out 0 220u
-Rload out 0 900m
-Vgate gate 0 PULSE(0 12 0 1n 1n 10u 10u)
+Rload out 0 0.278
+Vgate gate sw PULSE(0 12 0 1n 1n 1.16u 10u)
 .model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
 .model DIODE D
 .tran 10n 1m

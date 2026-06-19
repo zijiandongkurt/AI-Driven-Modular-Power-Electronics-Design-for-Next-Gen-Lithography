@@ -1,16 +1,23 @@
-* OVERALL BEST CANDIDATE: 00_Phase_2_9V_to_80V_Specialized_Boost_g1_cand2_b1
-* FITNESS SCORE: 0.5117
+* === GLOBAL BEST TOPOLOGY ===
+* Candidate: cand_2
+* Fitness: 0.5074
 *
-* Generated: 2026-06-01T02:56:10
-* Constraint: Phase 2: 9V to 80V Specialized (Boost)
-*   vin_min = 8
-*   vin_max = 10
-*   vout_target = 80
-*   efficiency_target = 0.86
-*   power_in = 80
-* Candidate: 2 of 8
-* Grouped name: g1_cand2
+* --- Active Constraints ---
+* _comment: Phase 2: 9V to 80V Specialized (Boost)
+* vin_min: 8
+* vin_max: 10
+* vout_target: 80
+* efficiency_target: 0.86
+* power_in: 80
 *
+* --- Raw Metrics & Components ---
+* simulation_output_voltage: 19.583649
+* efficiency: 0.753318
+* total_volume_cm3: 44.419392
+* total_components: 4
+* ============================
+
+* cand_2
 Vin in 0 8
 L1 in sw 220u
 M1 sw gate 0 0 NMOS W=1 L=1
@@ -20,6 +27,6 @@ Rload out 0 6
 Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
 .model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
 .model DIODE D
-.tran 1u 10m
+.tran 10n 1m
 .save V(*) I(*)
 .end

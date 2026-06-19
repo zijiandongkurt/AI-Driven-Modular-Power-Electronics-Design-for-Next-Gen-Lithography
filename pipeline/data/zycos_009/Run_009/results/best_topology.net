@@ -1,24 +1,30 @@
-* OVERALL BEST CANDIDATE: 00_Phase_2_48V_Telecom_to_5V_Buck_9_6_1_g2_cand1_b7
-* FITNESS SCORE: 0.8607
+* === GLOBAL BEST TOPOLOGY ===
+* Candidate: cand_11
+* Fitness: 0.9901
 *
-* Generated: 2026-06-05T02:08:14
-* Constraint: Phase 2: 48V Telecom to 5V (Buck - 9.6:1)
-*   vin_min = 40
-*   vin_max = 56
-*   vout_target = 5
-*   efficiency_target = 0.86
-*   power_in = 50
-* Candidate: 4 of 12
-* Grouped name: g2_cand1
+* --- Active Constraints ---
+* _comment: Phase 2: 48V Telecom to 5V (Buck - 9.6:1)
+* vin_min: 40
+* vin_max: 56
+* vout_target: 5
+* efficiency_target: 0.86
+* power_in: 50
 *
-* 48V to 5V Buck, 50W
+* --- Raw Metrics & Components ---
+* simulation_output_voltage: 5.393976
+* efficiency: 0.863318
+* total_volume_cm3: 29.177060
+* total_components: 4
+* ============================
+
+* 48V to 5V Buck
 Vin in 0 40
-M1 in gate sw 0 NMOS W=1 L=1
+M1 in gate sw sw NMOS W=1 L=1
 D1 0 sw DIODE
 L1 sw out 100u
-C1 out 0 220u
+C1 out 0 100u
 Rload out 0 0.5
-Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate gate sw PULSE(0 12 0 1n 1n 1.56u 10u)
 .model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
 .model DIODE D
 .tran 10n 1m

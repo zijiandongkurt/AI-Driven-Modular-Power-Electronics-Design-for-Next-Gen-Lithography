@@ -1,0 +1,21 @@
+* 360V to 24V 3-Phase Buck
+Vin in 0 360
+M1 in gate1 sw1 sw1 NMOS W=1 L=1
+M2 in gate2 sw2 sw2 NMOS W=1 L=1
+M3 in gate3 sw3 sw3 NMOS W=1 L=1
+D1 0 sw1 DIODE
+D2 0 sw2 DIODE
+D3 0 sw3 DIODE
+L1 sw1 out 220u
+L2 sw2 out 220u
+L3 sw3 out 220u
+C1 out 0 220u
+Rload out 0 1.15
+Vgate1 gate1 sw1 PULSE(0 12 0 1n 1n 5.8u 10u)
+Vgate2 gate2 sw2 PULSE(0 12 0 1n 1n 7.5u 10u)
+Vgate3 gate3 sw3 PULSE(0 12 0 1n 1n 9.2u 10u)
+.model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
+.model DIODE D
+.tran 10n 1m
+.save V(*) I(*)
+.end

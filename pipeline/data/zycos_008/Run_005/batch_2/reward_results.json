@@ -8,133 +8,116 @@
         "power_in": 10
     },
     "circuits": {
-        "00_Phase_1_5V_USB_to_12V_Sensor_Boost_g1_cand1_b2": {
-            "fitness_score": 0.9825974710054789,
+        "cand_1": {
+            "fitness_score": 0.9526043350551308,
             "source": "simulation",
             "loss_breakdown": {
-                "voltage_tracking_loss": 0.31076424776271533,
+                "voltage_tracking_loss": 0.5842803118432695,
+                "efficiency_loss": 1.8710847387001084,
+                "volume_loss": 0.5626970724227389,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 10.290789199888923,
+                "efficiency": 0.5928915261299892,
+                "total_volume_cm3": 28.134853621136948,
+                "total_components": 4
+            },
+            "grpo_reward": 0.36239707469940186
+        },
+        "cand_10": {
+            "fitness_score": 0.8459987020019667,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 5.545268466667582,
+                "efficiency_loss": 2.3062147350063524,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 6.734419088710353,
+                "efficiency": 0.5493785264993648,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": -2.148493528366089
+        },
+        "cand_11": {
+            "fitness_score": 0.9273533355962982,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 2.1598096258759663,
+                "efficiency_loss": 0.47684156240132225,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 8.713809480663084,
+                "efficiency": 0.7323158437598678,
+                "total_volume_cm3": 107.83441241238724,
+                "total_components": 4
+            },
+            "grpo_reward": -0.23234231770038605
+        },
+        "cand_12": {
+            "fitness_score": 0.9110074444116835,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 5.015341879615171,
                 "efficiency_loss": 0.0,
-                "volume_loss": 0.4378026658756761,
-                "component_cost_loss": 0.4
+                "volume_loss": 0.6690809335959186,
+                "component_cost_loss": 0.020000000000000004
             },
             "raw_metrics": {
-                "simulation_output_voltage": 10.753476338446166,
-                "efficiency": 0.9030887104862214,
-                "total_volume_cm3": 21.890133293783805,
+                "simulation_output_voltage": 6.992334935513772,
+                "efficiency": 0.8166577596712149,
+                "total_volume_cm3": 33.45404667979593,
                 "total_components": 4
             },
-            "grpo_reward": 1.0446648597717285
+            "grpo_reward": -0.6173375248908997
         },
-        "00_Phase_1_5V_USB_to_12V_Sensor_Boost_g1_cand2_b2": {
-            "fitness_score": 0.9825974710054789,
+        "cand_2": {
+            "fitness_score": 0.9526043350551308,
             "source": "simulation",
             "loss_breakdown": {
-                "voltage_tracking_loss": 0.31076424776271533,
+                "voltage_tracking_loss": 0.5842803118432695,
+                "efficiency_loss": 1.8710847387001084,
+                "volume_loss": 0.5626970724227389,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 10.290789199888923,
+                "efficiency": 0.5928915261299892,
+                "total_volume_cm3": 28.134853621136948,
+                "total_components": 4
+            },
+            "grpo_reward": 0.36239707469940186
+        },
+        "cand_3": {
+            "fitness_score": 0.9899539536103642,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.21595157357565742,
                 "efficiency_loss": 0.0,
-                "volume_loss": 0.4378026658756761,
-                "component_cost_loss": 0.4
+                "volume_loss": 0.408,
+                "component_cost_loss": 0.020000000000000004
             },
             "raw_metrics": {
-                "simulation_output_voltage": 10.753476338446166,
-                "efficiency": 0.9030887104862214,
-                "total_volume_cm3": 21.890133293783805,
+                "simulation_output_voltage": 10.96088601786027,
+                "efficiency": 1.0,
+                "total_volume_cm3": 20.4,
                 "total_components": 4
             },
-            "grpo_reward": 1.0446648597717285
+            "grpo_reward": 1.2420945167541504
         },
-        "00_Phase_1_5V_USB_to_12V_Sensor_Boost_g1_cand3_b2": {
-            "fitness_score": 0.982722564231292,
-            "source": "simulation",
-            "loss_breakdown": {
-                "voltage_tracking_loss": 0.3119704520827566,
-                "efficiency_loss": 0.0,
-                "volume_loss": 0.4283403086519712,
-                "component_cost_loss": 0.4
-            },
-            "raw_metrics": {
-                "simulation_output_voltage": 10.751059544888635,
-                "efficiency": 0.9024751429721256,
-                "total_volume_cm3": 21.41701543259856,
-                "total_components": 4
-            },
-            "grpo_reward": 1.0481607913970947
-        },
-        "00_Phase_1_5V_USB_to_12V_Sensor_Boost_g2_cand1_b2": {
-            "fitness_score": 0.9715754169140094,
-            "source": "simulation",
-            "loss_breakdown": {
-                "voltage_tracking_loss": 0.8864233791294036,
-                "efficiency_loss": 0.0,
-                "volume_loss": 0.5895991045459787,
-                "component_cost_loss": 0.4
-            },
-            "raw_metrics": {
-                "simulation_output_voltage": 9.894740658339924,
-                "efficiency": 0.8310879520973715,
-                "total_volume_cm3": 29.479955227298937,
-                "total_components": 4
-            },
-            "grpo_reward": 0.7366724014282227
-        },
-        "00_Phase_1_5V_USB_to_12V_Sensor_Boost_g2_cand2_b2": {
-            "fitness_score": 0.9715754169140094,
-            "source": "simulation",
-            "loss_breakdown": {
-                "voltage_tracking_loss": 0.8864233791294036,
-                "efficiency_loss": 0.0,
-                "volume_loss": 0.5895991045459787,
-                "component_cost_loss": 0.4
-            },
-            "raw_metrics": {
-                "simulation_output_voltage": 9.894740658339924,
-                "efficiency": 0.8310879520973715,
-                "total_volume_cm3": 29.479955227298937,
-                "total_components": 4
-            },
-            "grpo_reward": 0.7366724014282227
-        },
-        "00_Phase_1_5V_USB_to_12V_Sensor_Boost_g2_cand3_b2": {
-            "fitness_score": 0.9432826482339,
-            "source": "simulation",
-            "loss_breakdown": {
-                "voltage_tracking_loss": 2.8483804323699777,
-                "efficiency_loss": 0.0,
-                "volume_loss": 0.4949647841926276,
-                "component_cost_loss": 0.4
-            },
-            "raw_metrics": {
-                "simulation_output_voltage": 8.226155519652421,
-                "efficiency": 0.85538853576353,
-                "total_volume_cm3": 24.748239209631382,
-                "total_components": 4
-            },
-            "grpo_reward": -0.05392227694392204
-        },
-        "00_Phase_1_5V_USB_to_12V_Sensor_Boost_g3_cand1_b2": {
-            "fitness_score": 0.8674792275380614,
-            "source": "simulation",
-            "loss_breakdown": {
-                "voltage_tracking_loss": 4.8553914522854615,
-                "efficiency_loss": 2.353987790553326,
-                "volume_loss": 1.136991739649158,
-                "component_cost_loss": 0.4
-            },
-            "raw_metrics": {
-                "simulation_output_voltage": 7.072834764144061,
-                "efficiency": 0.5446012209446675,
-                "total_volume_cm3": 56.8495869824579,
-                "total_components": 4
-            },
-            "grpo_reward": -2.1721243858337402
-        },
-        "00_Phase_1_5V_USB_to_12V_Sensor_Boost_g3_cand2_b2": {
-            "fitness_score": 0.9691950116801146,
+        "cand_4": {
+            "fitness_score": 0.9742101524319432,
             "source": "simulation",
             "loss_breakdown": {
                 "voltage_tracking_loss": 1.0038625572184643,
                 "efficiency_loss": 0.0,
                 "volume_loss": 0.6292666718939744,
-                "component_cost_loss": 0.4
+                "component_cost_loss": 0.020000000000000004
             },
             "raw_metrics": {
                 "simulation_output_voltage": 9.759617714296883,
@@ -142,16 +125,84 @@
                 "total_volume_cm3": 31.46333359469872,
                 "total_components": 4
             },
-            "grpo_reward": 0.6701552271842957
+            "grpo_reward": 0.871279776096344
         },
-        "00_Phase_1_5V_USB_to_12V_Sensor_Boost_g3_cand3_b2": {
-            "fitness_score": 0.9170270254751922,
+        "cand_5": {
+            "fitness_score": 0.9742101524319432,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 1.0038625572184643,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.6292666718939744,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 9.759617714296883,
+                "efficiency": 0.8042463582323337,
+                "total_volume_cm3": 31.46333359469872,
+                "total_components": 4
+            },
+            "grpo_reward": 0.871279776096344
+        },
+        "cand_6": {
+            "fitness_score": 0.954487936101796,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 2.445010259149649,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.45231303672522655,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 8.503565917145263,
+                "efficiency": 0.9203289497064489,
+                "total_volume_cm3": 22.61565183626133,
+                "total_components": 4
+            },
+            "grpo_reward": 0.4067608416080475
+        },
+        "cand_7": {
+            "fitness_score": 0.869479391848862,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 4.8553914522854615,
+                "efficiency_loss": 2.353987790553326,
+                "volume_loss": 1.136991739649158,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 7.072834764144061,
+                "efficiency": 0.5446012209446675,
+                "total_volume_cm3": 56.8495869824579,
+                "total_components": 4
+            },
+            "grpo_reward": -1.5954506397247314
+        },
+        "cand_8": {
+            "fitness_score": 0.9742101524319432,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 1.0038625572184643,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.6292666718939744,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 9.759617714296883,
+                "efficiency": 0.8042463582323337,
+                "total_volume_cm3": 31.46333359469872,
+                "total_components": 4
+            },
+            "grpo_reward": 0.871279776096344
+        },
+        "cand_9": {
+            "fitness_score": 0.9204958452630684,
             "source": "simulation",
             "loss_breakdown": {
                 "voltage_tracking_loss": 4.561633550516152,
                 "efficiency_loss": 0.0,
                 "volume_loss": 0.5145827681211638,
-                "component_cost_loss": 0.4
+                "component_cost_loss": 0.020000000000000004
             },
             "raw_metrics": {
                 "simulation_output_voltage": 7.224210248285551,
@@ -159,58 +210,7 @@
                 "total_volume_cm3": 25.729138406058187,
                 "total_components": 4
             },
-            "grpo_reward": -0.7875933647155762
-        },
-        "00_Phase_1_5V_USB_to_12V_Sensor_Boost_g4_cand1_b2": {
-            "fitness_score": 0.9234109848181505,
-            "source": "simulation",
-            "loss_breakdown": {
-                "voltage_tracking_loss": 2.167771709173997,
-                "efficiency_loss": 0.4871032928280683,
-                "volume_loss": 2.0,
-                "component_cost_loss": 0.4
-            },
-            "raw_metrics": {
-                "simulation_output_voltage": 8.707757823933667,
-                "efficiency": 0.7312896707171932,
-                "total_volume_cm3": 112.39756881199337,
-                "total_components": 4
-            },
-            "grpo_reward": -0.6092026829719543
-        },
-        "00_Phase_1_5V_USB_to_12V_Sensor_Boost_g4_cand2_b2": {
-            "fitness_score": 0.9234214618284241,
-            "source": "simulation",
-            "loss_breakdown": {
-                "voltage_tracking_loss": 2.1680650461153754,
-                "efficiency_loss": 0.4861184732086332,
-                "volume_loss": 2.0,
-                "component_cost_loss": 0.4
-            },
-            "raw_metrics": {
-                "simulation_output_voltage": 8.707535082863163,
-                "efficiency": 0.7313881526791367,
-                "total_volume_cm3": 109.06732185807414,
-                "total_components": 4
-            },
-            "grpo_reward": -0.6089112162590027
-        },
-        "00_Phase_1_5V_USB_to_12V_Sensor_Boost_g4_cand3_b2": {
-            "fitness_score": 0.9076620540232526,
-            "source": "simulation",
-            "loss_breakdown": {
-                "voltage_tracking_loss": 5.024403061965427,
-                "efficiency_loss": 0.0,
-                "volume_loss": 0.6699013724998979,
-                "component_cost_loss": 0.4
-            },
-            "raw_metrics": {
-                "simulation_output_voltage": 6.98781332053293,
-                "efficiency": 0.8160941744721246,
-                "total_volume_cm3": 33.49506862499489,
-                "total_components": 4
-            },
-            "grpo_reward": -1.0492817163467407
+            "grpo_reward": -0.3938564360141754
         }
     }
 }

@@ -1,26 +1,32 @@
-* OVERALL BEST CANDIDATE: 00_Phase_2_12V_to_100V_Piezo_Drive_Boost_1_8_3_g4_cand2_b9
-* FITNESS SCORE: 0.6843
+* === GLOBAL BEST TOPOLOGY ===
+* Candidate: cand_10
+* Fitness: 0.6813
 *
-* Generated: 2026-06-04T22:33:16
-* Constraint: Phase 2: 12V to 100V Piezo Drive (Boost - 1:8.3)
-*   vin_min = 10
-*   vin_max = 14
-*   vout_target = 100
-*   efficiency_target = 0.87
-*   power_in = 100
-* Candidate: 11 of 12
-* Grouped name: g4_cand2
+* --- Active Constraints ---
+* _comment: Phase 2: 12V to 100V Piezo Drive (Boost - 1:8.3)
+* vin_min: 10
+* vin_max: 14
+* vout_target: 100
+* efficiency_target: 0.87
+* power_in: 100
 *
+* --- Raw Metrics & Components ---
+* simulation_output_voltage: 64.589287
+* efficiency: 1.000000
+* total_volume_cm3: 20.400000
+* total_components: 4
+* ============================
+
 * 12V to 100V Boost, 100W
 Vin in 0 12
-L1 in sw 44u
+L1 in sw 10u
 M1 sw gate 0 0 NMOS W=1 L=1
 D1 sw out DIODE
 C1 out 0 100u
-Rload out 0 100
+Rload out 0 10
 Vgate gate 0 PULSE(0 12 0 1n 1n 8.33u 10u)
 .model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
 .model DIODE D
-.tran 1u 10m
+.tran 10n 1m
 .save V(*) I(*)
 .end

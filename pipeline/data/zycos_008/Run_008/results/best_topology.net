@@ -1,24 +1,30 @@
-* OVERALL BEST CANDIDATE: 00_Phase_1_15V_Rail_to_5V_Buck_g2_cand1_b4
-* FITNESS SCORE: 0.9270
+* === GLOBAL BEST TOPOLOGY ===
+* Candidate: cand_8
+* Fitness: 0.9920
 *
-* Generated: 2026-06-04T17:15:46
-* Constraint: Phase 1: 15V Rail to 5V (Buck)
-*   vin_min = 13
-*   vin_max = 17
-*   vout_target = 5
-*   efficiency_target = 0.79
-*   power_in = 20
-* Candidate: 4 of 12
-* Grouped name: g2_cand1
+* --- Active Constraints ---
+* _comment: Phase 1: 15V Rail to 5V (Buck)
+* vin_min: 13
+* vin_max: 17
+* vout_target: 5
+* efficiency_target: 0.79
+* power_in: 20
 *
-* 15V to 5V Buck Converter
+* --- Raw Metrics & Components ---
+* simulation_output_voltage: 5.066725
+* efficiency: 0.904678
+* total_volume_cm3: 24.694493
+* total_components: 4
+* ============================
+
+* 15V to 5V Buck
 Vin in 0 15
-M1 in gate sw 0 NMOS W=1 L=1
+M1 in gate sw sw NMOS W=1 L=1
 D1 0 sw DIODE
-L1 sw out 100u
-C1 out 0 220u
+L1 sw out 47u
+C1 out 0 470u
 Rload out 0 0.5
-Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+Vgate gate sw PULSE(0 12 0 1n 1n 4.16u 10u)
 .model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
 .model DIODE D
 .tran 10n 1m

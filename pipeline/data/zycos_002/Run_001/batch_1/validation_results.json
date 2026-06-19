@@ -1,5 +1,5 @@
 {
-    "00_12V_to_5V_step_down_g2_cand2_b1": {
+    "cand_1": {
         "passed": true,
         "checks": {
             "netlist_syntax": true,
@@ -27,7 +27,7 @@
             "singular_cap_loop": true
         }
     },
-    "00_12V_to_5V_step_down_g1_cand1_b1": {
+    "cand_2": {
         "passed": true,
         "checks": {
             "netlist_syntax": true,
@@ -55,8 +55,8 @@
             "singular_cap_loop": true
         }
     },
-    "00_12V_to_5V_step_down_g2_cand1_b1": {
-        "passed": true,
+    "cand_3": {
+        "passed": false,
         "checks": {
             "netlist_syntax": true,
             "ground_reference": true,
@@ -73,7 +73,7 @@
             "connected_graph": true,
             "floating_nodes": true,
             "cl_loops": true,
-            "current_path": true,
+            "current_path": false,
             "short_same_node": true,
             "short_zero_resistor": true,
             "short_zero_voltage": true,
@@ -83,7 +83,7 @@
             "singular_cap_loop": true
         }
     },
-    "00_12V_to_5V_step_down_g1_cand2_b1": {
+    "cand_4": {
         "passed": true,
         "checks": {
             "netlist_syntax": true,

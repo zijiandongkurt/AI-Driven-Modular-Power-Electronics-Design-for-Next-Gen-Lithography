@@ -8,6 +8,16 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
+# --- NEW: Crank up the global font sizes for LaTeX 1-column readability ---
+plt.rcParams.update({
+    'axes.titlesize': 24,    # Title of each subplot
+    'axes.labelsize': 20,    # X and Y axis labels
+    'xtick.labelsize': 16,   # X axis tick marks
+    'ytick.labelsize': 16,   # Y axis tick marks
+    'legend.fontsize': 16,   # Legend text
+    'figure.titlesize': 28   # The main overarching title
+})
+
 def extract_run_number(folder_name):
     """Extract the integer run number from a folder name like 'Run_005'."""
     match = re.search(r'Run_(\d+)', folder_name)
@@ -93,9 +103,6 @@ def process_zycos_run(zycos_name):
         except (TypeError, ValueError):
             raw_vol = 1.0
             
-        # Debug print commented out for cleaner terminal output
-        # print(f"  -> Run {run_idx:02d} | Best: {cand_id[:20]}... | Raw Vol: {raw_vol:.4f} cm³")
-            
         # Clamp bounds so log scales don't crash
         vol = raw_vol
         if vol <= 0:
@@ -148,9 +155,10 @@ def process_zycos_run(zycos_name):
                 
             plt.legend(loc='best')
             
-        plt.title(f"{zycos_name} - {title}", fontsize=14, fontweight='bold')
-        plt.xlabel("Run Number", fontsize=12)
-        plt.ylabel(ylabel, fontsize=12)
+        # Updated font sizes to match rcParams
+        plt.title(f"{zycos_name} - {title}", fontsize=24, fontweight='bold')
+        plt.xlabel("Run Number", fontsize=20)
+        plt.ylabel(ylabel, fontsize=20)
         plt.grid(True, linestyle='--', alpha=0.6)
         
         if is_log:
@@ -184,7 +192,8 @@ def process_zycos_run(zycos_name):
     
     # 2. Generate 2x2 Subplot Summary
     fig, axs = plt.subplots(2, 2, figsize=(16, 10))
-    fig.suptitle(f'Constraint Satisfaction & Metrics Summary ({zycos_name})', fontsize=16, fontweight='bold')
+    # Updated title size to match rcParams
+    fig.suptitle(f'Constraint Satisfaction & Metrics Summary ({zycos_name})', fontsize=28, fontweight='bold')
     
     axs[0, 0].plot(run_numbers, v_err_pcts, marker='o', color='deepskyblue', linewidth=2)
     
@@ -246,6 +255,6 @@ def process_zycos_run(zycos_name):
     plt.close()
 
 if __name__ == "__main__":
-    for i in range(5, 10):
+    for i in range(8, 11):
         run_name = f"zycos_{i:03d}"
         process_zycos_run(run_name)

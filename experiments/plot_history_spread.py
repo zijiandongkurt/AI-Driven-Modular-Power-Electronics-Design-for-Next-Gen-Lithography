@@ -243,7 +243,7 @@ def process_zycos_run(zycos_name):
                 print(f" PERMISSION ERROR: Close {filename} to allow overwrite.")
             plt.close()
 
-        save_standalone(plot_box, v_err_pcts, "Voltage Error (%)", "Error (%)", "err_voltage_pct.png", color='deepskyblue', hline_y=5, hline_name='Tolerance (+/- 5%)', limit_type='band', y_min=-5)
+        save_standalone(plot_box, v_err_pcts, "Voltage Error (%)", "Error (%)", "err_voltage_pct.png", color='deepskyblue', hline_y=10, hline_name='Tolerance (+/- 10%)', limit_type='band', y_min=-10)
         save_standalone(plot_box, abs_v_errors, "Absolute Voltage Error", "|Error| (V)", "err_abs_voltage.png", color='crimson', hline_y=1, hline_name='Tolerance (1V)', limit_type='lower', y_min=0)
         save_standalone(plot_box, eff_errors, "Efficiency Error", "Error", "err_efficiency.png", color='darkorange', hline_y=0, hline_name='Target Met (0)', limit_type='lower')
         save_standalone(plot_box, volumes, "Volume Spread", "Volume (cm³)", "metric_volume.png", color='purple', is_log=True, hline_y=9000, hline_name='Burn Threshold', limit_type='upper', y_max=10000)
@@ -252,7 +252,7 @@ def process_zycos_run(zycos_name):
         fig, axs = plt.subplots(2, 2, figsize=(16, 10))
         fig.suptitle(f'{master_title} ({zycos_name})', fontsize=16, fontweight='bold')
         
-        plot_box(axs[0, 0], run_numbers, v_err_pcts, 'Voltage Error Spread (%)', 'Error (%)', color='deepskyblue', hline_y=5, hline_name='Tolerance (+/- 5%)', limit_type='band', y_min=-5)
+        plot_box(axs[0, 0], run_numbers, v_err_pcts, 'Voltage Error Spread (%)', 'Error (%)', color='deepskyblue', hline_y=10, hline_name='Tolerance (+/- 10%)', limit_type='band', y_min=-10)
         plot_box(axs[0, 1], run_numbers, eff_errors, 'Efficiency Error Spread', 'Error', color='darkorange', hline_y=0, hline_name='Target Met (0)', limit_type='lower')
         plot_box(axs[1, 0], run_numbers, volumes, 'Total Volume Spread', 'Volume (cm³)', color='purple', is_log=True, hline_y=9000, hline_name='Burn Threshold', limit_type='upper', y_max=10000)
         plot_comp_bars(axs[1, 1], run_numbers, components, 'Component Count Distribution', 'Valid Circuit Yield')
@@ -275,6 +275,6 @@ def process_zycos_run(zycos_name):
     generate_spread_plots(top_k_data, "spread_topk", f"Top {TOP_K_SPREAD} Valid Spread")
 
 if __name__ == "__main__":
-    for i in range(5, 10):
+    for i in range(10, 11):
         run_name = f"zycos_{i:03d}"
         process_zycos_run(run_name)

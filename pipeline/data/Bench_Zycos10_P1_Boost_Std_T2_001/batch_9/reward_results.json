@@ -8,64 +8,27 @@
         "power_in": 5
     },
     "circuits": {
-        "00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g1_cand3_b9": {
-            "fitness_score": -0.89,
+        "cand_3": {
+            "fitness_score": -0.915,
             "source": "validation_penalty",
-            "grpo_reward": -0.5066676139831543
+            "grpo_reward": -0.7252888083457947
         },
-        "00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g3_cand1_b9": {
-            "fitness_score": -0.89,
+        "cand_5": {
+            "fitness_score": -0.915,
             "source": "validation_penalty",
-            "grpo_reward": -0.5066676139831543
+            "grpo_reward": -0.7252888083457947
         },
-        "00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g2_cand3_b9": {
+        "cand_6": {
             "fitness_score": -0.85,
             "source": "validation_penalty",
-            "grpo_reward": -0.4528190791606903
+            "grpo_reward": -0.65160071849823
         },
-        "00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g3_cand3_b9": {
-            "fitness_score": -0.89,
+        "cand_9": {
+            "fitness_score": -0.915,
             "source": "validation_penalty",
-            "grpo_reward": -0.5066676139831543
+            "grpo_reward": -0.7252888083457947
         },
-        "00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g2_cand2_b9": {
-            "fitness_score": -0.89,
-            "source": "validation_penalty",
-            "grpo_reward": -0.5066676139831543
-        },
-        "00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g1_cand1_b9": {
-            "fitness_score": -0.89,
-            "source": "validation_penalty",
-            "grpo_reward": -0.5066676139831543
-        },
-        "00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g1_cand2_b9": {
-            "fitness_score": -0.89,
-            "source": "validation_penalty",
-            "grpo_reward": -0.5066676139831543
-        },
-        "00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g3_cand2_b9": {
-            "fitness_score": -0.89,
-            "source": "validation_penalty",
-            "grpo_reward": -0.5066676139831543
-        },
-        "00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g2_cand1_b9": {
-            "fitness_score": 0.9720506091692241,
-            "source": "simulation",
-            "loss_breakdown": {
-                "voltage_tracking_loss": 0.010012528508481706,
-                "efficiency_loss": 0.8506573706729903,
-                "volume_loss": 0.9108860530712581,
-                "component_cost_loss": 0.020000000000000004
-            },
-            "raw_metrics": {
-                "simulation_output_voltage": 5.22374682688791,
-                "efficiency": 0.664934262932701,
-                "total_volume_cm3": 45.54430265356291,
-                "total_components": 4
-            },
-            "grpo_reward": 2.000053882598877
-        },
-        "00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g4_cand3_b9": {
+        "cand_12": {
             "fitness_score": 0.9715932596280339,
             "source": "simulation",
             "loss_breakdown": {
@@ -80,7 +43,24 @@
                 "total_volume_cm3": 46.2282616890881,
                 "total_components": 4
             },
-            "grpo_reward": 1.9994381666183472
+            "grpo_reward": 1.4134743213653564
+        },
+        "cand_4": {
+            "fitness_score": 0.9720506091692241,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.010012528508481706,
+                "efficiency_loss": 0.8506573706729903,
+                "volume_loss": 0.9108860530712581,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 5.22374682688791,
+                "efficiency": 0.664934262932701,
+                "total_volume_cm3": 45.54430265356291,
+                "total_components": 4
+            },
+            "grpo_reward": 1.4139928817749023
         }
     }
 }

@@ -8,116 +8,152 @@
         "power_in": 35
     },
     "circuits": {
-        "00_Phase_1_12V_Car_to_24V_Truck_Boost_g1_cand1_b2": {
-            "fitness_score": 0.9636824995673066,
+        "cand_1": {
+            "fitness_score": 0.6536237475637362,
             "source": "simulation",
             "loss_breakdown": {
-                "voltage_tracking_loss": 0.5104982160024591,
-                "efficiency_loss": 0.0,
-                "volume_loss": 1.4864568125553077,
-                "component_cost_loss": 0.4
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.03216397893724743,
+                "volume_loss": 0.645675003221089,
+                "component_cost_loss": 0.020000000000000004
             },
             "raw_metrics": {
-                "simulation_output_voltage": 25.59765173927621,
-                "efficiency": 0.8966065351086814,
-                "total_volume_cm3": 74.32284062776539,
+                "simulation_output_voltage": 11.051915842604762,
+                "efficiency": 0.8167836021062752,
+                "total_volume_cm3": 32.28375016105445,
                 "total_components": 4
             },
-            "grpo_reward": 0.6542884111404419
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.8674367993335347,
+            "grpo_reward": -2.8814547061920166
         },
-        "00_Phase_1_12V_Car_to_24V_Truck_Boost_g1_cand2_b2": {
-            "fitness_score": 0.9635432295952089,
+        "cand_11": {
+            "fitness_score": 0.9666087722340211,
             "source": "simulation",
             "loss_breakdown": {
-                "voltage_tracking_loss": 0.006146846716211375,
+                "voltage_tracking_loss": 0.12037769979924667,
                 "efficiency_loss": 0.0,
                 "volume_loss": 2.0,
-                "component_cost_loss": 0.4
+                "component_cost_loss": 0.020000000000000004
             },
             "raw_metrics": {
-                "simulation_output_voltage": 24.17531181814429,
-                "efficiency": 0.8575120319647924,
-                "total_volume_cm3": 164.0907573723029,
-                "total_components": 4
-            },
-            "grpo_reward": 0.6524074673652649
-        },
-        "00_Phase_1_12V_Car_to_24V_Truck_Boost_g1_cand3_b2": {
-            "fitness_score": 0.9633548389790288,
-            "source": "simulation",
-            "loss_breakdown": {
-                "voltage_tracking_loss": 0.015619762993795031,
-                "efficiency_loss": 0.002960864390303408,
-                "volume_loss": 2.0,
-                "component_cost_loss": 0.4
-            },
-            "raw_metrics": {
-                "simulation_output_voltage": 24.2794616520544,
-                "efficiency": 0.8197039135609696,
+                "simulation_output_voltage": 24.775814732391847,
+                "efficiency": 0.8379218596622509,
                 "total_volume_cm3": 10000.0,
                 "total_components": 4
             },
-            "grpo_reward": 0.6498622894287109
+            "grpo_reward": 0.8037126660346985
         },
-        "00_Phase_1_12V_Car_to_24V_Truck_Boost_g2_cand1_b2": {
-            "fitness_score": 0.9602788011845659,
+        "cand_12": {
+            "fitness_score": 0.9666087722340211,
             "source": "simulation",
             "loss_breakdown": {
-                "voltage_tracking_loss": 0.2215991218186486,
+                "voltage_tracking_loss": 0.12037769979924667,
                 "efficiency_loss": 0.0,
                 "volume_loss": 2.0,
-                "component_cost_loss": 0.4
+                "component_cost_loss": 0.020000000000000004
             },
             "raw_metrics": {
-                "simulation_output_voltage": 25.0526137036412,
-                "efficiency": 0.8767608144180885,
-                "total_volume_cm3": 588.4070686309669,
+                "simulation_output_voltage": 24.775814732391847,
+                "efficiency": 0.8379218596622509,
+                "total_volume_cm3": 10000.0,
                 "total_components": 4
             },
-            "grpo_reward": 0.6083088517189026
+            "grpo_reward": 0.8037126660346985
         },
-        "00_Phase_1_12V_Car_to_24V_Truck_Boost_g2_cand2_b2": {
-            "fitness_score": 0.9056671957727519,
+        "cand_2": {
+            "fitness_score": 0.8950968592474553,
             "source": "simulation",
             "loss_breakdown": {
-                "voltage_tracking_loss": 5.152730131485602,
-                "efficiency_loss": 0.0,
-                "volume_loss": 0.6732349475127727,
-                "component_cost_loss": 0.4
+                "voltage_tracking_loss": 0.7898891884958661,
+                "efficiency_loss": 3.9144021337422483,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
             },
             "raw_metrics": {
-                "simulation_output_voltage": 18.924209356422587,
-                "efficiency": 0.9210952746906652,
-                "total_volume_cm3": 33.66174737563863,
+                "simulation_output_voltage": 22.01267870174968,
+                "efficiency": 0.4285597866257751,
+                "total_volume_cm3": 10000.0,
                 "total_components": 4
             },
-            "grpo_reward": -0.12943105399608612
+            "grpo_reward": -0.038287438452243805
         },
-        "00_Phase_1_12V_Car_to_24V_Truck_Boost_g2_cand3_b2": {
-            "fitness_score": 0.9602788011845659,
+        "cand_3": {
+            "fitness_score": 0.8950968592474553,
             "source": "simulation",
             "loss_breakdown": {
-                "voltage_tracking_loss": 0.2215991218186486,
+                "voltage_tracking_loss": 0.7898891884958661,
+                "efficiency_loss": 3.9144021337422483,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 22.01267870174968,
+                "efficiency": 0.4285597866257751,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": -0.038287438452243805
+        },
+        "cand_4": {
+            "fitness_score": 0.967047534975637,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.09225300806167071,
                 "efficiency_loss": 0.0,
                 "volume_loss": 2.0,
-                "component_cost_loss": 0.4
+                "component_cost_loss": 0.020000000000000004
             },
             "raw_metrics": {
-                "simulation_output_voltage": 25.0526137036412,
-                "efficiency": 0.8767608144180885,
-                "total_volume_cm3": 588.4070686309669,
+                "simulation_output_voltage": 24.67916495809807,
+                "efficiency": 0.8393348932871765,
+                "total_volume_cm3": 10000.0,
                 "total_components": 4
             },
-            "grpo_reward": 0.6083088517189026
+            "grpo_reward": 0.8088786005973816
         },
-        "00_Phase_1_12V_Car_to_24V_Truck_Boost_g3_cand1_b2": {
-            "fitness_score": 0.88344524269709,
+        "cand_5": {
+            "fitness_score": 0.912949245605345,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 4.938444936721638,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.6215084199757468,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 19.03087284489437,
+                "efficiency": 0.932045038317344,
+                "total_volume_cm3": 31.07542099878734,
+                "total_components": 4
+            },
+            "grpo_reward": 0.17191168665885925
+        },
+        "cand_6": {
+            "fitness_score": 0.967047534975637,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.09225300806167071,
+                "efficiency_loss": 0.0,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 24.67916495809807,
+                "efficiency": 0.8393348932871765,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": 0.8088786005973816
+        },
+        "cand_7": {
+            "fitness_score": 0.8859186586272689,
             "source": "simulation",
             "loss_breakdown": {
                 "voltage_tracking_loss": 6.020756341994611,
                 "efficiency_loss": 0.0,
                 "volume_loss": 1.2718576399974497,
-                "component_cost_loss": 0.4
+                "component_cost_loss": 0.020000000000000004
             },
             "raw_metrics": {
                 "simulation_output_voltage": 18.513308673711173,
@@ -125,16 +161,16 @@
                 "total_volume_cm3": 63.59288199987248,
                 "total_components": 4
             },
-            "grpo_reward": -0.429623544216156
+            "grpo_reward": -0.14635351300239563
         },
-        "00_Phase_1_12V_Car_to_24V_Truck_Boost_g3_cand2_b2": {
-            "fitness_score": 0.88344524269709,
+        "cand_8": {
+            "fitness_score": 0.8859186586272689,
             "source": "simulation",
             "loss_breakdown": {
                 "voltage_tracking_loss": 6.020756341994611,
                 "efficiency_loss": 0.0,
                 "volume_loss": 1.2718576399974497,
-                "component_cost_loss": 0.4
+                "component_cost_loss": 0.020000000000000004
             },
             "raw_metrics": {
                 "simulation_output_voltage": 18.513308673711173,
@@ -142,16 +178,16 @@
                 "total_volume_cm3": 63.59288199987248,
                 "total_components": 4
             },
-            "grpo_reward": -0.429623544216156
+            "grpo_reward": -0.14635351300239563
         },
-        "00_Phase_1_12V_Car_to_24V_Truck_Boost_g3_cand3_b2": {
-            "fitness_score": 0.88344524269709,
+        "cand_9": {
+            "fitness_score": 0.8859186586272689,
             "source": "simulation",
             "loss_breakdown": {
                 "voltage_tracking_loss": 6.020756341994611,
                 "efficiency_loss": 0.0,
                 "volume_loss": 1.2718576399974497,
-                "component_cost_loss": 0.4
+                "component_cost_loss": 0.020000000000000004
             },
             "raw_metrics": {
                 "simulation_output_voltage": 18.513308673711173,
@@ -159,58 +195,7 @@
                 "total_volume_cm3": 63.59288199987248,
                 "total_components": 4
             },
-            "grpo_reward": -0.429623544216156
-        },
-        "00_Phase_1_12V_Car_to_24V_Truck_Boost_g4_cand1_b2": {
-            "fitness_score": 0.696906934911275,
-            "source": "simulation",
-            "loss_breakdown": {
-                "voltage_tracking_loss": 18.6974170538606,
-                "efficiency_loss": 0.0,
-                "volume_loss": 0.7067252419952489,
-                "component_cost_loss": 0.6
-            },
-            "raw_metrics": {
-                "simulation_output_voltage": 14.331128024981249,
-                "efficiency": 0.8626882935689534,
-                "total_volume_cm3": 35.33626209976244,
-                "total_components": 6
-            },
-            "grpo_reward": -2.949540853500366
-        },
-        "00_Phase_1_12V_Car_to_24V_Truck_Boost_g4_cand2_b2": {
-            "fitness_score": 0.9594658695269155,
-            "source": "simulation",
-            "loss_breakdown": {
-                "voltage_tracking_loss": 0.27525261122357597,
-                "efficiency_loss": 0.0,
-                "volume_loss": 2.0,
-                "component_cost_loss": 0.4
-            },
-            "raw_metrics": {
-                "simulation_output_voltage": 25.17314238527038,
-                "efficiency": 0.8809770697225472,
-                "total_volume_cm3": 223.15400543033329,
-                "total_components": 4
-            },
-            "grpo_reward": 0.5973268747329712
-        },
-        "00_Phase_1_12V_Car_to_24V_Truck_Boost_g4_cand3_b2": {
-            "fitness_score": 0.9594658695269155,
-            "source": "simulation",
-            "loss_breakdown": {
-                "voltage_tracking_loss": 0.27525261122357597,
-                "efficiency_loss": 0.0,
-                "volume_loss": 2.0,
-                "component_cost_loss": 0.4
-            },
-            "raw_metrics": {
-                "simulation_output_voltage": 25.17314238527038,
-                "efficiency": 0.8809770697225472,
-                "total_volume_cm3": 223.15400543033329,
-                "total_components": 4
-            },
-            "grpo_reward": 0.5973268747329712
+            "grpo_reward": -0.14635351300239563
         }
     }
 }

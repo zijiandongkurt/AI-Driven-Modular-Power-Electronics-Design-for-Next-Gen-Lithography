@@ -8,21 +8,23 @@
         "power_in": 75
     },
     "circuits": {
-        "00_Phase_2_Exact_10_1_Limit_Buck_g4_cand3_b1": {
-            "fitness_score": 0.8529150624800135,
+        "cand_12": {
+            "fitness_score": 0.5093570181624777,
             "source": "simulation",
             "loss_breakdown": {
-                "voltage_tracking_loss": 0.1824798420534496,
-                "efficiency_loss": 7.125126034265657,
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.0,
                 "volume_loss": 2.0,
-                "component_cost_loss": 0.4
+                "component_cost_loss": 0.020000000000000004
             },
             "raw_metrics": {
-                "simulation_output_voltage": 4.044804098486992,
-                "efficiency": 0.1374873965734343,
+                "simulation_output_voltage": 26.27843233119785,
+                "efficiency": 0.893468842968547,
                 "total_volume_cm3": 10000.0,
                 "total_components": 4
             },
+            "fatal_penalty_applied": true,
+            "voltage_decay_factor": 0.05979908915402011,
             "grpo_reward": 0.0
         }
     }

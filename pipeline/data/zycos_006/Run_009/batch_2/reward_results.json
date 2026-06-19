@@ -8,115 +8,111 @@
         "power_in": 150
     },
     "circuits": {
-        "00_Phase_2_48V_to_12V_Server_Bus_Buck_High_Pwr_g1_cand1_b2": {
-            "fitness_score": -0.505,
+        "cand_1": {
+            "fitness_score": -0.5549999999999999,
             "source": "validation_penalty",
-            "grpo_reward": -1.0
+            "grpo_reward": -1.269392967224121
         },
-        "00_Phase_2_48V_to_12V_Server_Bus_Buck_High_Pwr_g1_cand2_b2": {
-            "fitness_score": -0.505,
+        "cand_2": {
+            "fitness_score": -0.5549999999999999,
             "source": "validation_penalty",
-            "grpo_reward": -1.0
+            "grpo_reward": -1.269392967224121
         },
-        "00_Phase_2_48V_to_12V_Server_Bus_Buck_High_Pwr_g1_cand3_b2": {
-            "fitness_score": -0.505,
+        "cand_3": {
+            "fitness_score": -0.5549999999999999,
             "source": "validation_penalty",
-            "grpo_reward": -1.0
+            "grpo_reward": -1.269392967224121
         },
-        "00_Phase_2_48V_to_12V_Server_Bus_Buck_High_Pwr_g1_cand4_b2": {
-            "fitness_score": 0.5725195860786514,
+        "cand_4": {
+            "fitness_score": 0.7421761798051543,
             "source": "simulation",
             "loss_breakdown": {
-                "voltage_tracking_loss": 694.6375802809191,
-                "efficiency_loss": 13.80674674416316,
-                "volume_loss": 777.4813464086265,
-                "component_cost_loss": 4.0
+                "voltage_tracking_loss": 11.636991980558474,
+                "efficiency_loss": 0.0,
+                "volume_loss": 0.5760000000000001,
+                "component_cost_loss": 0.020000000000000004
             },
             "raw_metrics": {
-                "simulation_output_voltage": 3.6655079322077513,
-                "efficiency": 0.209662662791842,
-                "total_volume_cm3": 388.7406732043132,
+                "simulation_output_voltage": 19.62790665273195,
+                "efficiency": 1.0,
+                "total_volume_cm3": 28.8,
                 "total_components": 4
             },
             "fatal_penalty_applied": true,
-            "voltage_decay_factor": 0.7045656184065497,
-            "grpo_reward": 0.7985891103744507
+            "voltage_decay_factor": 0.7833419207521655,
+            "grpo_reward": 0.76092529296875
         },
-        "00_Phase_2_48V_to_12V_Server_Bus_Buck_High_Pwr_g2_cand1_b2": {
-            "fitness_score": 0.5521173970296459,
+        "cand_5": {
+            "fitness_score": 0.9073396404323466,
             "source": "simulation",
             "loss_breakdown": {
-                "voltage_tracking_loss": 855.9987444179562,
-                "efficiency_loss": 14.9975652776038,
-                "volume_loss": 20000.0,
-                "component_cost_loss": 4.0
+                "voltage_tracking_loss": 3.885971431740938,
+                "efficiency_loss": 0.03355761654564415,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
             },
             "raw_metrics": {
-                "simulation_output_voltage": 2.747979980469368,
-                "efficiency": 0.1501217361198101,
+                "simulation_output_voltage": 16.407931165377324,
+                "efficiency": 0.8966442383454356,
+                "total_volume_cm3": 10000.0,
+                "total_components": 4
+            },
+            "grpo_reward": 1.0194363594055176
+        },
+        "cand_6": {
+            "fitness_score": 0.5781474477367321,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.38317652021937265,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 22.36894803548165,
+                "efficiency": 0.8616823479780628,
                 "total_volume_cm3": 10000.0,
                 "total_components": 4
             },
             "fatal_penalty_applied": true,
-            "voltage_decay_factor": 0.6139738121724022,
-            "grpo_reward": 0.7590257525444031
+            "voltage_decay_factor": 0.5192643371596596,
+            "grpo_reward": 0.5041903853416443
         },
-        "00_Phase_2_48V_to_12V_Server_Bus_Buck_High_Pwr_g2_cand2_b2": {
-            "fitness_score": 0.5619228341597106,
+        "cand_7": {
+            "fitness_score": 0.5781474477367321,
             "source": "simulation",
             "loss_breakdown": {
-                "voltage_tracking_loss": 659.2090898017726,
-                "efficiency_loss": 14.983751877842526,
-                "volume_loss": 20000.0,
-                "component_cost_loss": 4.0
+                "voltage_tracking_loss": 20.0,
+                "efficiency_loss": 0.38317652021937265,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
             },
             "raw_metrics": {
-                "simulation_output_voltage": 3.880830770320324,
-                "efficiency": 0.1508124061078737,
+                "simulation_output_voltage": 22.36894803548165,
+                "efficiency": 0.8616823479780628,
                 "total_volume_cm3": 10000.0,
                 "total_components": 4
             },
             "fatal_penalty_applied": true,
-            "voltage_decay_factor": 0.7276934646845546,
-            "grpo_reward": 0.7780401706695557
+            "voltage_decay_factor": 0.5192643371596596,
+            "grpo_reward": 0.5041903853416443
         },
-        "00_Phase_2_48V_to_12V_Server_Bus_Buck_High_Pwr_g2_cand3_b2": {
-            "fitness_score": 0.5619228341597106,
+        "cand_8": {
+            "fitness_score": 0.9073396404323466,
             "source": "simulation",
             "loss_breakdown": {
-                "voltage_tracking_loss": 659.2090898017726,
-                "efficiency_loss": 14.983751877842526,
-                "volume_loss": 20000.0,
-                "component_cost_loss": 4.0
+                "voltage_tracking_loss": 3.885971431740938,
+                "efficiency_loss": 0.03355761654564415,
+                "volume_loss": 2.0,
+                "component_cost_loss": 0.020000000000000004
             },
             "raw_metrics": {
-                "simulation_output_voltage": 3.880830770320324,
-                "efficiency": 0.1508124061078737,
+                "simulation_output_voltage": 16.407931165377324,
+                "efficiency": 0.8966442383454356,
                 "total_volume_cm3": 10000.0,
                 "total_components": 4
             },
-            "fatal_penalty_applied": true,
-            "voltage_decay_factor": 0.7276934646845546,
-            "grpo_reward": 0.7780401706695557
-        },
-        "00_Phase_2_48V_to_12V_Server_Bus_Buck_High_Pwr_g2_cand4_b2": {
-            "fitness_score": 0.5521173970296459,
-            "source": "simulation",
-            "loss_breakdown": {
-                "voltage_tracking_loss": 855.9987444179562,
-                "efficiency_loss": 14.9975652776038,
-                "volume_loss": 20000.0,
-                "component_cost_loss": 4.0
-            },
-            "raw_metrics": {
-                "simulation_output_voltage": 2.747979980469368,
-                "efficiency": 0.1501217361198101,
-                "total_volume_cm3": 10000.0,
-                "total_components": 4
-            },
-            "fatal_penalty_applied": true,
-            "voltage_decay_factor": 0.6139738121724022,
-            "grpo_reward": 0.7590257525444031
+            "grpo_reward": 1.0194363594055176
         }
     }
 }

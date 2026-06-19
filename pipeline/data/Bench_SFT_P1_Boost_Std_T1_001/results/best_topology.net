@@ -1,16 +1,22 @@
-* OVERALL BEST CANDIDATE: 00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g4_cand1_b2
-* FITNESS SCORE: 0.9891
+* === GLOBAL BEST TOPOLOGY ===
+* Candidate: cand_10
+* Fitness: 0.9890
 *
-* Generated: 2026-06-08T02:29:38
-* Constraint: Phase 1: 3.3V Logic to 5V Rail (Boost)
-*   vin_min = 3.0
-*   vin_max = 3.6
-*   vout_target = 5
-*   efficiency_target = 0.75
-*   power_in = 5
-* Candidate: 10 of 12
-* Grouped name: g4_cand1
+* --- Active Constraints ---
+* _comment: Phase 1: 3.3V Logic to 5V Rail (Boost)
+* vin_min: 3.0
+* vin_max: 3.6
+* vout_target: 5
+* efficiency_target: 0.75
+* power_in: 5
 *
+* --- Raw Metrics & Components ---
+* simulation_output_voltage: 4.235404
+* efficiency: 0.749544
+* total_volume_cm3: 28.035261
+* total_components: 4
+* ============================
+
 * 3.3V to 5V Boost, 5W
 Vin in 0 3.3
 L1 in sw 22u
@@ -22,6 +28,6 @@ Rbleed sw 0 1Meg
 Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
 .model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
 .model DIODE D
-.tran 1u 10m
+.tran 10n 1m
 .save V(*) I(*)
 .end

@@ -1,57 +1,18 @@
-=== GLOBAL TRAINING RUN SUMMARY: zycos_010 ===
-Progress: 10 / 10 Runs Completed (0 remaining)
+=== GLOBAL TRAINING SUMMARY: zycos_010 ===
+Total Runs Completed: 10
 
---- AGGREGATE TIME METRICS ---
-Total Time Elapsed: 26350.44 sec (7.32 hours)
-Average Time per Run: 2635.04 sec
-Average Time per Batch: 263.50 sec
-Average Time per Netlist: 22.35 sec
+Run: Run_001 | Best Fitness: 0.5186 (cand_3)
+Run: Run_002 | Best Fitness: 0.6809 (cand_5)
+Run: Run_003 | Best Fitness: 0.5000 (cand_3)
+Run: Run_004 | Best Fitness: 0.5183 (cand_3)
+Run: Run_005 | Best Fitness: 0.5137 (cand_2)
+Run: Run_006 | Best Fitness: 0.9887 (cand_6)
+Run: Run_007 | Best Fitness: 0.5000 (cand_6)
+Run: Run_008 | Best Fitness: 0.5070 (cand_11)
+Run: Run_009 | Best Fitness: 0.5000 (cand_4)
+Run: Run_010 | Best Fitness: 0.5000 (cand_2)
 
---- AGGREGATE TOPOLOGY YIELD ---
-Total Candidates Generated: 1179
-Total Valid: 905
-Total Invalid: 295
-Global Validity Rate: 76.76%
-
---- GLOBAL BEST FITNESS ---
-Best Overall Score: 0.9123
-Best Candidate: 00_Phase_3_220V_Mains_to_5V_USB_Hub_Buck_g3_cand3_b7
-Found in: Run_005 (Constraint: 2)
-
---- TRAINING HYPERPARAMETERS ---
-{
-  "n_runs": 10,
-  "n_batch": 10,
-  "sft_lora_path": "checkpoints/zycos_009/grpo-lora/final/grpo",
-  "seed_prompts": 4,
-  "parents_per_batch": 4,
-  "outputs_per_parent": 3,
-  "top_k": 9,
-  "epsilon": 0.3,
-  "softmax_temperature": 0.05,
-  "random_seed": 45,
-  "max_tokens": 1536,
-  "constraint_path": "pipeline/data/datasets/constraints_hard.json",
-  "rl_config": {
-    "max_length": 1536,
-    "max_prompt_length": 1024,
-    "max_completion_length": 1024,
-    "learning_rate": 1e-05,
-    "save_every": 1,
-    "lora_r": 8,
-    "lora_alpha": 16
-  },
-  "weights": {
-    "v_out": 20.0,
-    "efficiency": 10.0,
-    "volume": 2.0,
-    "component_cost": 0.05,
-    "components": {
-      "mosfet": 1.0,
-      "diode": 1.0,
-      "inductor": 1.0,
-      "capacitor": 1.0
-    }
-  }
-}
-==================================================
+--- OVERALL SESSION CHAMPION ---
+Run: Run_006
+Candidate: cand_6
+Score: 0.9887

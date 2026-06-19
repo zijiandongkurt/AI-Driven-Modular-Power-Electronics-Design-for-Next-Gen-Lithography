@@ -4,7 +4,6 @@ import glob
 import re
 import numpy as np
 
-# Use thread-safe, headless backend to prevent Tkinter crashes during ML loops
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -22,30 +21,12 @@ def extract_batch_number(folder_name):
     return int(match.group()) if match else -1
 
 def shorten_cid(cid):
-    """Shorten a candidate id to a compact label for plot annotations.
-
-    Args:
-        cid (str): Full candidate identifier (e.g. ``Phase1_cons4_b2_cand1``).
-
-    Returns:
-        str: Short label such as ``b2_c1``, or first 10 characters if the
-            pattern is not found.
-    """
     match = re.search(r'_b(\d+)_cand(\d+)', cid)
     if match:
         return f"b{match.group(1)}_c{match.group(2)}"
     return cid[:10]
 
 def get_sampled_parents(batch_folder):
-    """Find which parents were sampled to generate a given batch.
-
-    Args:
-        batch_folder (str): Path to the batch directory.
-
-    Returns:
-        list[str]: Parent circuit identifiers extracted from
-            ``prompt_parent_*.txt`` filenames.
-    """
     parent_files = glob.glob(os.path.join(batch_folder, 'prompt_parent_*.txt'))
     return [os.path.basename(pf).replace('prompt_parent_', '').replace('.txt', '') for pf in parent_files]
 
@@ -72,8 +53,8 @@ def plot_run_results(run_dir):
 
     cumulative_total_attempted = 0
     cumulative_total_valid = 0
-    exploration_seen_hashes = set() # Tracks ALL topologies (Valid + Invalid)
-    global_seen_hashes = set()      # Tracks ONLY rewarded topologies for the swarm plots
+    exploration_seen_hashes = set() 
+    global_seen_hashes = set()      
     
     batch_avg_fitness, batch_max_fitness = [], []
     global_avg_fitness, global_max_fitness = [], []
@@ -96,7 +77,7 @@ def plot_run_results(run_dir):
         batch_attempted = 0
         batch_valid = 0
 
-        # A. Safely Calculate Batch Validity from the True Validation Ledger
+        # A. Safely Calculate Batch Validity
         if os.path.exists(valid_file):
             with open(valid_file, 'r') as f:
                 val_data = json.load(f)
@@ -106,11 +87,11 @@ def plot_run_results(run_dir):
         cumulative_total_attempted += batch_attempted
         cumulative_total_valid += batch_valid
 
-        # B. Calculate True Structural Exploration (Uniqueness) across ALL generated .net files
+        # B. Calculate True Structural Exploration (Uniqueness)
         hashes_before = len(exploration_seen_hashes)
         net_files = glob.glob(os.path.join(llm_out_dir, '*.net'))
         if not net_files:
-            net_files = glob.glob(os.path.join(folder, '*.net')) # Fallback
+            net_files = glob.glob(os.path.join(folder, '*.net')) 
             
         for net_file in net_files:
             try:
@@ -123,7 +104,6 @@ def plot_run_results(run_dir):
         hashes_after = len(exploration_seen_hashes)
         new_unique_this_batch = hashes_after - hashes_before
 
-        # Calculate Rates (Protect against ZeroDivisionErrors)
         b_val_rate = (batch_valid / batch_attempted * 100) if batch_attempted > 0 else 0
         c_val_rate = (cumulative_total_valid / cumulative_total_attempted * 100) if cumulative_total_attempted > 0 else 0
         
@@ -136,7 +116,7 @@ def plot_run_results(run_dir):
         cumulative_uniqueness_rates.append(c_uniq_rate)
         valid_counts.append(batch_valid)
 
-        # C. Process Rewards for the Swarm Plots
+        # C. Process Rewards
         if os.path.exists(reward_file):
             with open(reward_file, 'r') as f:
                 reward_data = json.load(f)
@@ -158,13 +138,16 @@ def plot_run_results(run_dir):
                         if os.path.exists(net_path):
                             net_text = open(net_path, "r", encoding="utf-8").read()
                             t_hash = get_topological_hash(net_text)
+                            unique_cid = f"b{b_idx}_{cid}"
 
-                            # This logic ensures the swarm plot only shows each topology once
+                            # 1. ALWAYS track batch performance for the Line Graph (including duplicates)
+                            b_fit_batch.append(metrics['fitness'])
+
+                            # 2. ONLY track unique topologies for the Swarm Plot & Cumulative DB
                             if t_hash not in global_seen_hashes:
                                 global_seen_hashes.add(t_hash)
-                                new_cands[cid] = metrics
-                                cumulative_db[cid] = metrics
-                                b_fit_batch.append(metrics['fitness'])
+                                new_cands[unique_cid] = metrics
+                                cumulative_db[unique_cid] = metrics
 
                                 if val_data.get(cid, {}).get("passed", False):
                                     batch_unique_valid += 1
@@ -183,7 +166,6 @@ def plot_run_results(run_dir):
         b_fit_global = [m['fitness'] for m in cumulative_db.values()]
         global_avg_fitness.append(sum(b_fit_global) / len(b_fit_global) if b_fit_global else None)
         global_max_fitness.append(max(b_fit_global) if b_fit_global else None)
-
 
     def plot_swarm(metric_key, title, ylabel, yscale='linear', target_val=None, y_limits=None, filename=''):
         plt.figure(figsize=(14, 8)) 
@@ -264,18 +246,16 @@ def plot_run_results(run_dir):
     try:
         fig, ax1 = plt.subplots(figsize=(11, 6))
         
-        # Axis 1: Validity (Greens)
         ax1.plot(batches, batch_validity_rates, color='mediumseagreen', marker='o', linewidth=2.5, label='Batch Validity Rate')
         ax1.plot(batches, cumulative_validity_rates, color='darkgreen', marker='^', linestyle='--', linewidth=2, label='Cumulative Validity Rate')
         
         ax1.set_xlabel('Batch Number', fontsize=12)
         ax1.set_ylabel('Validity Rate (%)', fontsize=12, color='darkgreen')
         ax1.tick_params(axis='y', labelcolor='darkgreen')
-        ax1.set_ylim(0, 105) # Lock strictly to 100% since denominator is fixed
+        ax1.set_ylim(0, 105) 
         ax1.set_xticks(batches)
         ax1.grid(True, linestyle='--', alpha=0.3)
         
-        # Axis 2: Uniqueness (Reds)
         ax2 = ax1.twinx()
         ax2.plot(batches, batch_uniqueness_rates, color='lightcoral', marker='d', linestyle='-', linewidth=2.5, label='Batch Uniqueness Rate')
         ax2.plot(batches, cumulative_uniqueness_rates, color='crimson', marker='s', linestyle='--', linewidth=2.5, label='Cumulative Uniqueness Rate')
@@ -283,13 +263,11 @@ def plot_run_results(run_dir):
         ax2.set_ylabel('Uniqueness Rate (%)', fontsize=12, color='darkred')
         ax2.tick_params(axis='y', labelcolor='darkred')
         
-        # Ensure the Uniqueness axis scales cleanly
         max_uniq = max(max(batch_uniqueness_rates, default=0), max(cumulative_uniqueness_rates, default=0))
         ax2.set_ylim(0, max_uniq * 1.2 if max_uniq > 0 else 100)
         
         plt.title('Exploration vs. Yield: Uniqueness & Validity Rates', fontsize=14, fontweight='bold')
         
-        # Combine legends neatly below the plot
         lines_1, labels_1 = ax1.get_legend_handles_labels()
         lines_2, labels_2 = ax2.get_legend_handles_labels()
         ax1.legend(lines_1 + lines_2, labels_1 + labels_2, loc='lower center', bbox_to_anchor=(0.5, -0.25), ncol=2)
@@ -303,7 +281,7 @@ def plot_run_results(run_dir):
     plt.plot(batches, batch_avg_fitness, label='Batch Avg Fitness', marker='o', linestyle='-', color='royalblue', alpha=0.7)
     plt.plot(batches, batch_max_fitness, label='Batch Max Fitness', marker='^', linestyle='-', color='darkblue', alpha=0.7)
     
-    plt.plot(batches, global_avg_fitness, label='Global Avg Fitness', marker='s', linestyle='--', color='mediumseagreen')
+    plt.plot(batches, global_avg_fitness, label='Global Avg Fitness (Unique DB)', marker='s', linestyle='--', color='mediumseagreen')
     plt.plot(batches, global_max_fitness, label='Global Best Fitness', marker='*', linestyle='-', color='gold', markeredgecolor='black', markersize=12)
     
     plt.title('Overall Summary: Fitness Progression (Batch vs Global)', fontsize=14, fontweight='bold')

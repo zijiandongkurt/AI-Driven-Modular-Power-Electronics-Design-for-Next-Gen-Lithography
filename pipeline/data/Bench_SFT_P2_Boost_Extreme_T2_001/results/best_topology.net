@@ -1,30 +1,32 @@
-* OVERALL BEST CANDIDATE: 00_Phase_2_5V_to_24V_High_Current_Boost_g4_cand3_b8
-* FITNESS SCORE: 0.6522
+* === GLOBAL BEST TOPOLOGY ===
+* Candidate: cand_11
+* Fitness: 0.6802
 *
-* Generated: 2026-06-08T05:01:49
-* Constraint: Phase 2: 5V to 24V High Current (Boost)
-*   vin_min = 4.5
-*   vin_max = 5.5
-*   vout_target = 24
-*   efficiency_target = 0.88
-*   power_in = 120
-* Candidate: 12 of 12
-* Grouped name: g4_cand3
+* --- Active Constraints ---
+* _comment: Phase 2: 5V to 24V High Current (Boost)
+* vin_min: 4.5
+* vin_max: 5.5
+* vout_target: 24
+* efficiency_target: 0.88
+* power_in: 120
 *
-* 5V to 24V Interleaved 2-Phase Boost, 120W
+* --- Raw Metrics & Components ---
+* simulation_output_voltage: 13.438062
+* efficiency: 1.000000
+* total_volume_cm3: 24.000000
+* total_components: 4
+* ============================
+
+* 5V to 24V Boost, 120W
 Vin in 0 5
-L1 in sw1 22u
-L2 in sw2 22u
-M1 sw1 gate1 0 0 NMOS W=1 L=1
-M2 sw2 gate2 0 0 NMOS W=1 L=1
-D1 sw1 out DIODE
-D2 sw2 out DIODE
+L1 in sw 100u
+M1 sw gate 0 0 NMOS W=2 L=1
+D1 sw out DIODE
 C1 out 0 100u
 Rload out 0 4.8
-Vgate1 gate1 0 PULSE(0 12 0 1n 1n 5.8u 10u)
-Vgate2 gate2 0 PULSE(0 12 5u 1n 1n 5.8u 10u)
+Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
 .model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
 .model DIODE D
-.tran 1u 10m
+.tran 10n 1m
 .save V(*) I(*)
 .end

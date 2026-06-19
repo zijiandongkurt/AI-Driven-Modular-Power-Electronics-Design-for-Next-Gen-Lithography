@@ -8,14 +8,14 @@
         "power_in": 50
     },
     "circuits": {
-        "00_Phase_2_48V_Telecom_to_5V_Buck_9_6_1_g2_cand1_b1": {
-            "fitness_score": 0.6350150024454259,
+        "cand_4": {
+            "fitness_score": 0.6364140200230584,
             "source": "simulation",
             "loss_breakdown": {
                 "voltage_tracking_loss": 7.367120549890077,
                 "efficiency_loss": 7.711964252612203,
                 "volume_loss": 2.0,
-                "component_cost_loss": 0.7
+                "component_cost_loss": 0.034999999999999996
             },
             "raw_metrics": {
                 "simulation_output_voltage": 11.069234115557776,
@@ -25,26 +25,26 @@
             },
             "fatal_penalty_applied": true,
             "voltage_decay_factor": 0.585443782175664,
-            "grpo_reward": 1.0
+            "grpo_reward": 0.9999995827674866
         },
-        "00_Phase_2_48V_Telecom_to_5V_Buck_9_6_1_g2_cand3_b1": {
-            "fitness_score": 0.5009773679658523,
+        "cand_6": {
+            "fitness_score": 0.5009255290938465,
             "source": "simulation",
             "loss_breakdown": {
                 "voltage_tracking_loss": 20.0,
-                "efficiency_loss": 3.5016406387379906,
+                "efficiency_loss": 3.501640628937613,
                 "volume_loss": 2.0,
-                "component_cost_loss": 0.4
+                "component_cost_loss": 0.020000000000000004
             },
             "raw_metrics": {
-                "simulation_output_voltage": 38.83904191976587,
-                "efficiency": 0.5098359361262009,
+                "simulation_output_voltage": 38.839041957095255,
+                "efficiency": 0.5098359371062386,
                 "total_volume_cm3": 10000.0,
                 "total_components": 4
             },
             "fatal_penalty_applied": true,
-            "voltage_decay_factor": 0.00908749225888566,
-            "grpo_reward": -1.0
+            "voltage_decay_factor": 0.009087492208001082,
+            "grpo_reward": -1.0000004768371582
         }
     }
 }

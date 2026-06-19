@@ -1,26 +1,32 @@
-* OVERALL BEST CANDIDATE: 00_Phase_1_5V_USB_to_12V_Sensor_Boost_g1_cand3_b2
-* FITNESS SCORE: 0.9827
+* === GLOBAL BEST TOPOLOGY ===
+* Candidate: cand_4
+* Fitness: 0.9900
 *
-* Generated: 2026-06-04T15:56:47
-* Constraint: Phase 1: 5V USB to 12V Sensor (Boost)
-*   vin_min = 4.5
-*   vin_max = 5.5
-*   vout_target = 12
-*   efficiency_target = 0.78
-*   power_in = 10
-* Candidate: 3 of 12
-* Grouped name: g1_cand3
+* --- Active Constraints ---
+* _comment: Phase 1: 5V USB to 12V Sensor (Boost)
+* vin_min: 4.5
+* vin_max: 5.5
+* vout_target: 12
+* efficiency_target: 0.78
+* power_in: 10
 *
+* --- Raw Metrics & Components ---
+* simulation_output_voltage: 11.150969
+* efficiency: 0.959169
+* total_volume_cm3: 23.729802
+* total_components: 4
+* ============================
+
 * 5V to 12V Boost Converter
 Vin in 0 5
-L1 in sw 10u
+L1 in sw 47u
 M1 sw gate 0 0 NMOS W=1 L=1
 D1 sw out DIODE
-C1 out 0 100u
-Rload out 0 6
+C1 out 0 220u
+Rload out 0 1.44
 Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
 .model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
 .model DIODE D
-.tran 1u 10m
+.tran 10n 1m
 .save V(*) I(*)
 .end

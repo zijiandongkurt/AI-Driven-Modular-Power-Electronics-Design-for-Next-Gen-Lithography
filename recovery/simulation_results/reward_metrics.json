@@ -1,0 +1,37 @@
+{
+    "circuit_name": "best_buck",
+    "fitness_score": 0.9921977368191467,
+    "constraints_used": {
+        "vin_min": 10.0,
+        "vin_max": 14.0,
+        "vout_target": 5.0,
+        "efficiency_target": 0.8,
+        "power_in": 15.0
+    },
+    "weights_used": {
+        "v_out": 20.0,
+        "efficiency": 10.0,
+        "volume": 2.0,
+        "component_cost": 0.05,
+        "components": {
+            "mosfet": 1.0,
+            "diode": 1.0,
+            "inductor": 1.0,
+            "capacitor": 1.0
+        }
+    },
+    "details": {
+        "loss_breakdown": {
+            "voltage_tracking_loss": 0.0001250698926980804,
+            "efficiency_loss": 0.0,
+            "volume_loss": 0.48,
+            "component_cost_loss": 0.020000000000000004
+        },
+        "raw_metrics": {
+            "simulation_output_voltage": 4.974993011706917,
+            "efficiency": 1.0,
+            "total_volume_cm3": 24.0,
+            "total_components": 4
+        }
+    }
+}

@@ -8,105 +8,22 @@
         "power_in": 5
     },
     "circuits": {
-        "00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g1_cand1_b8": {
+        "cand_1": {
             "fitness_score": -0.59,
             "source": "validation_penalty",
-            "grpo_reward": -0.7216567993164062
+            "grpo_reward": -1.1570262908935547
         },
-        "00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g2_cand2_b8": {
-            "fitness_score": -0.89,
+        "cand_2": {
+            "fitness_score": -0.915,
             "source": "validation_penalty",
-            "grpo_reward": -1.0511201620101929
+            "grpo_reward": -1.5435632467269897
         },
-        "00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g4_cand3_b8": {
-            "fitness_score": -0.89,
+        "cand_3": {
+            "fitness_score": -0.895,
             "source": "validation_penalty",
-            "grpo_reward": -1.0511201620101929
+            "grpo_reward": -1.5197763442993164
         },
-        "00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g1_cand2_b8": {
-            "fitness_score": -0.89,
-            "source": "validation_penalty",
-            "grpo_reward": -1.0511201620101929
-        },
-        "00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g2_cand3_b8": {
-            "fitness_score": -0.89,
-            "source": "validation_penalty",
-            "grpo_reward": -1.0511201620101929
-        },
-        "00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g1_cand3_b8": {
-            "fitness_score": -0.89,
-            "source": "validation_penalty",
-            "grpo_reward": -1.0511201620101929
-        },
-        "00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g2_cand1_b8": {
-            "fitness_score": 0.9715932596280339,
-            "source": "simulation",
-            "loss_breakdown": {
-                "voltage_tracking_loss": 0.009281823506762456,
-                "efficiency_loss": 0.8670250005545055,
-                "volume_loss": 0.924565233781762,
-                "component_cost_loss": 0.020000000000000004
-            },
-            "raw_metrics": {
-                "simulation_output_voltage": 5.215427754789888,
-                "efficiency": 0.6632974999445495,
-                "total_volume_cm3": 46.2282616890881,
-                "total_components": 4
-            },
-            "grpo_reward": 0.9933027625083923
-        },
-        "00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g3_cand1_b8": {
-            "fitness_score": 0.9739727372062559,
-            "source": "simulation",
-            "loss_breakdown": {
-                "voltage_tracking_loss": 0.016281825657709286,
-                "efficiency_loss": 0.7376315664895838,
-                "volume_loss": 0.8944341529317046,
-                "component_cost_loss": 0.020000000000000004
-            },
-            "raw_metrics": {
-                "simulation_output_voltage": 5.285322849222677,
-                "efficiency": 0.6762368433510416,
-                "total_volume_cm3": 44.72170764658523,
-                "total_components": 4
-            },
-            "grpo_reward": 0.9959158301353455
-        },
-        "00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g3_cand2_b8": {
-            "fitness_score": 0.9715932596280339,
-            "source": "simulation",
-            "loss_breakdown": {
-                "voltage_tracking_loss": 0.009281823506762456,
-                "efficiency_loss": 0.8670250005545055,
-                "volume_loss": 0.924565233781762,
-                "component_cost_loss": 0.020000000000000004
-            },
-            "raw_metrics": {
-                "simulation_output_voltage": 5.215427754789888,
-                "efficiency": 0.6632974999445495,
-                "total_volume_cm3": 46.2282616890881,
-                "total_components": 4
-            },
-            "grpo_reward": 0.9933027625083923
-        },
-        "00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g3_cand3_b8": {
-            "fitness_score": 0.9715932596280339,
-            "source": "simulation",
-            "loss_breakdown": {
-                "voltage_tracking_loss": 0.009281823506762456,
-                "efficiency_loss": 0.8670250005545055,
-                "volume_loss": 0.924565233781762,
-                "component_cost_loss": 0.020000000000000004
-            },
-            "raw_metrics": {
-                "simulation_output_voltage": 5.215427754789888,
-                "efficiency": 0.6632974999445495,
-                "total_volume_cm3": 46.2282616890881,
-                "total_components": 4
-            },
-            "grpo_reward": 0.9933027625083923
-        },
-        "00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g4_cand1_b8": {
+        "cand_10": {
             "fitness_score": 0.9890454452719806,
             "source": "simulation",
             "loss_breakdown": {
@@ -121,9 +38,9 @@
                 "total_volume_cm3": 28.03524780156579,
                 "total_components": 4
             },
-            "grpo_reward": 1.0124688148498535
+            "grpo_reward": 0.7210028767585754
         },
-        "00_Phase_1_3_3V_Logic_to_5V_Rail_Boost_g4_cand2_b8": {
+        "cand_11": {
             "fitness_score": 0.9676434517393543,
             "source": "simulation",
             "loss_breakdown": {
@@ -138,7 +55,75 @@
                 "total_volume_cm3": 56.907460022865095,
                 "total_components": 4
             },
-            "grpo_reward": 0.9889649152755737
+            "grpo_reward": 0.6955484747886658
+        },
+        "cand_4": {
+            "fitness_score": 0.9715932596280339,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.009281823506762456,
+                "efficiency_loss": 0.8670250005545055,
+                "volume_loss": 0.924565233781762,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 5.215427754789888,
+                "efficiency": 0.6632974999445495,
+                "total_volume_cm3": 46.2282616890881,
+                "total_components": 4
+            },
+            "grpo_reward": 0.7002462148666382
+        },
+        "cand_7": {
+            "fitness_score": 0.9739727372062559,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.016281825657709286,
+                "efficiency_loss": 0.7376315664895838,
+                "volume_loss": 0.8944341529317046,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 5.285322849222677,
+                "efficiency": 0.6762368433510416,
+                "total_volume_cm3": 44.72170764658523,
+                "total_components": 4
+            },
+            "grpo_reward": 0.7030762434005737
+        },
+        "cand_8": {
+            "fitness_score": 0.9715932596280339,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.009281823506762456,
+                "efficiency_loss": 0.8670250005545055,
+                "volume_loss": 0.924565233781762,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 5.215427754789888,
+                "efficiency": 0.6632974999445495,
+                "total_volume_cm3": 46.2282616890881,
+                "total_components": 4
+            },
+            "grpo_reward": 0.7002462148666382
+        },
+        "cand_9": {
+            "fitness_score": 0.9715932596280339,
+            "source": "simulation",
+            "loss_breakdown": {
+                "voltage_tracking_loss": 0.009281823506762456,
+                "efficiency_loss": 0.8670250005545055,
+                "volume_loss": 0.924565233781762,
+                "component_cost_loss": 0.020000000000000004
+            },
+            "raw_metrics": {
+                "simulation_output_voltage": 5.215427754789888,
+                "efficiency": 0.6632974999445495,
+                "total_volume_cm3": 46.2282616890881,
+                "total_components": 4
+            },
+            "grpo_reward": 0.7002462148666382
         }
     }
 }

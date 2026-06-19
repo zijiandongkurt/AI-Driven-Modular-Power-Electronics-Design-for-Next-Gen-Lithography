@@ -43,10 +43,14 @@ FIXED RULES — do not deviate:
   - Load resistor  : Rload out 0 <value>
   - MOSFET model   : .model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
   - MOSFET pins    : M<n> drain gate source bulk NMOS
-      High-side    : drain=in,  gate=gate,  source=sw,  bulk=0
+      CRITICAL RULE: The bulk node MUST ALWAYS be exactly the same as the source node.
+      High-side    : drain=in,  gate=gate,  source=sw,  bulk=sw
       Low-side     : drain=sw,  gate=gate2, source=0,   bulk=0
-  - Gate drive     : Vgate gate 0 PULSE(0 12 0 1n 1n [t_on] [period])
-                     — exactly 7 parameters, choose t_on and period to meet switching frequency
+  - Gate drive     : Vgate gate <reference_node> PULSE(0 12 0 1n 1n [t_on] [period])
+      CRITICAL RULE: <reference_node> MUST be the source node of the MOSFET it is driving. 
+                     For a high-side switch, this must be a floating drive (e.g., Vgate gate sw PULSE...).
+                     For a low-side switch, this is ground (Vgate gate 0 PULSE...).
+      — exactly 7 PULSE parameters. You MUST choose t_on and period to meet the requested switching frequency, AND ensure <reference_node> is correct.
   - Floating nodes : any node connected only to reactive elements needs Rbleed <node> 0 1Meg
   - Simulation     : .tran 10n 1m
   CRITICAL SYNTAX RULE: DO NOT output placeholders like <vin>, [value], or formulas like <vin/20000>. You MUST output concrete floating point numbers or SPICE notation (e.g., 10u, 220).
@@ -77,15 +81,15 @@ OUTPUT FORMAT:
 ### SPICE Netlist:
 * 12V to 5V Buck Converter
 Vin in 0 12
-M1 in gate sw 0 NMOS W=1 L=1
+M1 in gate sw sw NMOS W=1 L=1
 D1 0 sw DIODE
 L1 sw out 47u
 C1 out 0 220u
 Rload out 0 0.278
-Vgate gate 0 PULSE(0 12 0 1n 1n 4.16u 10u)
+Vgate gate sw PULSE(0 12 0 1n 1n 4.16u 10u)
 .model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
 .model DIODE D
-.tran 1u 10m
+.tran 10n 1m
 .end
 --- END EXAMPLE 1 ---
 
@@ -101,7 +105,7 @@ Rload out 0 6
 Vgate gate 0 PULSE(0 12 0 1n 1n 5.8u 10u)
 .model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
 .model DIODE D
-.tran 1u 10m
+.tran 10n 1m
 .end
 --- END EXAMPLE 2 ---
 """

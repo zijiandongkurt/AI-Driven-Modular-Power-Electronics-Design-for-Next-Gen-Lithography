@@ -1,66 +1,122 @@
 [
-  {
-    "netlist_id": "00_12V_to_5V_step_down_g1_cand1_b1",
-    "batch_id": "zycos_004/Run_001/batch_1",
-    "group_id": "g1",
-    "parent_id": null,
-    "fitness": 0.7874735936672846,
-    "depth": 1
-  },
-  {
-    "netlist_id": "00_12V_to_5V_step_down_g1_cand2_b1",
-    "batch_id": "zycos_004/Run_001/batch_1",
-    "group_id": "g1",
-    "parent_id": null,
-    "fitness": 0.7874735936672846,
-    "depth": 1
-  },
-  {
-    "netlist_id": "00_12V_to_5V_step_down_g2_cand1_b1",
-    "batch_id": "zycos_004/Run_001/batch_1",
-    "group_id": "g2",
-    "parent_id": null,
-    "fitness": 0.7874735936672846,
-    "depth": 1
-  },
-  {
-    "netlist_id": "00_12V_to_5V_step_down_g2_cand2_b1",
-    "batch_id": "zycos_004/Run_001/batch_1",
-    "group_id": "g2",
-    "parent_id": null,
-    "fitness": 0.7874735936672846,
-    "depth": 1
-  },
-  {
-    "netlist_id": "00_12V_to_5V_step_down_g1_cand1_b2",
-    "batch_id": "zycos_004/Run_001/batch_2",
-    "group_id": "g1",
-    "parent_id": "00_12V_to_5V_step_down_g1_cand1_b1",
-    "fitness": 0.7874735936672846,
-    "depth": 2
-  },
-  {
-    "netlist_id": "00_12V_to_5V_step_down_g1_cand2_b2",
-    "batch_id": "zycos_004/Run_001/batch_2",
-    "group_id": "g1",
-    "parent_id": "00_12V_to_5V_step_down_g1_cand1_b1",
-    "fitness": 0.7874735936672846,
-    "depth": 2
-  },
-  {
-    "netlist_id": "00_12V_to_5V_step_down_g2_cand1_b2",
-    "batch_id": "zycos_004/Run_001/batch_2",
-    "group_id": "g2",
-    "parent_id": "00_12V_to_5V_step_down_g2_cand2_b1",
-    "fitness": 0.7874735936672846,
-    "depth": 2
-  },
-  {
-    "netlist_id": "00_12V_to_5V_step_down_g2_cand2_b2",
-    "batch_id": "zycos_004/Run_001/batch_2",
-    "group_id": "g2",
-    "parent_id": "00_12V_to_5V_step_down_g2_cand2_b1",
-    "fitness": 0.7874735936672846,
-    "depth": 2
-  }
+    {
+        "netlist_id": "cand_1",
+        "batch_id": "zycos_004/Run_001/batch_1",
+        "group_id": "g1",
+        "parent_id": null,
+        "fitness": 0.9779781259677853,
+        "depth": 1,
+        "metrics": {
+            "simulation_output_voltage": 4.160597463186642,
+            "efficiency": 0.8336679800849383,
+            "total_volume_cm3": 29.368130127629986,
+            "total_components": 4
+        },
+        "topo_hash": "b348cc87b7d8dd8cd46063f6c2eab290"
+    },
+    {
+        "netlist_id": "cand_2",
+        "batch_id": "zycos_004/Run_001/batch_1",
+        "group_id": "g1",
+        "parent_id": null,
+        "fitness": 0.9779781259677853,
+        "depth": 1,
+        "metrics": {
+            "simulation_output_voltage": 4.160597463186642,
+            "efficiency": 0.8336679800849383,
+            "total_volume_cm3": 29.368130127629986,
+            "total_components": 4
+        },
+        "topo_hash": "b348cc87b7d8dd8cd46063f6c2eab290"
+    },
+    {
+        "netlist_id": "cand_3",
+        "batch_id": "zycos_004/Run_001/batch_1",
+        "group_id": "g2",
+        "parent_id": null,
+        "fitness": 0.9779781259677853,
+        "depth": 1,
+        "metrics": {
+            "simulation_output_voltage": 4.160597463186642,
+            "efficiency": 0.8336679800849383,
+            "total_volume_cm3": 29.368130127629986,
+            "total_components": 4
+        },
+        "topo_hash": "b348cc87b7d8dd8cd46063f6c2eab290"
+    },
+    {
+        "netlist_id": "cand_4",
+        "batch_id": "zycos_004/Run_001/batch_1",
+        "group_id": "g2",
+        "parent_id": null,
+        "fitness": 0.9779781259677853,
+        "depth": 1,
+        "metrics": {
+            "simulation_output_voltage": 4.160597463186642,
+            "efficiency": 0.8336679800849383,
+            "total_volume_cm3": 29.368130127629986,
+            "total_components": 4
+        },
+        "topo_hash": "b348cc87b7d8dd8cd46063f6c2eab290"
+    },
+    {
+        "netlist_id": "cand_1",
+        "batch_id": "zycos_004/Run_001/batch_2",
+        "group_id": "g1",
+        "parent_id": "00_12V_to_5V_step_down_g1_cand1_b1",
+        "fitness": 0.9779781259677853,
+        "depth": 2,
+        "metrics": {
+            "simulation_output_voltage": 4.160597463186642,
+            "efficiency": 0.8336679800849383,
+            "total_volume_cm3": 29.368130127629986,
+            "total_components": 4
+        },
+        "topo_hash": "b348cc87b7d8dd8cd46063f6c2eab290"
+    },
+    {
+        "netlist_id": "cand_2",
+        "batch_id": "zycos_004/Run_001/batch_2",
+        "group_id": "g1",
+        "parent_id": "00_12V_to_5V_step_down_g1_cand1_b1",
+        "fitness": 0.9779781259677853,
+        "depth": 2,
+        "metrics": {
+            "simulation_output_voltage": 4.160597463186642,
+            "efficiency": 0.8336679800849383,
+            "total_volume_cm3": 29.368130127629986,
+            "total_components": 4
+        },
+        "topo_hash": "b348cc87b7d8dd8cd46063f6c2eab290"
+    },
+    {
+        "netlist_id": "cand_3",
+        "batch_id": "zycos_004/Run_001/batch_2",
+        "group_id": "g2",
+        "parent_id": "00_12V_to_5V_step_down_g2_cand2_b1",
+        "fitness": 0.9779781259677853,
+        "depth": 2,
+        "metrics": {
+            "simulation_output_voltage": 4.160597463186642,
+            "efficiency": 0.8336679800849383,
+            "total_volume_cm3": 29.368130127629986,
+            "total_components": 4
+        },
+        "topo_hash": "b348cc87b7d8dd8cd46063f6c2eab290"
+    },
+    {
+        "netlist_id": "cand_4",
+        "batch_id": "zycos_004/Run_001/batch_2",
+        "group_id": "g2",
+        "parent_id": "00_12V_to_5V_step_down_g2_cand2_b1",
+        "fitness": 0.9779781259677853,
+        "depth": 2,
+        "metrics": {
+            "simulation_output_voltage": 4.160597463186642,
+            "efficiency": 0.8336679800849383,
+            "total_volume_cm3": 29.368130127629986,
+            "total_components": 4
+        },
+        "topo_hash": "b348cc87b7d8dd8cd46063f6c2eab290"
+    }
 ]

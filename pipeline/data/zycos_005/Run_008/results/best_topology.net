@@ -1,24 +1,30 @@
-* OVERALL BEST CANDIDATE: 00_Phase_1_24V_Industrial_to_12V_Bus_Buck_g1_cand3_b10
-* FITNESS SCORE: 0.6484
+* === GLOBAL BEST TOPOLOGY ===
+* Candidate: cand_3
+* Fitness: 0.9869
 *
-* Generated: 2026-05-31T21:55:42
-* Constraint: Phase 1: 24V Industrial to 12V Bus (Buck)
-*   vin_min = 20
-*   vin_max = 28
-*   vout_target = 12
-*   efficiency_target = 0.82
-*   power_in = 30
-* Candidate: 3 of 8
-* Grouped name: g1_cand3
+* --- Active Constraints ---
+* _comment: Phase 1: 24V Industrial to 12V Bus (Buck)
+* vin_min: 20
+* vin_max: 28
+* vout_target: 12
+* efficiency_target: 0.82
+* power_in: 30
 *
-* 20V to 12V Buck, D=0.6
-Vin in 0 20
-M1 in gate sw 0 NMOS W=1 L=1
+* --- Raw Metrics & Components ---
+* simulation_output_voltage: 13.039039
+* efficiency: 0.964281
+* total_volume_cm3: 30.062253
+* total_components: 4
+* ============================
+
+* 24V to 12V Buck, D=0.5
+Vin in 0 24
+M1 in gate sw sw NMOS W=1 L=1
 D1 0 sw DIODE
-L1 sw out 47u
-C1 out 0 100u
-Rload out 0 0.48
-Vgate gate 0 PULSE(0 12 0 1n 1n 6.666u 10u)
+L1 sw out 100u
+C1 out 0 220u
+Rload out 0 0.6
+Vgate gate sw PULSE(0 12 0 1n 1n 5.8u 10u)
 .model NMOS NMOS(Vto=1 Kp=2 Lambda=0)
 .model DIODE D
 .tran 10n 1m
